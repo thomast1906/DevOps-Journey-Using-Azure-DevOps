@@ -5,7 +5,7 @@ The purpose of this lab is to create the location that will store the remote Ter
 When deploying Terraform there is a requirement that it must store a state file; this file is used by Terraform to map Azure Resources to your configuration that you want to deploy, keeps track of meta data and can also assist with improving performance for larger Azure Resource deployments.
 
 ## Create Blob Storage location for Terraform State file
-1. Edit the [variables](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/Azure/create-terraform-storage.sh#L3-L4)
+1. Edit the [variables](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/1-Initial-Setup/scripts/create-terraform-storage.sh#L3-L4)
 2. Run the script `./scripts/create-terraform-storage.sh`
 3. The script will create
 - Azure Resource Group
