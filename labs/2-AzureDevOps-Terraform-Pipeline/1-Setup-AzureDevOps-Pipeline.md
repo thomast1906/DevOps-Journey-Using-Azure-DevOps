@@ -15,3 +15,12 @@ The Terraform task enables running Terraform commands as part of Azure Build and
 
 3. Copy contents from this folder into the newly created Azure DevOps repository
 
+4. Once copied to Azure DevOps repository, Select **Repo** -> **Setup Build**
+
+5. Select **Existing Azure Pipelines YAML file** and branch  / path to the .yaml Azure DevOps Pipeline
+
+![](images/azuredevops-terraform-pipeline.png)
+
+6. Save pipeline and run
+
+![](images/azuredevops-terraform-pipeline-2.png)

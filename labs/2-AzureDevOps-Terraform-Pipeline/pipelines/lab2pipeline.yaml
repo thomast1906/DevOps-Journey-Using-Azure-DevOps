@@ -9,7 +9,7 @@ variables:
   - name: backendServiceArm
     value: 'azure-devops-journey-service-connection'
   - name: backendAzureRmResourceGroupName
-    value: 'azure-devops-journey-service-connection'
+    value: 'devops-journey-rg'
   - name: backendAzureRmStorageAccountName
     value: 'devopsjourneyazuredevops'
   - name: backendAzureRmContainerName
@@ -19,7 +19,7 @@ variables:
   - name: environment
     value: 'production'
   - name: terraform_version
-    value: '0.15.1'
+    value: '0.15.4'
 
 stages :
   - stage: validate
@@ -30,8 +30,8 @@ stages :
       - task: TerraformInstaller@0
         displayName: 'install'
         inputs:
-          terraformVersion: '0.15.1'
-      - task: TerraformTaskV1@0
+          terraformVersion: ${{ variables.terraform_version}}
+      - task: TerraformTaskV2@2
         displayName: 'init'
         inputs:
           provider: 'azurerm'
@@ -42,7 +42,7 @@ stages :
           backendAzureRmContainerName: ${{ variables.backendAzureRmContainerName }}
           backendAzureRmKey: ${{ variables.backendAzureRmKey }}
           workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
-      - task: TerraformTaskV1@0
+      - task: TerraformTaskV2@2
         displayName: 'validate'
         inputs:
           provider: 'azurerm'
@@ -57,8 +57,8 @@ stages :
         - task: TerraformInstaller@0
           displayName: 'install'
           inputs:
-            terraformVersion: '0.15.1'
-        - task: TerraformTaskV1@0
+            terraformVersion: ${{ variables.terraform_version}}
+        - task: TerraformTaskV2@2
           displayName: 'init'
           inputs:
             provider: 'azurerm'
@@ -69,12 +69,12 @@ stages :
             backendAzureRmContainerName: ${{ variables.backendAzureRmContainerName }}
             backendAzureRmKey: ${{ variables.backendAzureRmKey }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
-        - task: TerraformTaskV1@0
+        - task: TerraformTaskV2@2
           displayName: 'plan'
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -var-file="../vars/${{ variables.environment }}/${{ variables.environment }}.tfvars"'
+            commandOptions: '-input=false -var-file="../vars/${{ variables.environment }}.tfvars"'
             environmentServiceNameAzureRM: ${{ variables.backendServiceArm }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
 
@@ -87,8 +87,8 @@ stages :
         - task: TerraformInstaller@0
           displayName: 'install'
           inputs:
-            terraformVersion: '0.15.1'
-        - task: TerraformTaskV1@0
+            terraformVersion: ${{ variables.terraform_version}}
+        - task: TerraformTaskV2@2
           displayName: 'init'
           inputs:
             provider: 'azurerm'
@@ -99,19 +99,19 @@ stages :
             backendAzureRmContainerName: ${{ variables.backendAzureRmContainerName }}
             backendAzureRmKey: ${{ variables.backendAzureRmKey }} 
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
-        - task: TerraformTaskV1@0
+        - task: TerraformTaskV2@2
           displayName: 'plan'
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -var-file="../vars/${{ variables.environment }}/${{ variables.environment }}.tfvars"'
+            commandOptions: '-input=false -var-file="../vars/${{ variables.environment }}.tfvars"'
             environmentServiceNameAzureRM: ${{ variables.backendServiceArm }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
-        - task: TerraformTaskV1@0
+        - task: TerraformTaskV2@2
           displayName: 'apply'
           inputs:
             provider: 'azurerm'
             command: 'apply'
-            commandOptions: '-input=false -auto-approve -var-file="../vars/${{ variables.environment }}/${{ variables.environment }}.tfvars"'
+            commandOptions: '-input=false -auto-approve -var-file="../vars/${{ variables.environment }}.tfvars"'
             environmentServiceNameAzureRM: ${{ variables.backendServiceArm }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
