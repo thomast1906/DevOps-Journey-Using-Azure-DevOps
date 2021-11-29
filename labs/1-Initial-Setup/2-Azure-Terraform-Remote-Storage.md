@@ -6,7 +6,7 @@ When deploying Terraform there is a requirement that it must store a state file;
 
 ## Create Blob Storage location for Terraform State file
 1. Edit the [variables](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/Azure/create-terraform-storage.sh#L3-L4)
-2. Run the script `./create-terraform-storage.sh`
+2. Run the script `./scripts/create-terraform-storage.sh`
 3. The script will create
 - Azure Resource Group
 - Azure Storage Account
