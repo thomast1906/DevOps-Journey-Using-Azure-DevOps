@@ -23,7 +23,7 @@ variables:
   - name: repository
     value: 'devopsjourney'
   - name: dockerfile
-    value: '$(Build.SourcesDirectory)/azure-vote-app/azure-vote/Dockerfile'
+    value: '$(Build.SourcesDirectory)/azure-vote-app/Dockerfile'
   - name: containerRegistry
     value: 'devopsjourneyacr.azurecr.io'
 
@@ -160,4 +160,4 @@ stages :
             az aks get-credentials -g $AKS_RG -n $AKS_NAME --admin
 
             # Apply azure-vote-app
-            kubectl apply -f pipelines/files/azure-vote-app.yaml 
+            kubectl apply -f pipelines/scripts/azure-vote-app.yaml 
