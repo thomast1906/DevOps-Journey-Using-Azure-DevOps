@@ -19,3 +19,20 @@ This lab is to deploy the same Application to Container Registry
    - Select correct ACR and create service connection name. I have given devopsjourneyacr.azurecr.io as my service connection name
 
 ![](images/deploy-app-to-acr-1.png)
+
+6. Copy the app folder to Azure DevOps repo
+
+7. Update pipeline in Azure DevOps repo with the below updates:
+- [Updated variables](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/3-Deploy-App-to-ACR/pipelines/lab3pipeline.yaml#L23-L28)
+  - repository: ACR repository name
+  - dockerfile: Dockerfile location
+  - containerRegistry: Service connection name of container registry
+- [Add Build Stage](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/3-Deploy-App-to-ACR/pipelines/lab3pipeline.yaml#L125-L138)
+
+8. Run pipeline, you will see an additional stage on pipeline
+
+![](images/deploy-app-to-acr-3.png)
+
+9. Reviewing in ACR, you will see the image 
+
+![](images/deploy-app-to-acr-2.png)
