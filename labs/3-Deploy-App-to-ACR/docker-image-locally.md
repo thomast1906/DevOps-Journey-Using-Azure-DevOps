@@ -15,3 +15,7 @@ d10e5244f237        mcr.microsoft.com/azuredocs/azure-vote-front:v1   "/entrypoi
 To see the running application, enter http://localhost:8080 in a local web browser. The sample application loads, as shown in the following example:
 
 ![](images/deploy-app-to-acr-4.png)
+
+Stop and remove the container instances and resources with the docker-compose down command:
+
+`docker-compose down`
