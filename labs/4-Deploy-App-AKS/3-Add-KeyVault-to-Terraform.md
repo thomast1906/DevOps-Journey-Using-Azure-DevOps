@@ -22,3 +22,7 @@ access_policy_id is the object group ID that you created as part of initial setu
 
 `keyvault_name = "devopsjourney"
 access_policy_id  = "7da738c2-5c92-401c-87f1-eadbcf714367"`
+
+5. Once the Key Vault has been created - create a new variable group: devopsjourney as below.
+
+![](images/deploy-app-aks-3.png)
