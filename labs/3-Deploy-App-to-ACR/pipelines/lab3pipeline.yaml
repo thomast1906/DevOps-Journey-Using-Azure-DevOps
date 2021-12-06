@@ -23,7 +23,7 @@ variables:
   - name: repository
     value: 'devopsjourney'
   - name: dockerfile
-    value: '$(Build.SourcesDirectory)/azure-vote-app/azure-vote/Dockerfile'
+    value: '$(Build.SourcesDirectory)/aspnet-core-dotnet-core/Dockerfile'
   - name: containerRegistry
     value: 'devopsjourneyacr.azurecr.io'
 

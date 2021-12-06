@@ -1,21 +1,23 @@
-## Build & run the Docker Image Locally
-The application can be built & ran locally as below once you are in this directory using Docker Compose. Docker Compose can be used to automate building container images and the deployment of multi-container applications.
-`docker-compose up -d`
+## Build the Docker Image Locally
+The application can be built & ran locally as below once you are in the app directory
+`docker build -t devopsjourneyapp .`
 
-When completed, use the docker images command to see the created images. Three images have been downloaded or created. The azure-vote-front image contains the front-end application and uses the nginx-flask image as a base. The redis image is used to start a Redis instance.
+The `-t` is for the tag (the name) of the Docker image and the `.` is telling the Docker CLI that the Dockerfile is in the current directory
 
-Run the docker ps command to see the running containers:
+After the Docker image is created, run the following command to confirm the Docker image is on your machine.
+`docker image ls`
 
-`$ docker ps
+## Run The Docker Image Locally
+Now that the Docker image is created, you can run the container locally just to confirm it'll work and not crash.
 
-CONTAINER ID        IMAGE                                             COMMAND                  CREATED             STATUS              PORTS                           NAMES
-d10e5244f237        mcr.microsoft.com/azuredocs/azure-vote-front:v1   "/entrypoint.sh /sta…"   3 minutes ago       Up 3 minutes        443/tcp, 0.0.0.0:8080->80/tcp   azure-vote-front
-21574cb38c1f        mcr.microsoft.com/oss/bitnami/redis:6.0.8         "/opt/bitnami/script…"   3 minutes ago       Up 3 minutes        0.0.0.0:6379->6379/tcp          azure-vote-back`
+1. To run the Docker container, run the following command:
+`docker run -tid devopsjourneyapp`
 
-To see the running application, enter http://localhost:8080 in a local web browser. The sample application loads, as shown in the following example:
+- `t` stands for a TTY console
+- `i` stands for interactive
+- `d` stands for detach so your terminal isn't directly connected to the Docker container
 
-![](images/deploy-app-to-acr-4.png)
+2. To confirm the Docker container is running, run the following command:
+`docker container ls`
 
-Stop and remove the container instances and resources with the docker-compose down command:
-
-`docker-compose down`
+You should now see the container running.
