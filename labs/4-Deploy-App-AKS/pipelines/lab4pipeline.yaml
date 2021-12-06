@@ -21,11 +21,12 @@ variables:
   - name: terraform_version
     value: '0.15.4'
   - name: repository
-    value: 'devopsjourney'
+    value: 'aspnet'
   - name: dockerfile
-    value: '$(Build.SourcesDirectory)/azure-vote-app/Dockerfile'
+    value: '$(Build.SourcesDirectory)/aspnet-core-dotnet-core/Dockerfile'
   - name: containerRegistry
     value: 'devopsjourneyacr.azurecr.io'
+  - group: devopsjourney
 
 stages :
   - stage: validate
@@ -159,5 +160,9 @@ stages :
             # Get AKS Credentials
             az aks get-credentials -g $AKS_RG -n $AKS_NAME --admin
 
-            # Apply azure-vote-app
-            kubectl apply -f pipelines/scripts/azure-vote-app.yaml 
+            # Create secret
+            # kubectl -n default create secret generic aikey --from-literal=aisecret=19067f39c26f-48fd-4ca5-a092-0bd7c2ed1e89
+            kubectl -n default create secret generic aikey --from-literal=$(AIKEY)
+
+            # Apply app
+            kubectl apply -f pipelines/scripts/aspnet.yaml 

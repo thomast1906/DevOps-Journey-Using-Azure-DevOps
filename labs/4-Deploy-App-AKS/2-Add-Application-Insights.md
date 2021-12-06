@@ -1,20 +1,20 @@
-# Deploy sample Application to AKS
+# Add Application Insights to Terraform
 
-This lab is to deploy the Azure Voting App to AKS using ACR Image
+Application Insights will be used to monitor the application once deployed!
 
-1. For AKS to be able to pull images from ACR, you will need to add the below to the main.tf terraform file
+1. Deploy Application Insights using:
 
 `resource "azurerm_role_assignment" "aks-acr-rg" {
   scope                = module.acr.resource_group_id
   role_definition_name = "Acrpull"
   principal_id         = module.aks.kubelet_object_id
 
-       depends_on = [
+  depends_on = [
      module.aks,
      module.acr
   ]
-}
-`
+}`
+
 
 2. Update .yaml with your ACR image name
 
