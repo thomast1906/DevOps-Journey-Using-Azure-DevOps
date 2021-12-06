@@ -25,6 +25,14 @@ access_policy_id  = "7da738c2-5c92-401c-87f1-eadbcf714367"`
 
 5. Edit your Azure DevOps pipeline to run this pipeline: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/lab4-updates/labs/4-Deploy-App-AKS/pipelines/lab4pipeline-1-2-3.yaml 
 
-6. Once the Key Vault has been created - create a new variable group: devopsjourney as below.
+6. Get Azure Application Insights Instrumentation Key using Az CLI:
+`az extension add --name application-insights`
+`az monitor app-insights component show --app devopsjourney -g devopsjourney-rg`
+
+7. Add This key to Key Vault as secret `AIKEY`
+
+`az keyvault secret set --vault-name "devopsjourney-kv" --name "AIKEY" --value "App_insights_key_value"`
+
+8. Once the Key Vault has been created - create a new variable group: devopsjourney as below.
 
 ![](images/deploy-app-aks-3.png)
