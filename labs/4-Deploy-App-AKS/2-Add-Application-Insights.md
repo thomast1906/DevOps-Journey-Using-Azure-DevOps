@@ -18,4 +18,4 @@ https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/
 4. Add new .tfvars to https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/vars/production.tfvars#L23-L25
 
 `app_insights_name = "devopsjourney"
-application_type  = "web"`
+ application_type  = "web"`
