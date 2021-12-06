@@ -23,6 +23,8 @@ access_policy_id is the object group ID that you created as part of initial setu
 `keyvault_name = "devopsjourney"
 access_policy_id  = "7da738c2-5c92-401c-87f1-eadbcf714367"`
 
-5. Once the Key Vault has been created - create a new variable group: devopsjourney as below.
+5. Edit your Azure DevOps pipeline to run this pipeline: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/lab4-updates/labs/4-Deploy-App-AKS/pipelines/lab4pipeline-1-2-3.yaml 
+
+6. Once the Key Vault has been created - create a new variable group: devopsjourney as below.
 
 ![](images/deploy-app-aks-3.png)
