@@ -1,0 +1,38 @@
+# Add Azure Key Vault to Terraform
+
+Azure Key Vault will be used to store secrets used within your Azure DevOps Variable Group. I also recommend you read this [Blog Post on: Storing and retrieving secrets in Azure KeyVault with Variable Groups in Azure DevOps Pipelines
+](https://thomasthornton.cloud/2021/06/24/storing-and-retrieving-secrets-in-azure-keyvault-with-variable-groups-in-azure-devops-pipelines/)
+
+1. Deploy Azure Key Vault using this module: 
+
+- [Azure Key Vault](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/4-Deploy-App-AKS/terraform/modules/keyvault)
+
+1. Update main.tf with Azure Key Vault module:
+
+https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/terraform/main.tf#L79-L83
+
+
+3. Update variables.tf
+
+https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/terraform/variables.tf#L86-L94
+
+4. Add new .tfvars to https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/vars/production.tfvars#L28-L29
+
+access_policy_id is the object group ID that you created as part of initial setup [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/3-Create-Azure-AD-AKS-Admins.md) *Please note: add the service principal that docker uses to this group also. This was created [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md)*
+
+`keyvault_name = "devopsjourney"
+access_policy_id  = "7da738c2-5c92-401c-87f1-eadbcf714367"`
+
+5. Edit your Azure DevOps pipeline to run this pipeline: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/lab4-updates/labs/4-Deploy-App-AKS/pipelines/lab4pipeline-1-2-3.yaml 
+
+6. Get Azure Application Insights Instrumentation Key using Az CLI:
+`az extension add --name application-insights`
+`az monitor app-insights component show --app devopsjourney -g devopsjourney-rg`
+
+7. Add This key to Key Vault as secret `AIKEY`
+
+`az keyvault secret set --vault-name "devopsjourney-kv" --name "AIKEY" --value "App_insights_key_value"`
+
+8. Once the Key Vault has been created - create a new variable group: devopsjourney as below.
+
+![](images/deploy-app-aks-3.png)
