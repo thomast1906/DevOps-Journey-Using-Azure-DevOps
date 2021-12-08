@@ -5,3 +5,6 @@ A DevOps journey using Azure DevOps (CI/CD, reporting, terraform, AKS)
 ## Labs
 1. [Prerequisites](https://github.com/thomast1906/DevOps-The-Hard-Way-Azure/blob/main/prerequisites.md)
 
+
+
+az network application-gateway start -g devopsjourneyaks-node-rg -n applicationgateway
