@@ -11,30 +11,30 @@ Select the Application Insights that you created previously & also have the ingr
 # Live Metrics
 When you deploy a new build, watch these near-real-time performance indicators to make sure everything works as expected. 
 
-![](images/monitoring-and-alerting-1.png)
+![](images/monitoring-and-alerting-1.PNG)
 
 # Transaction search for instance data
 Search and filter events such as requests, exceptions, dependency calls, log traces, and page views.
 
-![](images/monitoring-and-alerting-2.png)
+![](images/monitoring-and-alerting-2.PNG)
 
 # Viewing failures easily
 Ability to view failures easily within this pain
 
-![](images/monitoring-and-alerting-3.png)
+![](images/monitoring-and-alerting-3.PNG)
 
 # Application map
 Explore the components of your app, with key metrics and alerts.
 
-![](images/monitoring-and-alerting-4.png)
+![](images/monitoring-and-alerting-4.PNG)
 
 
 # Smart detection and manual alerts
 Set up automatic alerts that adapt to your app's normal patterns of telemetry and trigger when there's something outside the usual pattern. You can also set alerts on particular levels of custom or standard metrics.
 
-![](images/monitoring-and-alerting-5.png)
+![](images/monitoring-and-alerting-5.PNG)
 
 # Usage analysis
 Analyze user segmentation and retention.
 
-![](images/monitoring-and-alerting-6.png)
+![](images/monitoring-and-alerting-6.PNG)

@@ -9,7 +9,7 @@ Access to Container insights is available directly from an AKS cluster by select
 
 The default page opens and displays four line performance charts that show key performance metrics of your cluster.
 
-![](images/monitoring-and-alerting-9.png)
+![](images/monitoring-and-alerting-9.PNG)
 
 The performance charts display four performance metrics:
 

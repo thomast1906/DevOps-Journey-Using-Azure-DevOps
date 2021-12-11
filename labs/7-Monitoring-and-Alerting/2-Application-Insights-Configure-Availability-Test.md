@@ -19,8 +19,8 @@ Select Availability -> Add Classic Test
 
 Enter details as below, URL will be the ingress IP that you have been accessing the test application on
 
-![](images/monitoring-and-alerting-7.png)
+![](images/monitoring-and-alerting-7.PNG)
 
 Once configured, over time - you will be able to view additional testing information
 
-![](images/monitoring-and-alerting-8.png)
+![](images/monitoring-and-alerting-8.PNG)
