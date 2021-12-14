@@ -46,38 +46,3 @@ module "acr" {
   location = var.location
   environment = var.environment
 }
-
-# resource "azurerm_role_assignment" "aks-vnetid" {
-#   scope                = module.vnet_aks.vnet_id
-#   role_definition_name = "Network Contributor"
-#   principal_id         = module.aks.kubelet_object_id
-
-#      depends_on = [
-#      module.aks
-#   ]
-# }
-
-# resource "azurerm_role_assignment" "aks-acr-rg" {
-#   scope                = module.acr.resource_group_id
-#   role_definition_name = "Contributor"
-#   principal_id         = module.aks.kubelet_object_id
-
-#        depends_on = [
-#      module.aks,
-#      module.acr
-#   ]
-# }
-
-# data "azurerm_resource_group" "mi_rg" {
-#   name = "azurebacktoschool-mi-rg"
-# }
-
-# resource "azurerm_role_assignment" "aks-mi-rg" {
-#   scope                = data.azurerm_resource_group.mi_rg.id
-#   role_definition_name = "Contributor"
-#   principal_id         = module.aks.kubelet_object_id
-
-#        depends_on = [
-#      module.aks
-#   ]
-# }

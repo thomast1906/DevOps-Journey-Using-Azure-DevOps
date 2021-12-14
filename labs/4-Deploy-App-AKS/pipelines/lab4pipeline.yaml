@@ -122,3 +122,46 @@ stages :
             commandOptions: '-input=false -auto-approve -var-file="../vars/${{ variables.environment }}.tfvars"'
             environmentServiceNameAzureRM: ${{ variables.backendServiceArm }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
+
+  - stage: Build
+    displayName: Build and push stage
+    jobs:  
+    - job: Build
+      displayName: Build job
+      steps:
+      - task: Docker@2
+        displayName: Build and push an image to container registry
+        inputs:
+          command: buildAndPush
+          repository: ${{ variables.repository }}
+          dockerfile: ${{ variables.dockerfile }}
+          containerRegistry: ${{ variables.containerRegistry }}
+          tags: $(Build.BuildId)
+
+  - stage: aks_deploy
+    displayName: Deploy aspnet app to AKS
+    jobs:  
+    - job: Build
+      displayName: Build job
+      steps:
+      - task: AzureCLI@2
+        displayName: 'Configure AKS Cluster'
+        inputs:
+          azureSubscription: ${{ variables.backendServiceArm }}
+          scriptType: bash
+          scriptLocation: inlineScript
+          addSpnToEnvironment: true
+          inlineScript: |
+            #!/usr/bin/env bash
+            set -x
+            AKS_RG="devopsjourneyaks-rg"
+            AKS_NAME="devopsjourneyaks"
+
+            # Get AKS Credentials
+            az aks get-credentials -g $AKS_RG -n $AKS_NAME --admin
+
+            # Create secret
+            kubectl -n default create secret generic aikey --from-literal=aisecret=$(AIKEY)
+
+            # Apply app
+            kubectl apply -f pipelines/scripts/aspnet.yaml 

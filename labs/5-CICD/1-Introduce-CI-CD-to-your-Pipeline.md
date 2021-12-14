@@ -10,11 +10,12 @@ In Azure DevOps, you can use triggers to run pipelines automatically. In this la
 
 2. Update pipeline with trigger below - this will run the pipeline each time a change has been made to the main/master branch. *( Rename main/master as per your branch naming)*
 
-`trigger:
+```
+trigger:
   batch: true 
   branches:
     include:
-      - master`
+      - master
+```
 
 3. Edit your Azure DevOps pipeline to run this pipeline: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/lab5pipeline.yaml#L3-L7
-

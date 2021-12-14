@@ -37,11 +37,11 @@ It will result in a folder setup similar to [this](https://github.com/thomast190
 3. Reviewing the tests created, notice the [controls folder](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/lab6-testing-infrastructure/labs/6-Testing-Infrastructure/azure-inspec-tests/controls)? This is where you create the ruby tests to run against your Azure resources. 
 
 I have created test examples for:
-- AKS
-- Application Gateway
-- Azure Container Registry
-- Key Vault
-- Virtual Network
+- [AKS](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Testing-Infrastructure/azure-inspec-tests/controls/azure_aks_cluster.rb)
+- [Application Gateway](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Testing-Infrastructure/azure-inspec-tests/controls/azure_application_gateway.rb)
+- [Azure Container Registry](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Testing-Infrastructure/azure-inspec-tests/controls/azure_container_registry.rb)
+- [Key Vault](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Testing-Infrastructure/azure-inspec-tests/controls/azure_key_vault.rb)
+- [Virtual Network](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Testing-Infrastructure/azure-inspec-tests/controls/azure_virtual_network.rb)
 
 Review these tests and change variables where needed!
 
