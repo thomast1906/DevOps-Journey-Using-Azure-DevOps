@@ -2,7 +2,9 @@
 
 This tutorial/lab setup is going to take you through a DevOps journey using Azure DevOps. From setting up your pipeline to deploying an application to your Azure Kubernetes cluster! 
 
-In this setup, you will learn:
+# What you will learn
+
+In this tutorial/lab, you will learn:
 - Initial setup of Azure DevOps to begin deploying to Azure using Pipelines as code
 - Deploy Azure resources using Terraform modules
 - Deploy a test application to Azure Kubernetes Service 
@@ -12,7 +14,7 @@ In this setup, you will learn:
 
 This setup is based on a somewhat "real-life" scenario and setup mirrors an example of a real-world setup!
 
-## The labs tutorial format
+## Tutorial/labs format
 
 Prior to starting the tutorial/labs - please review the below Prerequisites
 [Prerequisites](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/prerequisites.md)
@@ -83,4 +85,28 @@ Labs are found [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-
      - Reviewing Log Analytics Container Insights
 
 
-az network application-gateway start -g devopsjourneyaks-node-rg -n applicationgateway
+# CI/CD
+
+You will learn how to setup and configure a pipeline that involves CI/CD
+
+![](images/cicd.png)
+
+1. Developer changes application source code.
+2. Application is committed to the source code repository in Azure Repos.
+3. Continuous integration triggers application build 
+4. Continuous deployment within Azure Pipelines triggers an automated deployment with environment-specific configuration values.
+5. Updated Application is deployed to environment specific Kubernetes cluster
+6. Application Insights collects and analyzes health, performance, and usage data.
+7. Azure Monitor collects and analyzes health, performance, and usage data.
+
+# Thank you
+Thank you for taking the time to work on this tutorial/labs. Let me know what you thought!
+
+<a href= "https://twitter.com/tamstar1234"><img src="https://img.icons8.com/nolan/50/twitter.png"/></a>
+<a href= "https://www.linkedin.com/in/thomas-thornton-21a86b75/"><img src="https://img.icons8.com/nolan/50/linkedin.png"/></a>
+
+Feel free to check out my blog for more awesome content!
+https://thomasthornton.cloud/ 
+
+Ensure to follow me on GitHub. Please star/share this repository!
+
