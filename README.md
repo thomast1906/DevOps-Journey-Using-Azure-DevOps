@@ -89,7 +89,7 @@ Labs are found [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-
 
 You will learn how to setup and configure a pipeline that involves CI/CD
 
-![](images/cicd.png)
+![](images/cicdimage.png)
 
 1. Developer changes application source code.
 2. Application is committed to the source code repository in Azure Repos.
