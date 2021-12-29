@@ -142,35 +142,8 @@ stages :
           containerRegistry: ${{ variables.containerRegistry }}
           tags: 'latest '
 
-  - stage: aks_deploy
-    displayName: Deploy aspnet app to AKS
-    jobs:  
-    - job: Build
-      displayName: Build job
-      steps:
-      - task: AzureCLI@2
-        displayName: 'Configure AKS Cluster'
-        inputs:
-          azureSubscription: ${{ variables.backendServiceArm }}
-          scriptType: bash
-          scriptLocation: inlineScript
-          addSpnToEnvironment: true
-          inlineScript: |
-            #!/usr/bin/env bash
-            set -x
-            AKS_RG="devopsjourneyaks-rg"
-            AKS_NAME="devopsjourneyaks"
-
-            # Get AKS Credentials
-            az aks get-credentials -g $AKS_RG -n $AKS_NAME --admin
-
-            # Create secret
-            kubectl -n default create secret generic aikey --from-literal=aisecret=$(AIKEY)
-
-            # Apply app
-            kubectl apply -f pipelines/scripts/aspnet.yaml 
-
   - stage: inspec_tests
+    displayName: Inspec Testing
     jobs:
       - job: "Checkout"
         steps:
@@ -199,3 +172,31 @@ stages :
             inputs:
               testResultsFiles: '**/inspectestresults.xml'
               mergeTestResults: true
+
+  - stage: aks_deploy
+    displayName: Deploy aspnet app to AKS
+    jobs:  
+    - job: Build
+      displayName: Build job
+      steps:
+      - task: AzureCLI@2
+        displayName: 'Configure AKS Cluster'
+        inputs:
+          azureSubscription: ${{ variables.backendServiceArm }}
+          scriptType: bash
+          scriptLocation: inlineScript
+          addSpnToEnvironment: true
+          inlineScript: |
+            #!/usr/bin/env bash
+            set -x
+            AKS_RG="devopsjourneyaks-rg"
+            AKS_NAME="devopsjourneyaks"
+
+            # Get AKS Credentials
+            az aks get-credentials -g $AKS_RG -n $AKS_NAME --admin
+
+            # Create secret
+            kubectl -n default create secret generic aikey --from-literal=aisecret=$(AIKEY)
+
+            # Apply app
+            kubectl apply -f pipelines/scripts/aspnet.yaml 

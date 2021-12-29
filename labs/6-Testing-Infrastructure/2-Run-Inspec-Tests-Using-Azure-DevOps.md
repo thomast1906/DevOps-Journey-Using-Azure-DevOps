@@ -42,7 +42,7 @@ The deployment may deploy OK and look fine but the deployment has not been valid
 
 6. Copy `azure-inspec-tests` [folder](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/6-Testing-Infrastructure/azure-inspec-tests) to Azure DevOps repo
 
-7. Add [inspec_tests](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/lab6-testing-infrastructure/labs/6-Testing-Infrastructure/pipelines/lab6pipeline.yaml#L173-L201) stage to your DevOps Pipeline
+7. Add [inspec_tests](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Testing-Infrastructure/pipelines/lab6pipeline.yaml#L145-L174) stage to your DevOps Pipeline
 
 8. Run pipeline and successful output shows as below:
 
