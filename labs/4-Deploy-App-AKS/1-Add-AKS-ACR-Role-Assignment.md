@@ -17,4 +17,4 @@ resource "azurerm_role_assignment" "aks-acr-rg" {
 }
 ```
 
-2. Edit your Azure DevOps pipeline to run this pipeline: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/lab4-updates/labs/4-Deploy-App-AKS/pipelines/lab4pipeline-1-2-3.yaml
+1. Edit your Azure DevOps pipeline to run this pipeline: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/pipelines/lab4pipeline.yaml

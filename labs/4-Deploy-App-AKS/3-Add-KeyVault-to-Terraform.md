@@ -7,7 +7,7 @@ Azure Key Vault will be used to store secrets used within your Azure DevOps Vari
 
 - [Azure Key Vault](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/4-Deploy-App-AKS/terraform/modules/keyvault)
 
-1. Update main.tf with Azure Key Vault module:
+2. Update main.tf with Azure Key Vault module:
 
 https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/terraform/main.tf#L79-L83
 
@@ -23,9 +23,9 @@ access_policy_id is the object group ID that you created as part of initial setu
 `keyvault_name = "devopsjourney"
 access_policy_id  = "7da738c2-5c92-401c-87f1-eadbcf714367"`
 
-5. Edit your Azure DevOps pipeline to run this pipeline: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/lab4-updates/labs/4-Deploy-App-AKS/pipelines/lab4pipeline-1-2-3.yaml 
+1. Edit your Azure DevOps pipeline to run this pipeline: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/pipelines/lab4pipeline.yaml 
 
-6. Get Azure Application Insights Instrumentation Key using Az CLI:
+2. Get Azure Application Insights Instrumentation Key using Az CLI:
 `az extension add --name application-insights`
 `az monitor app-insights component show --app devopsjourney -g devopsjourney-rg`
 
