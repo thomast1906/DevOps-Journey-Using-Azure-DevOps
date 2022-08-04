@@ -55,6 +55,9 @@ spec:
     - http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: aspnetcore
-              servicePort: 80
+              service:
+                name: aspnetcore
+                port:
+                  number: 80
