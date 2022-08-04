@@ -19,7 +19,7 @@ variables:
   - name: environment
     value: 'production'
   - name: terraform_version
-    value: '0.15.4'
+    value: '1.2.6'
   - name: repository
     value: 'devopsjourney'
   - name: dockerfile
