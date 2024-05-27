@@ -5,14 +5,14 @@ The first setup to setting up Azure DevOps is to create an organisation
 
 1. [Sign into Azure DevOps](https://go.microsoft.com/fwlink/?LinkId=307137)
 2. Select **New Organisation**
-3. Enter your preferred Azure DevOps organisation name & hosting location (In this lab, I will be using thomasthorntoncloud organisation)
-4. Once you have created your organisation, you can sign into your organisation anything using
-`https://dev.azure.com/{yourorganization`
+3. Enter your preferred Azure DevOps organisation name and hosting location. (For this lab, the organisation name is thomasthorntoncloud.)
+4. Once your organisation is created, you can access it anytime using:
+`https://dev.azure.com/{yourorganisation}`
 
 Once an organisation has been setup, next is to create an Azure DevOps project
 
 ## Azure DevOps Project Creation
-Creating a project allows you to use repositories, pipelines etc. 
+Creating a project allows you to utilise repositories, pipelines, and other features within Azure DevOps.
 
 1. [Sign into Azure DevOps](https://go.microsoft.com/fwlink/?LinkId=307137)
 2. Select organisation that you have created above
@@ -21,26 +21,27 @@ Creating a project allows you to use repositories, pipelines etc.
 
 ![](images/azure-devops-project-creation.png)
 
-## Azure Service Principal Creation
-A Service Principal (SPN) is considered a best practice for DevOps within your CI/CD pipeline. It is used as an identity to authenticate you within your Azure Subscription to allow you to deploy the relevant Terraform code.
+## Azure Workload Identity Federation
+Using a Workload Identity Federation is considered best practice for DevOps within your CI/CD pipeline. It serves as an identity to authenticate within your Azure Subscription, allowing you to deploy the relevant Terraform code.
 
 1. To begin creation, within your newly created Azure DevOps Project – select **Project Settings**
 2. Select **Service Connections**
-3. Select **Create Service Connection** -> **Azure Resource Manager** -> **Service Principal (Automatic)**
+3. Select **Create Service Connection** -> **Azure Resource Manager** -> **Workload Identity federation (Automatic)**
 4. Enter subscription/resource group to where service connection will be created. Create with relevant service connection name
 
-![](images/azure-devops-service-connection.png)
+![](images/azure-devops-workload-identity.png)
 
-5. Once created you will see similar to below (You can select **Manage Service Principal** to review further)
+5. Once created, you will see a similar screen. You can select **Manage Workload Identity** to review further details.
 
-![](images/azure-devops-service-connection-2.png)
+![](images/azure-devops-workload-identity-2.png)
 
-6. Within** Manage Service Principal** options, branding -> name to give a relevant name for service principal (it creates originally with a random string at end)
+6. Within **Manage Workload Identity** options, update the branding and name to give a relevant identity name (it initially has a random string at the end).
 
-![](images/azure-devops-service-connection-3.png)
+![](images/azure-devops-workload-identity-3.png)
 
-7. All Service Principal role assignment to subscription, in this lab I will be giving the Service Principal **contributor** access to the subscription
+7. Assign the necessary Service Principal role to the subscription. For this lab, the Workload Identity will be given **Contributor** access to the subscription.
+Service Principal Role Assignment
 
-![](images/azure-devops-service-connection-4.png)
+![](images/azure-devops-workload-identity-4.png)
 
-You are now all set and ready to deploy to Azure using Azure Devops :)
+You are now all set and ready to deploy to Azure using Azure DevOps!
