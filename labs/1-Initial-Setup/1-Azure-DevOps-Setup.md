@@ -39,7 +39,7 @@ Using a Workload Identity Federation is considered best practice for DevOps with
 
 ![](images/azure-devops-workload-identity-3.png)
 
-7. Assign the necessary Service Principal role to the subscription. For this lab, the Workload Identity will be given **Contributor** access to the subscription.
+7. Assign the necessary Service Principal role to the subscription. For this lab, the Workload Identity will be given **User Access Admin**(required to add rbac control during AKS deploy stage) access to the subscription.
 Service Principal Role Assignment
 
 ![](images/azure-devops-workload-identity-4.png)
