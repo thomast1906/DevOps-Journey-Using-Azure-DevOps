@@ -1,17 +1,20 @@
-# Setup Azure DevOps Pipeline
-Time to setup Azure DevOps to deploy your Terraform into Azure.
+# Setting Up Azure DevOps Pipeline for Terraform Deployment
+
+Follow these steps to configure Azure DevOps for deploying your Terraform configurations into Azure.
 
 1. Install the Terraform extension/task from [here](https://marketplace.visualstudio.com/items?itemName=ms-devlabs.custom-terraform-tasks) into your Azure DevOps organisation
 
-The Terraform task enables running Terraform commands as part of Azure Build and Release Pipelines providing support for the following Terraform commands
+This extension allows you to run Terraform commands within Azure Build and Release Pipelines, supporting the following commands:
 
-- init
-- validate
-- plan
-- apply
-- destroy
+- `init`
+- `validate`
+- `plan`
+- `apply`
+- `destroy`
 
-2. Create Azure repository - select Repos & you will see various options to setup a respository (This repository will store code throughout further labs also, please note this!)
+2. Create an Azure repository
+
+Navigate to Repos in Azure DevOps. Here, you will find various options to set up a repository. Create a new repository to store your code. Note that this repository will be used for subsequent labs as well.
 
 3. Copy contents from this folder into the newly created Azure DevOps repository
 
