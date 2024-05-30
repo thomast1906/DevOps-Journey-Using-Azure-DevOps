@@ -1,21 +1,27 @@
-# Begin CI/CD with Pipeline Trigger for automatic pipeline runs
+# Setting Up CI/CD with Pipeline Triggers for Automatic Runs
 
-In Azure DevOps, you can use triggers to run pipelines automatically. In this lab we will set a trigger to automatically run the pipeline when there has been a change to the main/master branch
+In Azure DevOps, triggers allow pipelines to run automatically. In this lab, we will configure a trigger to automatically run the pipeline whenever there is a change to the main/master branch.
 
-
-1. You may have noticed prior changes to this branch didn't automatically run the pipeline. This is because the pipeline trigger is set to none. 
+1. Current Trigger Configuration
+ 
+You might have noticed that previous changes to the branch did not trigger the pipeline. This is because the pipeline trigger is currently set to none.
 
 `trigger: none`
 
+2. Update the Pipeline Trigger
 
-2. Update pipeline with trigger below - this will run the pipeline each time a change has been made to the main/master branch. *( Rename main/master as per your branch naming)*
+
+Update the pipeline with the following trigger configuration to ensure it runs each time a change is made to the main/master branch. (Rename main/master according to your branch naming convention)
+
 
 ```
 trigger:
   batch: true 
   branches:
     include:
-      - master
+      - main
 ```
 
-3. Edit your Azure DevOps pipeline to run this pipeline: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/lab5pipeline.yaml#L3-L7
+3. Edit Your Azure DevOps Pipeline
+
+Modify your Azure DevOps pipeline to include this trigger configuration [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/lab5pipeline.yaml#L3-L7)

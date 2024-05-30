@@ -1,54 +1,59 @@
-# Automated deployment of your AKS Application
+# Automated Deployment of Your AKS Application
 
-In previous labs; the application was initially manually setup for its build tag. In CI/CD, this would be automated and the Application on the AKS cluster would update each time the pipeline has been ran.
+In previous labs, the application build tag was manually set up. In a CI/CD pipeline, this process will be automated, ensuring that the application on the AKS cluster updates each time the pipeline runs.
 
-In this lab, we will be looking at creating an automated deployment for your AKS Application
-
-
-1. Reviewing the aspnet.yaml file, you will notice in a previous lab that the image build version has been hardcoded. Each time you require to update the pods on the cluster, you will actually have to delete the k8s deployment and re-run pipeline with the later build version. This is not ideal; we want zero downtime deployments!
-
-`        image: devopsjourneyacr.azurecr.io/aspnet:74`
+In this lab, we will create an automated deployment for your AKS application.
 
 
-2. Change the image tag to `latest` and also introduce an `imagePullPolicy`
 
-`        image: devopsjourneyacr.azurecr.io/aspnet:latest
+
+1. Review the aspnet.yaml File
+
+Previously, the image build version was hardcoded. This meant that to update the pods on the cluster, you had to delete the Kubernetes deployment and rerun the pipeline with the new build version. This approach is not ideal as it does not support zero-downtime deployments.
+
+`image: devopsjourneymay2024acr.azurecr.io/devopsjourney:123`
+
+
+2. Update the Image Tag and Introduce `imagePullPolicy`
+
+Change the image tag to latest and add an imagePullPolicy to ensure the latest image is always pulled when the pods are updated.
+
+`        image: devopsjourneymay2024acr.azurecr.io/devopsjourney:latest
         imagePullPolicy: Always`
 
+The `imagePullPolicy` determines when the kubelet attempts to pull (download) the specified image. Here are the possible values:
+- **IfNotPresent:** The image is pulled only if it is not already present locally.
+- **Always:** Every time the kubelet launches a container, it queries the container image registry to resolve the image name to a digest. If the image is not cached locally, the kubelet pulls it and uses it to launch the container.
+- **Never:** The kubelet does not try to fetch the image. If the image is present locally, the kubelet attempts to start the container; otherwise, the startup fails.
 
-The imagePullPolicy for a container and the tag of the image affect when the kubelet attempts to pull (download) the specified image.
+3. Edit Your aspnet.yaml File
 
-Here's a list of the values you can set for imagePullPolicy and the effects these values have:
+Make the necessary changes to the aspnet.yaml file as shown [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/scripts/aspnet.yaml#L19-L20)
 
-IfNotPresent
-the image is pulled only if it is not already present locally.
-Always
-every time the kubelet launches a container, the kubelet queries the container image registry to resolve the name to an image digest. If the kubelet has a container image with that exact digest cached locally, the kubelet uses its cached image; otherwise, the kubelet pulls the image with the resolved digest, and uses that image to launch the container.
-Never
-the kubelet does not try fetching the image. If the image is somehow already present locally, the kubelet attempts to start the container; otherwise, startup fails
+4. Update the Pipeline Tag 
 
-3. Edit your aspnet.yaml file with these two changes: https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/scripts/aspnet.yaml#L19-L20
+Previously, the pipeline tag was set to the latest Build ID:
 
-4. Now that the application .yaml has been updated, time to update the pipeline tag, previous it was: 
-
-`          tags: $(Build.BuildId)`
+`tags: $(Build.BuildId)`
 
 Which will tag with the latest BuildId each time of the pipeline. 
 
-Update to `latest`
+Update this to latest to ensure the latest build is always used:
 
-`          tags: 'latest '`
+`tags: 'latest'`
 
-https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/lab5pipeline.yaml#L143
+Modify this in your pipeline file [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/lab5pipeline.yaml#L106)
 
-5. Once you have merged these changes - the pipeline will automatically run! Checking the ACR you will notice a new Tag `latest` will be displayed
+5. Merge changes and verify
+
+Once you merge these changes, the pipeline will run automatically. In the Azure Container Registry (ACR), you will see a new tag `latest`. This tag will be used to update the pods on the AKS cluster.
 
 ![](images/cicd-1.png)
 
 As we changed the `imagePullPolicy` to `Always`, reviewing the K8s cluster, you will see a new pod also with the `latest` image tag
 
 `kubectl describe pod aspnetcore | grep Image
-Image:          devopsjourneyacr.azurecr.io/aspnet:latest`
+Image:          devopsjourneymay2024acr.azurecr.io/devopsjourney:latest`
 
-Awesome, your first introduction to CI/CD and automated deployments!
+Congratulations! You've successfully implemented CI/CD and automated deployments for your AKS application.
 
