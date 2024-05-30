@@ -46,3 +46,17 @@ module "acr" {
   location = var.location
   environment = var.environment
 }
+
+module "appinsights" {
+  source           = "./modules/appinsights"
+  name             = var.general_name
+  location         = var.location
+  environment      = var.environment
+  application_type = "web"
+}
+
+module "keyvault" {
+  source           = "./modules/keyvault"
+  name             = var.general_name
+  access_policy_id = var.access_policy_id
+}

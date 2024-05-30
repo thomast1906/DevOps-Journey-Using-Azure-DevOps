@@ -68,3 +68,8 @@ variable "ssh_public_key" {
   type        = string
   description = "SSH key for AKS Cluster"
 }
+
+variable "access_policy_id" {
+  type = string
+  description = "Object ID for Key Vault Policy"
+}

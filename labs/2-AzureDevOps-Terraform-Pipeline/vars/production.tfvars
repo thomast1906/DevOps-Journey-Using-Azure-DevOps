@@ -19,3 +19,5 @@ ssh_public_key     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDrt/GYkYpuQYRxM3lgjO
 
 
 environment = "production"
+
+access_policy_id = "01e9e3d0-bdd3-4b2a-b630-eff0ab594f59"

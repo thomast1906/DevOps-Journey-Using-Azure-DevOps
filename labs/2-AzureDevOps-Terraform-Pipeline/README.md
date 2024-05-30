@@ -7,6 +7,7 @@ I have created modules to deploy the Terraform infrastructure
 - [Azure Virtual Network](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/2-AzureDevOps-Terraform-Pipeline/terraform/modules/vnet)
 - [Azure Kubernetes Service](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/2-AzureDevOps-Terraform-Pipeline/terraform/modules/aks)
 - [Azure Log Analytics](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/2-AzureDevOps-Terraform-Pipeline/terraform/modules/log-analytics)
+- [Azure Application Insights](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/2-AzureDevOps-Terraform-Pipeline/terraform/modules/appinsights)
 
 In this lab, you will:
 - Review Terraform modules mentioned above
