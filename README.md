@@ -28,7 +28,7 @@ By following this structured approach, you will build a strong foundation in Dev
    - [Azure DevOps Setup](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/1-Azure-DevOps-Setup.md)
      - Create an Azure DevOps organisation
      - Create a new Azure DevOps project
-     - Create an Azure Service Principal
+     - Create Azure Workload Identity
 
    - [Azure Terraform setup](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/2-Azure-Terraform-Remote-Storage.md)
      - Create a Blob Storage location for the Terraform state file
