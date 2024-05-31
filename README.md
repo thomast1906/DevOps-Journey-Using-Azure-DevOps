@@ -67,21 +67,14 @@ By following this structured approach, you will build a strong foundation in Dev
    - [Automated deployment of your AKS Application](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/2-Automated-Deployment-AKS-Application.md)
      - Automate the application deployment process to AKS, ensuring updates each time the pipeline runs
 
-6. [Testing your deployed Azure Infrastructure](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/6-Testing-Infrastructure) 
-   - [Testing Infrastructure using Inspec](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Testing-Infrastructure/1-Testing-Infrastructure-using-Inspec.md)
-     - Use Inspec-Azure to test your Azure resources
-
-   - [Inspec Testing using Azure DevOps Pipeline](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Testing-Infrastructure/2-Run-Inspec-Tests-Using-Azure-DevOps.md)
-     - Run Inspec tests and view reports in Azure DevOps
-
-7. [Monitoring and Alerting](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/7-Monitoring-and-Alerting) 
-   - [Azure Application Insights](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/7-Monitoring-and-Alerting/1-Application-Insights.md)
+6. [Monitoring and Alerting](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/6-Monitoring-and-Alerting) 
+   - [Azure Application Insights](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Monitoring-and-Alerting/1-Application-Insights.md)
      - Use Application Insights to view telemetry data
 
-   - [Azure Application Insights Availability Tests](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/7-Monitoring-and-Alerting/2-Application-Insights-Configure-Availability-Test.md)
+   - [Azure Application Insights Availability Tests](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Monitoring-and-Alerting/2-Application-Insights-Configure-Availability-Test.md)
      - Configure availability tests using Application Insights
 
-   - [Log Analytics Container Insights](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/7-Monitoring-and-Alerting/3-Log-Analytics-Container-Insights.md)
+   - [Log Analytics Container Insights](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Monitoring-and-Alerting/3-Log-Analytics-Container-Insights.md)
      - Review Log Analytics Container Insights
 
 # CI/CD
