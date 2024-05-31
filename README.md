@@ -1,4 +1,4 @@
-# DevOps-Journey-Using-Azure-DevOps
+# DevOps Journey using Azure DevOps
 
 Welcome to your comprehensive guide through a DevOps journey using Azure DevOps! This tutorial will walk you through the entire process, from setting up your pipeline to deploying an application on your Azure Kubernetes cluster.
 
