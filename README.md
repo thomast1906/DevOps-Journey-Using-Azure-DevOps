@@ -18,7 +18,7 @@ This setup is designed to reflect a real-world scenario, providing you with prac
 
 Before you begin, please ensure you have reviewed the [prerequisites](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/prerequisites.md). This step is crucial to ensure you have all necessary tools and configurations in place.
 
-The labs are organized sequentially. You can find them [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs). Please complete each lab in order: 1, 2, 3, etc.
+The labs are organised sequentially. You can find them [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs). Please complete each lab in order: 1, 2, 3, etc.
 
 By following this structured approach, you will build a strong foundation in DevOps practices using Azure DevOps. This journey is not only about learning but also about applying your knowledge to real-life scenarios. Enjoy your DevOps journey!
 
