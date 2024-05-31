@@ -1,7 +1,7 @@
 
 module "loganalytics" {
   source                       = "./modules/log-analytics"
-  log_analytics_workspace_name = var.log_analytics_workspace_name
+  log_analytics_workspace_name = var.general_name
   location                     = var.location
   log_analytics_workspace_sku  = "PerGB2018"
   environment = var.environment
@@ -9,7 +9,7 @@ module "loganalytics" {
 
 module "vnet_aks" {
   source                      = "./modules/vnet"
-  name                        = var.vnet_name
+  name                        = var.general_name
   location                    = var.location
   network_address_space       = var.network_address_space
   aks_subnet_address_prefix   = var.aks_subnet_address_prefix
@@ -21,7 +21,7 @@ module "vnet_aks" {
 
 module "aks" {
   source                     = "./modules/aks"
-  name                       = var.aks_name
+  name                       = var.general_name
   kubernetes_version         = var.kubernetes_version
   agent_count                = var.agent_count
   vm_size                    = var.vm_size
@@ -42,7 +42,21 @@ module "aks" {
 
 module "acr" {
   source   = "./modules/acr"
-  name     = var.acr_name
+  name     = var.general_name
   location = var.location
   environment = var.environment
+}
+
+module "appinsights" {
+  source           = "./modules/appinsights"
+  name             = var.general_name
+  location         = var.location
+  environment      = var.environment
+  application_type = "web"
+}
+
+module "keyvault" {
+  source           = "./modules/keyvault"
+  name             = var.general_name
+  access_policy_id = var.access_policy_id
 }

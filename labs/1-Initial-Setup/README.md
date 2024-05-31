@@ -1,9 +1,11 @@
 # Initial Setup
 
-The purpose of this lab is to create all of the Azure cloud services and resources that initially need prior to deploying additional Azure resources using Terraform. 
+The objective of this lab is to set up all necessary Azure cloud services and resources required before deploying additional Azure resources using Terraform.
 
 In this lab, you will:
-- Setup Azure DevOps
-- Create remote storage account for Terraform state files
-- Create an Azure AD group for AKS admins
 
+- Configure Azure DevOps.
+- Establish remote storage for Terraform state files.
+- Create an Azure AD group for AKS admins.
+
+By completing these setup tasks, you ensure a solid foundation for deploying and managing Azure resources effectively using Terraform.

@@ -7,11 +7,11 @@ pr: none
 
 variables:
   - name: backendServiceArm
-    value: 'azure-devops-journey-service-connection'
+    value: 'azure-devops-journey-may2024'
   - name: backendAzureRmResourceGroupName
-    value: 'devops-journey-rg'
+    value: 'devops-journey-rg-may2024'
   - name: backendAzureRmStorageAccountName
-    value: 'devopsjourneyazuredevops'
+    value: 'devopsjourneymay2024'
   - name: backendAzureRmContainerName
     value: 'tfstate'
   - name: backendAzureRmKey
@@ -19,52 +19,24 @@ variables:
   - name: environment
     value: 'production'
   - name: terraform_version
-    value: '1.2.6'
+    value: '1.8.4'
   - name: repository
     value: 'devopsjourney'
   - name: dockerfile
     value: '$(Build.SourcesDirectory)/aspnet-core-dotnet-core/Dockerfile'
   - name: containerRegistry
-    value: 'devopsjourneyacr.azurecr.io'
+    value: 'devopsjourneymay2024acr.azurecr.io'
 
-stages :
-  - stage: validate
-    jobs:
-    - job: validate
-      continueOnError: false
-      steps:
-      - task: TerraformInstaller@0
-        displayName: 'install'
-        inputs:
-          terraformVersion: ${{ variables.terraform_version}}
-      - task: TerraformTaskV2@2
-        displayName: 'init'
-        inputs:
-          provider: 'azurerm'
-          command: 'init'
-          backendServiceArm: ${{ variables.backendServiceArm }}
-          backendAzureRmResourceGroupName: ${{ variables.backendAzureRmResourceGroupName }}
-          backendAzureRmStorageAccountName: ${{ variables.backendAzureRmStorageAccountName }}
-          backendAzureRmContainerName: ${{ variables.backendAzureRmContainerName }}
-          backendAzureRmKey: ${{ variables.backendAzureRmKey }}
-          workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
-      - task: TerraformTaskV2@2
-        displayName: 'validate'
-        inputs:
-          provider: 'azurerm'
-          command: 'validate'
-          
+stages :          
   - stage: plan
-    dependsOn: [validate]
-    condition: succeeded('validate')
     jobs:
-      - job: terraform_plan_develop
+      - job: terraform_plan_production
         steps:
-        - task: TerraformInstaller@0
+        - task: TerraformInstaller@1
           displayName: 'install'
           inputs:
             terraformVersion: ${{ variables.terraform_version}}
-        - task: TerraformTaskV2@2
+        - task: TerraformTaskV4@4
           displayName: 'init'
           inputs:
             provider: 'azurerm'
@@ -75,7 +47,7 @@ stages :
             backendAzureRmContainerName: ${{ variables.backendAzureRmContainerName }}
             backendAzureRmKey: ${{ variables.backendAzureRmKey }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
-        - task: TerraformTaskV2@2
+        - task: TerraformTaskV4@4
           displayName: 'plan'
           inputs:
             provider: 'azurerm'
@@ -88,13 +60,13 @@ stages :
     dependsOn: [plan]
     condition: succeeded('plan')
     jobs:
-      - job: terraform_apply_develop
+      - job: terraform_apply_production
         steps:
-        - task: TerraformInstaller@0
+        - task: TerraformInstaller@1
           displayName: 'install'
           inputs:
             terraformVersion: ${{ variables.terraform_version}}
-        - task: TerraformTaskV2@2
+        - task: TerraformTaskV4@4
           displayName: 'init'
           inputs:
             provider: 'azurerm'
@@ -105,15 +77,7 @@ stages :
             backendAzureRmContainerName: ${{ variables.backendAzureRmContainerName }}
             backendAzureRmKey: ${{ variables.backendAzureRmKey }} 
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
-        - task: TerraformTaskV2@2
-          displayName: 'plan'
-          inputs:
-            provider: 'azurerm'
-            command: 'plan'
-            commandOptions: '-input=false -var-file="../vars/${{ variables.environment }}.tfvars"'
-            environmentServiceNameAzureRM: ${{ variables.backendServiceArm }}
-            workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
-        - task: TerraformTaskV2@2
+        - task: TerraformTaskV4@4
           displayName: 'apply'
           inputs:
             provider: 'azurerm'
@@ -123,7 +87,7 @@ stages :
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
 
   - stage: Build
-    displayName: Build and push stage
+    displayName: Build and push image
     jobs:  
     - job: Build
       displayName: Build job

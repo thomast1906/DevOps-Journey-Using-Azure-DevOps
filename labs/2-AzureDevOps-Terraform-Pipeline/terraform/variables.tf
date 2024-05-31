@@ -1,8 +1,3 @@
-variable "log_analytics_workspace_name" {
-  type        = string
-  description = "Log Analytics Workspace Name"
-}
-
 variable "location" {
   type        = string
   description = "Location of Resources"
@@ -59,9 +54,9 @@ variable "vm_size" {
   description = "AKS VM Size"
 }
 
-variable "acr_name" {
+variable "general_name" {
   type        = string
-  description = "ACR Name"
+  description = "General Name"
 }
 
 variable "environment" {
@@ -72,4 +67,9 @@ variable "environment" {
 variable "ssh_public_key" {
   type        = string
   description = "SSH key for AKS Cluster"
+}
+
+variable "access_policy_id" {
+  type = string
+  description = "Object ID for Key Vault Policy"
 }

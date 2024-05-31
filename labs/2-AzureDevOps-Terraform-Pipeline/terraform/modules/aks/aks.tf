@@ -1,18 +1,20 @@
-resource "azurerm_resource_group" "kubernetes_resource_group" {
-  location = var.location
+ data "azurerm_resource_group" "kubernetes_resource_group" {
   name     = "${var.name}-rg"
-  tags = {
-    Environment = var.environment
-  }
-}
+ }
+
+ data "azurerm_log_analytics_workspace" "workspace" {
+  name                = "${var.name}la"
+  resource_group_name = data.azurerm_resource_group.kubernetes_resource_group.name
+ }
 
 resource "azurerm_kubernetes_cluster" "k8s" {
   name                = var.name
   location            = var.location
-  resource_group_name = azurerm_resource_group.kubernetes_resource_group.name
+  resource_group_name = data.azurerm_resource_group.kubernetes_resource_group.name
   dns_prefix          = var.name
   kubernetes_version  = var.kubernetes_version
-
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
   node_resource_group = "${var.name}-node-rg"
 
   linux_profile {
@@ -30,26 +32,15 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     vnet_subnet_id       = var.aks_subnet
     type                 = "VirtualMachineScaleSets"
     orchestrator_version = var.kubernetes_version
+      os_sku = "AzureLinux"
   }
 
   identity {
     type = "SystemAssigned"
   }
 
-  addon_profile {
-    oms_agent {
-      enabled                    = var.addons.oms_agent
-      log_analytics_workspace_id = var.log_analytics_workspace_id
-    }
-    azure_policy {
-      enabled = var.addons.azure_policy
-    }
-
-ingress_application_gateway {
-      enabled   = var.addons.ingress_application_gateway
-      subnet_id = var.agic_subnet_id
-    }
-
+ oms_agent {
+    log_analytics_workspace_id = data.azurerm_log_analytics_workspace.workspace.id
   }
 
   network_profile {
@@ -57,13 +48,10 @@ ingress_application_gateway {
     network_plugin    = "azure"
   }
 
-    role_based_access_control {
-    enabled = var.kubernetes_cluster_rbac_enabled
-
-    azure_active_directory {
-      managed                = true
-      admin_group_object_ids = [var.aks_admins_group_object_id]
-    }
+  azure_active_directory_role_based_access_control {
+    azure_rbac_enabled     = false
+    managed                = true
+    admin_group_object_ids = [var.aks_admins_group_object_id]
   }
 
   tags = {
@@ -74,15 +62,6 @@ ingress_application_gateway {
 data "azurerm_resource_group" "node_resource_group" {
   name = azurerm_kubernetes_cluster.k8s.node_resource_group
          depends_on = [
-     azurerm_kubernetes_cluster.k8s
-  ]
-}
-
-resource "azurerm_role_assignment" "node_infrastructure_update_scale_set" {
-  principal_id         = azurerm_kubernetes_cluster.k8s.kubelet_identity[0].object_id
-  scope                = data.azurerm_resource_group.node_resource_group.id
-  role_definition_name = "Virtual Machine Contributor"
-           depends_on = [
      azurerm_kubernetes_cluster.k8s
   ]
 }
