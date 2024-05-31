@@ -9,7 +9,6 @@ In this tutorial, you will gain hands-on experience in the following areas:
 - **Terraform Deployment**: Discover how to deploy Azure resources using Terraform modules for efficient infrastructure management.
 - **Application Deployment**: Deploy a test application to Azure Kubernetes Service (AKS) and understand the deployment process.
 - **CI/CD Fundamentals**: Grasp the concepts of Continuous Integration and Continuous Deployment (CI/CD) with automated application deployments.
-- **Automated Testing**: Implement automated testing to validate your deployed Azure resources.
 - **Monitoring and Alerting**: Explore monitoring and alerting solutions using Application Insights and Container Insights to keep track of your application's health and performance.
 
 This setup is designed to reflect a real-world scenario, providing you with practical, applicable skills.
