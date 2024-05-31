@@ -1,13 +1,13 @@
 # Reviewing Log Analytics Container Insights
 
-Access to Container insights is available directly from an AKS cluster by selecting Insights > Cluster from the left pane, or when you selected a cluster from the multi-cluster view. Information about your cluster is organized into four perspectives:
+You can access Container Insights directly from an AKS cluster by navigating to Monitoring -> Insights > Cluster in the left pane, or by selecting a cluster from the multi-cluster view. Information about your cluster is organised into four perspectives:
 
 - Cluster
 - Nodes
 - Controllers
 - Containers
 
-The default page opens and displays four line performance charts that show key performance metrics of your cluster.
+The default page presents four line performance charts displaying key performance metrics for your cluster.
 
 ![](images/monitoring-and-alerting-9.PNG)
 
@@ -18,4 +18,4 @@ The performance charts display four performance metrics:
 - Node count: A node count and status from Kubernetes. Statuses of the cluster nodes represented are Total, Ready, and Not Ready. They can be filtered individually or combined in the selector above the chart.
 - Active pod count: A pod count and status from Kubernetes. Statuses of the pods represented are Total, Pending, Running, Unknown, Succeeded, or Failed. They can be filtered individually or combined in the selector above the chart.
 
-This is only an insight into what Container Insights is capable off, review the [Azure Documentation](https://docs.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-analyze) to see further how it can assist you :)
+This is a brief overview of what Container Insights offers. For more detailed information, check out the [Azure Documentation](https://docs.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-analyze)
