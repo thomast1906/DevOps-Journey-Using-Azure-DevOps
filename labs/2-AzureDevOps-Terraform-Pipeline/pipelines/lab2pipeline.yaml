@@ -7,11 +7,11 @@ pr: none
 
 variables:
   - name: backendServiceArm
-    value: 'azure-devops-journey-may2024'
+    value: 'azure-devops-journey-oct2024'
   - name: backendAzureRmResourceGroupName
-    value: 'devops-journey-rg-may2024'
+    value: 'devops-journey-rg-oct2024'
   - name: backendAzureRmStorageAccountName
-    value: 'devopsjourneymay2024'
+    value: 'devopsjourneyoct2024'
   - name: backendAzureRmContainerName
     value: 'tfstate'
   - name: backendAzureRmKey
@@ -19,7 +19,7 @@ variables:
   - name: environment
     value: 'production'
   - name: terraform_version
-    value: '1.8.4'
+    value: '1.9.6'
 
 stages :          
   - stage: plan
