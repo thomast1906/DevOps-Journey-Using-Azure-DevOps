@@ -1,10 +1,11 @@
 # Prerequisites
 
-This lab will guide you through the necessary prerequisites to complete all subsequent labs. Ensure you have the following tools and accounts set up before proceeding.
+## 🎯 Objective
+Prepare your development environment for the upcoming DevOps labs by installing necessary tools and setting up required accounts.
 
 ## Installations
 
-### Code Editor
+### Code Editor: Visual Studio Code
 As you embark on this DevOps journey, having a reliable code editor is essential. I recommend using [Visual Studio Code](https://code.visualstudio.com), a free and highly versatile code editor. Visual Studio Code supports a wide range of extensions and integrations, making it a powerful tool for development and DevOps tasks.
 
 1. Download Visual Studio Code: Visit the [Visual Studio Code download](https://code.visualstudio.com/download) page and select the version appropriate for your operating system.
@@ -45,3 +46,15 @@ To enhance your understanding and make the most out of this lab, consider explor
 
 By ensuring these prerequisites are met, you will be well-prepared to proceed with the lab and delve deeper into the world of DevOps.
 
+## ✅ Checklist
+
+Before proceeding, ensure you have:
+- [ ] Installed and configured Visual Studio Code
+- [ ]  Installed Terraform
+- [ ]  Installed Docker Desktop
+- [ ]  Created an Azure account
+- [ ]  Installed and configured Azure CLI
+
+## 🚀 Ready to Begin?
+
+Once you've completed all the prerequisites, you're set to embark on your DevOps journey. Good luck!
