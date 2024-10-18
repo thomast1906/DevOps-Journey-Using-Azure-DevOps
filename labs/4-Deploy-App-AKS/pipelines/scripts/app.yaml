@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thomasthornton
+  namespace: thomasthorntoncloud
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: thomasthorntoncloud
+  template:
+    metadata:
+      labels:
+        app: thomasthorntoncloud
+    spec:
+      containers:
+      - name: thomasthorntoncloud
+        image: devopsjourneyoct2024acr.azurecr.io/repository:626 # Update this line
+        ports:
+        - containerPort: 80
+        env:
+        - name: APPINSIGHTS_INSTRUMENTATIONKEY
+          valueFrom:
+            secretKeyRef:
+              name: aikey
+              key: aisecret
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: thomasthorntoncloud
+  namespace: thomasthorntoncloud
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: thomasthorntoncloud

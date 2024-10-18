@@ -87,6 +87,7 @@ stages :
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
 
   - stage: Build
+    dependsOn: [apply]
     displayName: Build and push image
     jobs:  
     - job: Build

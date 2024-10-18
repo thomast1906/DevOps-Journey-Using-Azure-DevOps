@@ -87,6 +87,7 @@ stages :
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
 
   - stage: Build
+    dependsOn: [apply]
     displayName: Build and push image
     jobs:  
     - job: Build
@@ -102,7 +103,8 @@ stages :
           tags: $(Build.BuildId)
 
   - stage: aks_deploy
-    displayName: Deploy aspnet app to AKS
+    dependsOn: [Build]
+    displayName: Deploy app to AKS
     jobs:  
     - job: Build
       displayName: Build job
@@ -117,28 +119,71 @@ stages :
           inlineScript: |
             #!/usr/bin/env bash
             set -x
-            AKS_RG="devopsjourneymay2024-rg"
-            AKS_NAME="devopsjourneymay2024"
+
+            RESOURCE_GROUP="devopsjourneyoct2024-rg"
+            AKS_NAME="devopsjourneyoct2024"
             helm_resource_namespace="azure-alb-system"
-            VNET_NAME="devopsjourneymay2024-vnet"
+            VNET_NAME="devopsjourneyoct2024-vnet"
             ALB_SUBNET_NAME="appgw"
             ALB_CONTROLLER_VERSION="1.0.0"
+            ALB_RESOURCE_NAME='devopsjourneyoct2024-alb'
+            ALB_FRONTEND_NAME='alb-frontend'
+            APP_NAMESPACE='thomasthorntoncloud'
 
             # Get AKS Credentials
-            az aks get-credentials -g $AKS_RG -n $AKS_NAME --admin
+            az aks get-credentials -g $RESOURCE_GROUP -n $AKS_NAME --admin
 
-            # Create secret
-            kubectl -n sampleapp create secret generic aikey --from-literal=aisecret=$(AIKEY)
-
-            # Install gateway API CRDs curl -L -O $(curl -s https://api.github.com/repos/kubernetes-sigs/gateway-api/releases/latest | grep 'browser_' | cut -d\" -f4)
-            kubectl apply -f pipelines/scripts/gatewayapi/gatewayapi.yaml 
-
-            #create namespace for the ALB controller
+            #create namespace
             kubectl create namespace $helm_resource_namespace
 
-            helm install alb-controller oci://mcr.microsoft.com/application-lb/charts/alb-controller --namespace $helm_resource_namespace --version $ALB_CONTROLLER_VERSION --set albController.namespace=$helm_resource_namespace --set albController.podIdentity.clientID=$(az identity show -g $AKS_RG -n azure-alb-identity --query clientId -o tsv)
+            #Create App Namespace
+            kubectl create namespace $APP_NAMESPACE
 
-            # Apply alb
-            kubectl apply -f pipelines/scripts/alb.yaml
+            helm install alb-controller oci://mcr.microsoft.com/application-lb/charts/alb-controller --namespace $helm_resource_namespace --version $ALB_CONTROLLER_VERSION --set albController.namespace=$helm_resource_namespace --set albController.podIdentity.clientID=$(az identity show -g $RESOURCE_GROUP -n azure-alb-identity --query clientId -o tsv)
+
+            RESOURCE_ID=$(az network alb show --resource-group $RESOURCE_GROUP --name $ALB_RESOURCE_NAME --query id -o tsv)
+
+            # Create a Gateway
+            kubectl apply -f - <<EOF
+            apiVersion: gateway.networking.k8s.io/v1
+            kind: Gateway
+            metadata:
+              name: gateway-01
+              namespace: thomasthorntoncloud
+              annotations:
+                alb.networking.azure.io/alb-id: $RESOURCE_ID
+            spec:
+              gatewayClassName: azure-alb-external
+              listeners:
+              - name: http
+                port: 80
+                protocol: HTTP
+                allowedRoutes:
+                  namespaces:
+                    from: Same
+              addresses:
+              - type: alb.networking.azure.io/alb-frontend
+                value: $ALB_FRONTEND_NAME
+            EOF
+
+            #Create HTTP Route
+            kubectl apply -f - <<EOF
+            apiVersion: gateway.networking.k8s.io/v1
+            kind: HTTPRoute
+            metadata:
+              name: traffic-thomasthorntoncloud
+              namespace: thomasthorntoncloud
+            spec:
+              parentRefs:
+              - name: gateway-01
+              rules:
+              - backendRefs:
+                - name: thomasthorntoncloud
+                  port: 80
+            EOF
+
+            # Create secret for app insights
+            kubectl -n thomasthorntoncloud create secret generic aikey --from-literal=aisecret=$(AIKEY)
+
             # Apply app
-            kubectl apply -f pipelines/scripts/aspnet.yaml 
+            kubectl apply -f pipelines/scripts/app.yaml
