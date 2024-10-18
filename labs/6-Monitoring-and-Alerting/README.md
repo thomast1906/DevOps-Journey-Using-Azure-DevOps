@@ -1,8 +1,10 @@
 # Monitoring and alerting
 
-The purpose of this lab is to review and setup sample monitoring and alerting. 
+##  🚀 Lab Objective
+Set up and review monitoring and alerting solutions for your AKS-deployed application using Azure's monitoring tools.
 
-In this lab, you will:
+### Lab Overview
+You will:
 - Use and review Application Insights logs and metrics
 - Setup an Application Insights Availability test
 - Use and review Log Analytics along with container insights

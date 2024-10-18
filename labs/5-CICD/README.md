@@ -1,7 +1,9 @@
 # Introducing CI/CD to your pipeline
 
-The purpose of this lab is to introduce you to CI/CD. 
+##  🚀 Lab Objective
+Implement Continuous Integration and Continuous Deployment (CI/CD) practices in your Azure DevOps pipeline for automated and efficient application deployment to AKS.
 
-In this lab, you will:
+### Lab Overview
+You will:
 - Begin CI/CD with Pipeline Trigger for automatic pipeline runs
 - Automated deployment of your AKS Application
