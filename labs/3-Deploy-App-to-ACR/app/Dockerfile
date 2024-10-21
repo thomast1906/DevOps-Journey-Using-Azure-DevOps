@@ -1,12 +1,16 @@
-FROM python:3.12-slim
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build-env
+WORKDIR /app
 
-RUN mkdir /build
-WORKDIR /build
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
 
-COPY . /build
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
 
-RUN pip install --no-cache-dir -r requirements.txt
-
-EXPOSE 5000
-
-CMD ["python", "app.py"]
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim 
+WORKDIR /app
+COPY --from=build-env /app/out .
+ENTRYPOINT ["dotnet", "aspnet-core-dotnet-core.dll"]
