@@ -1,17 +1,10 @@
 # Azure DevOps setup
 
-## Azure DevOps Organisation Setup
-The first setup to setting up Azure DevOps is to create an organisation
+## 🎯 Purpose
+Set up Azure DevOps environment for efficient DevOps practices and pipeline management.
 
-1. [Sign into Azure DevOps](https://go.microsoft.com/fwlink/?LinkId=307137)
-2. Select **New Organisation**
-3. Enter your preferred Azure DevOps organisation name and hosting location. (For this lab, the organisation name is thomasthorntoncloud.)
-4. Once your organisation is created, you can access it anytime using:
-`https://dev.azure.com/{yourorganisation}`
+## Azure DevOps Organisation Setup & Project Creation
 
-Once an organisation has been setup, next is to create an Azure DevOps project
-
-## Azure DevOps Project Creation
 Creating a project allows you to utilise repositories, pipelines, and other features within Azure DevOps.
 
 1. [Sign into Azure DevOps](https://go.microsoft.com/fwlink/?LinkId=307137)
@@ -20,6 +13,18 @@ Creating a project allows you to utilise repositories, pipelines, and other feat
 4. Enter new project name & description
 
 ![](images/azure-devops-project-creation.png)
+
+### 🔍 Verification:
+- Confirm access to your new organisation URL
+- Confirm your new project appears in the organisation dashboard
+
+### 🧠 Knowledge Check:
+- Why is creating an Azure DevOps organisation the first step?
+- What information is required when setting up an organisation?
+- What features become available after creating a project?
+- How does project creation facilitate team collaboration?
+
+#### 💡 Pro Tip: Use clear, descriptive project names and descriptions to help team members understand the project's purpose at a glance.
 
 ## Azure Workload Identity Federation
 Using a Workload Identity Federation is considered best practice for DevOps within your CI/CD pipeline. It serves as an identity to authenticate within your Azure Subscription, allowing you to deploy the relevant Terraform code.
@@ -43,5 +48,15 @@ Using a Workload Identity Federation is considered best practice for DevOps with
 Service Principal Role Assignment
 
 ![](images/azure-devops-workload-identity-4.png)
+
+### 🔍 Verification:
+- Check that the Workload Identity appears in your Azure Active Directory
+- Confirm the assigned role in Azure subscription
+
+### 🧠 Knowledge Check:
+- Why is Workload Identity Federation considered best practice for DevOps CI/CD pipelines?
+- What role does the Service Principal play in Azure resource deployment?
+
+#### 💡 Pro Tip: Regularly review and update the permissions assigned to your Workload Identity to maintain the principle of least privilege.
 
 You are now all set and ready to deploy to Azure using Azure DevOps!

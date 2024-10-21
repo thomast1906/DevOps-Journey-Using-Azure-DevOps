@@ -2,29 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: sampleapp
-  name: aspnetcore
+  name: thomasthornton
+  namespace: thomasthorntoncloud
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: aspnetcore
+      app: thomasthorntoncloud
   template:
     metadata:
       labels:
-        app: aspnetcore
+        app: thomasthorntoncloud
     spec:
       containers:
-      - name: aspnetcore
-        image: devopsjourneymay2024acr.azurecr.io/devopsjourney:latest
+      - name: thomasthorntoncloud
+        image: devopsjourneyoct2024acr.azurecr.io/repository:latest # Update this line
         imagePullPolicy: Always
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 250m
-            memory: 256Mi
         ports:
         - containerPort: 80
         env:
@@ -33,15 +26,22 @@ spec:
             secretKeyRef:
               name: aikey
               key: aisecret
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: aspnetcore
-  namespace: sampleapp
+  name: thomasthorntoncloud
+  namespace: thomasthorntoncloud
 spec:
   type: LoadBalancer
   ports:
   - port: 80
   selector:
-    app: aspnetcore
+    app: thomasthorntoncloud

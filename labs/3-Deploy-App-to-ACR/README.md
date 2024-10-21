@@ -1,6 +1,8 @@
 # Deploy sample Application to Container Registry
 
-The purpose of this lab is to deploy the Application to Container Registry. 
+##  🚀 Lab Objective
+Deploy the sample application to Azure Container Registry (ACR) to prepare for Kubernetes deployment.
 
-In this lab, you will:
+### Lab Overview
+You will:
 - Deploy application to Azure Container Registry

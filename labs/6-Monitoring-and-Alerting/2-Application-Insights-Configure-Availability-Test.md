@@ -1,11 +1,13 @@
 # Configure Availability Tests Using Application Insights
 
+# 🎯 Purpose
+Set up recurring tests to monitor your application's availability and responsiveness using Application Insights.
 
 You can set up recurring tests to monitor the availability and responsiveness of your application using Application Insights. These tests send web requests to your application at regular intervals from various locations around the world and alert you if your application is unresponsive or slow.
 
 Availability tests can be configured for any HTTP or HTTPS endpoint accessible from the public internet. No modifications to the website being tested are necessary, and the site does not need to be owned by you. For example, you can test the availability of a REST API that your service depends on.
 
-# Types of tests
+## Types of tests
 
 There are four types of availability tests:
 
@@ -17,7 +19,17 @@ There are four types of availability tests:
 
 4. **Custom TrackAvailability Test:** For custom applications running availability tests, the TrackAvailability() method can be used to send test results to Application Insights.
 
-# Configuring a clasic test
+### 🔍 Verification:
+1. Confirm you understand the differences between each test type
+
+### 🧠 Knowledge Check:
+1. Which test type is best suited for complex scenarios?
+2. What unique features does the Standard Test (Preview) offer?
+
+#### 💡 Pro Tip: Choose the test type that best matches your application's complexity and your monitoring needs.
+
+
+# 1. Configuring a clasic test and viewing results
 
 To configure a classic availability test, follow these steps:
 
@@ -29,3 +41,17 @@ To configure a classic availability test, follow these steps:
 After configuring the test, you will be able to view detailed testing information over time.
 
 ![](images/monitoring-and-alerting-8.PNG)
+
+## 🔍 Verification:
+1. Successfully create a new classic test
+2. Confirm the test appears in the Availability tests list
+3. Check that test results are being recorded and displayed correctly
+
+## 🧠 Knowledge Check:
+
+1. What parameters can you configure for a classic test?
+2. How does the test frequency affect your monitoring strategy?
+3. What metrics are most important when reviewing availability test results?
+4. How can you use these results to improve your application's reliability?
+
+#### 💡 Pro Tip: Start with a higher test frequency during initial setup or after major changes, then adjust based on your application's stability.

@@ -21,7 +21,7 @@ variable "vm_size" {
 }
 
 variable "dns_prefix" {
-    default = "tamopsdns"
+  default = "tamopsdns"
 }
 
 variable "kubernetes_cluster_rbac_enabled" {
@@ -35,19 +35,19 @@ variable "aks_admins_group_object_id" {
 variable "addons" {
   description = "Defines which addons will be activated."
   type = object({
-    oms_agent            = bool
-    azure_policy         = bool
+    oms_agent                   = bool
+    azure_policy                = bool
     ingress_application_gateway = bool
   })
 }
 
-variable log_analytics_workspace_id {
+variable "log_analytics_workspace_id" {
 }
 
-variable aks_subnet {
+variable "aks_subnet" {
 }
 
-variable agic_subnet_id {
+variable "agic_subnet_id" {
 }
 
 variable "environment" {

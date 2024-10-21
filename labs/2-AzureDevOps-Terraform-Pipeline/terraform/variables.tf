@@ -70,6 +70,6 @@ variable "ssh_public_key" {
 }
 
 variable "access_policy_id" {
-  type = string
+  type        = string
   description = "Object ID for Key Vault Policy"
 }
