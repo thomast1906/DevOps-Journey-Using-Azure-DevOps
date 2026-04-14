@@ -18,13 +18,7 @@ spec:
       - name: thomasthorntoncloud
         image: devopsjourneyoct2024acr.azurecr.io/repository:626 # Update this line
         ports:
-        - containerPort: 80
-        env:
-        - name: APPINSIGHTS_INSTRUMENTATIONKEY
-          valueFrom:
-            secretKeyRef:
-              name: aikey
-              key: aisecret
+        - containerPort: 5000
         resources:
           requests:
             cpu: 100m
@@ -42,5 +36,6 @@ spec:
   type: LoadBalancer
   ports:
   - port: 80
+    targetPort: 5000
   selector:
     app: thomasthorntoncloud
