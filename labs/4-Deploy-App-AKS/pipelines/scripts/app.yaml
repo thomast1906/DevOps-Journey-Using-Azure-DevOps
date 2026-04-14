@@ -19,6 +19,12 @@ spec:
         image: devopsjourneyoct2024acr.azurecr.io/repository:626 # Update this line
         ports:
         - containerPort: 5000
+        env:
+        - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: aikey
+              key: aisecret
         resources:
           requests:
             cpu: 100m

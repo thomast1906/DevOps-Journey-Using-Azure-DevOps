@@ -191,5 +191,10 @@ stages :
                   port: 80
             EOF
 
+            # Create secret for App Insights connection string
+            # $(AIKEY) should be the full App Insights Connection String
+            # (found in Azure Portal > Application Insights > Overview > Connection String)
+            kubectl -n thomasthorntoncloud create secret generic aikey --from-literal=aisecret=$(AIKEY)
+
             # Apply app
             kubectl apply -f pipelines/scripts/app.yaml 

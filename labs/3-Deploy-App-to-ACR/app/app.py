@@ -1,5 +1,9 @@
+from azure.monitor.opentelemetry import configure_azure_monitor
 from flask import Flask, render_template
 import os
+
+# Reads APPLICATIONINSIGHTS_CONNECTION_STRING env var automatically
+configure_azure_monitor()
 
 app = Flask(__name__)
 
