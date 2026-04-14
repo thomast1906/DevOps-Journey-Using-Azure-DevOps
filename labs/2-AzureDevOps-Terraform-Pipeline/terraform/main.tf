@@ -31,23 +31,14 @@ module "vnet_aks" {
 }
 
 module "aks" {
-  source                     = "./modules/aks"
-  name                       = var.general_name
-  kubernetes_version         = var.kubernetes_version
-  agent_count                = var.agent_count
-  vm_size                    = var.vm_size
-  location                   = var.location
-  ssh_public_key             = var.ssh_public_key
-  log_analytics_workspace_id = module.loganalytics.id
-  aks_subnet                 = module.vnet_aks.aks_subnet_id
-  agic_subnet_id             = module.vnet_aks.appgw_subnet_id
-  environment                = var.environment
-
-  addons = {
-    oms_agent                   = true
-    azure_policy                = false
-    ingress_application_gateway = true
-  }
+  source             = "./modules/aks"
+  name               = var.general_name
+  kubernetes_version = var.kubernetes_version
+  vm_size            = var.vm_size
+  location           = var.location
+  ssh_public_key     = var.ssh_public_key
+  aks_subnet         = module.vnet_aks.aks_subnet_id
+  environment        = var.environment
 
   depends_on = [azurerm_resource_group.kubernetes_resource_group]
 }
@@ -65,14 +56,15 @@ module "appinsights" {
   location         = var.location
   environment      = var.environment
   application_type = "web"
+  workspace_id     = module.loganalytics.id
 
-  depends_on = [azurerm_resource_group.kubernetes_resource_group]
+  depends_on = [module.loganalytics, azurerm_resource_group.kubernetes_resource_group]
 }
 
 module "keyvault" {
-  source           = "./modules/keyvault"
-  name             = var.general_name
-  access_policy_id = var.access_policy_id
+  source          = "./modules/keyvault"
+  name            = var.general_name
+  admin_object_id = var.admin_object_id
 
   depends_on = [azurerm_resource_group.kubernetes_resource_group]
 }

@@ -1,24 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.ApplicationInsights.Kubernetes;
 
-namespace aspnet_core_dotnet_core
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-    }
+builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddApplicationInsightsKubernetesEnricher();
+builder.Services.AddRazorPages();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
+app.UseStaticFiles();
+app.UseCookiePolicy();
+app.UseRouting();
+app.UseAuthorization();
+app.MapRazorPages();
+
+app.Run();

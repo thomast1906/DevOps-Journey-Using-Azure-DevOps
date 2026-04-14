@@ -10,6 +10,10 @@ trigger:
 pr: none
 
 variables:
+  # NOTE: The service connection referenced by backendServiceArm must be configured as
+  # "Workload Identity Federation" (OIDC) in Azure DevOps > Project Settings > Service Connections.
+  # This eliminates the need for client secrets and enables automatic token rotation.
+  # TerraformTaskV4@4, Docker@2, and AzureCLI@2 all natively support WIF service connections.
   - name: backendServiceArm
     value: 'azure-devops-journey-oct2024'
   - name: backendAzureRmResourceGroupName
@@ -23,7 +27,7 @@ variables:
   - name: environment
     value: 'production'
   - name: terraform_version
-    value: '1.9.6'
+    value: '1.14.0'
   - name: repository
     value: 'repository'
   - name: dockerfile

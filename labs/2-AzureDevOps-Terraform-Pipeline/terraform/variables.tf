@@ -44,11 +44,6 @@ variable "kubernetes_version" {
   description = "AKS K8s Version"
 }
 
-variable "agent_count" {
-  type        = string
-  description = "AKS Agent Count"
-}
-
 variable "vm_size" {
   type        = string
   description = "AKS VM Size"
@@ -69,7 +64,7 @@ variable "ssh_public_key" {
   description = "SSH key for AKS Cluster"
 }
 
-variable "access_policy_id" {
+variable "admin_object_id" {
   type        = string
-  description = "Object ID for Key Vault Policy"
+  description = "Object ID of the principal to assign Key Vault Administrator role"
 }

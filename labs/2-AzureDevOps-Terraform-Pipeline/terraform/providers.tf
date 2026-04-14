@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.9.6"
+  required_version = ">= 1.14.0, < 2.0.0"
   backend "azurerm" {
     # resource_group_name  = "devopshardway-rg"
     # storage_account_name = "devopshardwaysa"
@@ -10,14 +10,15 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 4.3.0"
+      version = ">= 4.68.0, < 5.0.0"
     }
   }
 }
 
 provider "azurerm" {
   features {}
-  subscription_id = "04109105-f3ca-44ac-a3a7-66b4936112c3"
-
+  # subscription_id is sourced from the ARM_SUBSCRIPTION_ID environment variable
+  # set automatically by the Azure DevOps Workload Identity Federation service connection
 }
+
 data "azurerm_client_config" "current" {}
