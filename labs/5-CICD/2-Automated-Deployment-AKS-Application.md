@@ -1,105 +1,248 @@
-# Automated Deployment of Your AKS Application
+# ♻️ Automated Rolling Deployments to AKS
 
-# 🎯 Purpose
-Implement continuous integration and continuous deployment (CI/CD) for your AKS application, ensuring automatic updates with each pipeline run. In previous labs, the application build tag was manually set up. 
+> **Estimated Time:** ⏱️ **15-20 minutes**
 
-## 1. Review the app.yaml File
-1. Previously, the image build version was hardcoded. This meant that to update the pods on the cluster, you had to delete the Kubernetes deployment and rerun the pipeline with the new build version. This approach is not ideal as it does not support zero-downtime deployments.
+## 🎯 **Learning Objectives**
 
-```bash
-image: devopsjourneymay2024acr.azurecr.io/devopsjourney:123
-```
+By the end of this lab, you will:
+- [ ] **Switch the image tag from `$(Build.BuildId)` to `latest`** — enabling the pipeline to always use the most recent build
+- [ ] **Add `imagePullPolicy: Always`** — forcing AKS to pull the latest image on every pod restart or rolling update
+- [ ] **Understand zero-downtime rolling updates** — how Kubernetes replaces pods without service interruption
+- [ ] **Verify the automated deployment** — by observing new pods running the `latest` image after a pipeline run
 
-### 🔍 Verification:
-1. Confirm the hardcoded image version in the app.yaml file
+## 📋 **Prerequisites**
 
-### 🧠 Knowledge Check:
-1. Why is a hardcoded image version problematic for CI/CD?
-2. What are the drawbacks of manually deleting and redeploying for updates?
+**✅ Required Knowledge:**
+- [ ] Kubernetes Deployment and rolling update concepts
+- [ ] Docker image tagging strategies
 
-#### 💡 Pro Tip: Always consider zero-downtime deployment strategies when designing your CI/CD pipeline.
+**🔧 Required Tools:**
+- [ ] `kubectl` installed and configured (AKS credentials from Lab 4)
 
+**🏗️ Infrastructure Dependencies:**
+- [ ] Completed [Lab 5.1 — CI/CD Trigger](./1-Introduce-CI-CD-to-your-Pipeline.md)
+- [ ] Application successfully deployed to AKS (Lab 4)
 
-## 2. Update Image Tag and Introduce `imagePullPolicy`
+---
 
-1. Change the image tag to latest and add an imagePullPolicy to ensure the latest image is always pulled when the pods are updated.
+## 🚀 **Step-by-Step Implementation**
 
-```bash
-image: devopsjourneymay2024acr.azurecr.io/devopsjourney:latest
-imagePullPolicy: Always
-```
+### **Step 1: Understand the Problem with Hardcoded Build IDs** ⏱️ *3 minutes*
 
-The `imagePullPolicy` determines when the kubelet attempts to pull (download) the specified image. Here are the possible values:
-- **IfNotPresent:** The image is pulled only if it is not already present locally.
-- **Always:** Every time the kubelet launches a container, it queries the container image registry to resolve the image name to a digest. If the image is not cached locally, the kubelet pulls it and uses it to launch the container.
-- **Never:** The kubelet does not try to fetch the image. If the image is present locally, the kubelet attempts to start the container; otherwise, the startup fails.
-
-### 🔍 Verification:
-1. Ensure both the image tag and imagePullPolicy are correctly set in the YAML file
-
-### 🧠 Knowledge Check:
-1. What are the different imagePullPolicy options and their use cases?
-2. Why is 'Always' particularly useful in a CI/CD context?
-
-#### 💡 Pro Tip: While 'latest' is convenient for CI/CD, consider using specific version tags in production for better traceability and rollback capabilities.
-
-
-## 3. Edit Your app.yaml File & Update Pipeline Tag
-
-1. Make the necessary changes to the app.yaml file as shown [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/scripts/app.yaml#L19-L20)
-2. Update the Pipeline Tag 
-
-Previously, the pipeline tag was set to the latest Build ID:
+In Lab 4, the `app.yaml` had a hardcoded image tag:
 
 ```yaml
-tags: $(Build.BuildId)
+image: devopsjourneyoct2024acr.azurecr.io/repository:626
 ```
 
-Which will tag with the latest BuildId each time of the pipeline. 
+**Problems with this approach:**
+- Every new pipeline run produces a new tag (`627`, `628`, ...) but the manifest still references `626`
+- To update the running pods, you had to manually delete the Deployment and re-run the pipeline
+- No zero-downtime rolling update — the old pods are torn down before new ones are ready
+- Not truly automated — human intervention required for every deployment
 
-3. Update this to latest to ensure the latest build is always used:
+---
 
-```yaml
-tags: 'latest'
+### **Step 2: Update `app.yaml` to Use `latest` Tag** ⏱️ *5 minutes*
+
+1. **📝 Open the Kubernetes manifest**
+
+   Open [`labs/5-CICD/pipelines/scripts/app.yaml`](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/scripts/app.yaml#L19-L20)
+
+2. **✏️ Update the image reference**
+
+   Change:
+   ```yaml
+   image: devopsjourneyoct2024acr.azurecr.io/repository:626
+   ```
+
+   To:
+   ```yaml
+   image: devopsjourneyoct2024acr.azurecr.io/repository:latest
+   imagePullPolicy: Always
+   ```
+
+   **`imagePullPolicy` options explained:**
+   | Value | Behaviour |
+   |-------|-----------|
+   | `IfNotPresent` | Only pull if not cached locally — may run stale images |
+   | `Always` | Always query the registry and pull if the digest has changed — **use for CI/CD** |
+   | `Never` | Never pull — only uses locally cached images; fails if not cached |
+
+   > 💡 `imagePullPolicy: Always` combined with the `latest` tag ensures every pod restart pulls the newest image from ACR. This enables truly automated rolling updates — no manifest changes needed per pipeline run.
+
+---
+
+### **Step 3: Update the Pipeline Tag to `latest`** ⏱️ *3 minutes*
+
+1. **📝 Open the pipeline YAML**
+
+   Open [`labs/5-CICD/pipelines/lab5pipeline.yaml`](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/lab5pipeline.yaml#L108)
+
+2. **✏️ Change the Docker build tag**
+
+   Find the Docker task and change the `tags` parameter:
+
+   From:
+   ```yaml
+   tags: $(Build.BuildId)
+   ```
+
+   To:
+   ```yaml
+   tags: 'latest'
+   ```
+
+   This tells the `Docker@2` task to push the image to ACR with the `latest` tag, which is what the `app.yaml` now references.
+
+---
+
+### **Step 4: Commit, Push, and Verify** ⏱️ *5 minutes*
+
+1. **💾 Commit all changes**
+
+   ```bash
+   git add pipelines/lab5pipeline.yaml pipelines/scripts/app.yaml
+   git commit -m "Switch to latest tag with imagePullPolicy Always for automated CI/CD"
+   git push origin main
+   ```
+
+2. **⚡ The CI trigger fires automatically**
+
+   The push to `main` triggers the pipeline (from Lab 5.1). Watch the pipeline run in Azure DevOps.
+
+3. **🔍 Verify the `latest` tag in ACR**
+
+   After the Build stage completes:
+
+   ```bash
+   az acr repository show-tags \
+     --name devopsjourneyoct2024acr \
+     --repository repository \
+     --orderby time_desc \
+     --top 3 -o table
+   ```
+
+   **✅ Expected Output:**
+   ```
+   Result
+   ------
+   latest
+   ```
+
+   ![](images/cicd-1.png)
+
+4. **🔍 Verify new pods are running the `latest` image**
+
+   After the Deploy stage completes:
+
+   ```bash
+   kubectl describe pod \
+     $(kubectl get pods -n thomasthorntoncloud -o jsonpath='{.items[0].metadata.name}') \
+     -n thomasthorntoncloud \
+     | grep Image:
+   ```
+
+   **✅ Expected Output:**
+   ```
+   Image: devopsjourneyoct2024acr.azurecr.io/repository:latest
+   ```
+
+---
+
+## ✅ **Validation Steps**
+
+**🔍 Deployment Validation:**
+- [ ] `app.yaml` uses `latest` tag and `imagePullPolicy: Always`
+- [ ] Pipeline YAML uses `tags: 'latest'`
+- [ ] ACR shows `latest` tag after pipeline run
+- [ ] AKS pods show `repository:latest` image
+- [ ] Application still responds correctly via ALB FQDN
+
+**🔧 Full Validation Script:**
+```bash
+#!/bin/bash
+echo "=== Checking ACR for latest tag ==="
+az acr repository show-tags \
+  --name devopsjourneyoct2024acr \
+  --repository repository \
+  --orderby time_desc --top 3 -o table
+
+echo ""
+echo "=== Checking AKS pod image ==="
+POD=$(kubectl get pods -n thomasthorntoncloud -o jsonpath='{.items[0].metadata.name}')
+kubectl describe pod "$POD" -n thomasthorntoncloud | grep "Image:"
+
+echo ""
+echo "=== Testing application availability ==="
+FQDN=$(kubectl get gateway gateway-01 -n thomasthorntoncloud \
+  -o jsonpath='{.status.addresses[0].value}')
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://$FQDN")
+echo "HTTP Status: $HTTP_CODE"
+[ "$HTTP_CODE" = "200" ] && echo "✅ Application is healthy" || echo "❌ Application check failed"
 ```
 
-4. Modify this in your pipeline file [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/pipelines/lab5pipeline.yaml#L108)
+---
 
-### 🔍 Verification:
-1. Double-check that the changes are correctly applied to the app.yaml file
-2. Confirm the tag change in your pipeline file
+## 🚨 **Troubleshooting Guide**
 
-### 🧠 Knowledge Check:
-1. How does this change affect the deployment process?
-2. What potential issues could arise from using 'latest' in production?
-3. How does using 'latest' instead of $(Build.BuildId) impact your deployment strategy?
-4. What are the pros and cons of using 'latest' versus unique build IDs?
+**❌ Common Issues:**
 
-#### 💡 Pro Tip: Use version control to track changes to your Kubernetes manifests, enabling easy rollbacks if needed.
+```bash
+# Problem: Pods still running the old image tag after pipeline runs
+# Solution: Verify imagePullPolicy is set to Always in app.yaml
+kubectl get deployment -n thomasthorntoncloud -o yaml | grep -A2 imagePullPolicy
 
+# Problem: ACR still shows old tag, not "latest"
+# Solution: Confirm the pipeline tag was updated to 'latest' (not $(Build.BuildId))
+grep "tags:" pipelines/lab5pipeline.yaml
 
-## 5. Merge changes and verify
+# Problem: Rolling update causes brief downtime
+# Solution: Ensure the Deployment has a readiness probe configured
+# With readiness probes, Kubernetes waits for new pods to be ready before terminating old ones
+kubectl describe deployment -n thomasthorntoncloud | grep -A5 "Readiness"
 
-Once you merge these changes, the pipeline will run automatically. In the Azure Container Registry (ACR), you will see a new tag `latest`. This tag will be used to update the pods on the AKS cluster.
-
-![](images/cicd-1.png)
-
-As we changed the `imagePullPolicy` to `Always`, reviewing the K8s cluster, you will see a new pod also with the `latest` image tag
-
-```bash 
-kubectl describe pod thomasthornton-85cccb565d-qdltc | grep Image
-Image:          devopsjourneyoct2024acr.azurecr.io/repository:latest
+# Problem: "ErrImagePull" in pods after tag change
+# Solution: Verify the WIF service principal has AcrPull role
+az role assignment list \
+  --scope "$(az acr show --name devopsjourneyoct2024acr --query id -o tsv)" \
+  --query "[].{Principal:principalName,Role:roleDefinitionName}" -o table
 ```
 
-Congratulations! You've successfully implemented CI/CD and automated deployments for your AKS application.
+---
 
-### 🔍 Verification:
-1. Confirm the 'latest' tag in ACR
-2. Check for new pods in the AKS cluster using the 'latest' image
+## 💡 **Knowledge Check**
 
-### 🧠 Knowledge Check:
-1. How does the imagePullPolicy affect the pod update process?
-2. What would happen if you reverted to an older commit with this setup?
+**🎯 Questions:**
+1. Why does changing from `$(Build.BuildId)` to `latest` enable automated deployments?
+2. What would happen if `imagePullPolicy` were left as `IfNotPresent` with the `latest` tag?
+3. How does Kubernetes perform a rolling update with zero downtime?
+4. What are the trade-offs of using `latest` in production vs. explicit version tags?
 
-#### 💡 Pro Tip: Implement monitoring and alerting to quickly identify any issues with new deployments using the 'latest' tag.
+**📝 Answers:**
+1. **The manifest no longer needs to change per build** — with `latest`, every `kubectl apply` references the same image name. With `imagePullPolicy: Always`, AKS pulls the updated image from ACR every time a pod is (re)started. The rolling update replaces old pods with new ones automatically, pulling the fresh `latest` image each time — no manifest update required.
+2. **`IfNotPresent` with `latest` would serve stale images** — Kubernetes checks if the image is cached locally first. Since `latest` was already pulled once, it would reuse the cached version even though ACR now has a newer image under the same tag. `Always` bypasses the local cache and always fetches from the registry.
+3. **Rolling update process**: (1) Kubernetes creates one (or more) new pods with the updated spec; (2) waits until the new pods pass the `readiness` probe; (3) terminates one (or more) old pods; (4) repeats until all replicas are replaced. Traffic is never fully interrupted because old pods serve requests while new pods warm up.
+4. **`latest` is convenient for CI/CD** but provides less traceability and makes rollbacks harder (you cannot pin to a specific build). **Explicit version tags** (e.g., `626`) are better for production — you know exactly which build is running, can roll back by changing the tag, and can audit changes. A common pattern: use `latest` + BuildId in CI pipelines and promote explicit tags to production.
+
+---
+
+## 🎯 **Next Steps**
+
+**✅ Upon Completion:**
+- [ ] `app.yaml` updated: `image: ...repository:latest` + `imagePullPolicy: Always`
+- [ ] Pipeline updated: `tags: 'latest'`
+- [ ] Push to `main` triggers automatic pipeline run
+- [ ] New pods running `repository:latest` confirmed in AKS
+
+**➡️ Continue to:** [Lab 6 — Application Insights Monitoring](../6-Monitoring-and-Alerting/1-Application-Insights.md)
+
+---
+
+## 📚 **Additional Resources**
+
+- 🔗 [Kubernetes — Rolling update strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment)
+- 🔗 [Kubernetes — Image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy)
+- 🔗 [ACR — Best practices for tagging](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-image-tag-version)
+- 🔗 [Azure DevOps — Docker task](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/docker-v2)
 

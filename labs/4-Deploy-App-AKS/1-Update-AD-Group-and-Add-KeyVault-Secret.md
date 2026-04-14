@@ -1,76 +1,288 @@
-# Update Azure AD Group with Service Principal and Configure Application Insights variable in Key Vault
+# 🔑 Configure AD Group, App Insights Connection String & Key Vault
 
-## 🎯 Purpose
-Add the Docker service principal to the Azure AD group and set up Application Insights variable that will be used by the application/pipeline.
+> **Estimated Time:** ⏱️ **20-25 minutes**
 
-## 1. Add Service Principal to Azure AD Group
+## 🎯 **Learning Objectives**
 
-1. Locate the service principal created by Workload Identity Federation
+By the end of this lab, you will:
+- [ ] **Add the WIF service principal to the AKS admin AD group** — so the pipeline can authenticate to AKS for deployments
+- [ ] **Retrieve the Application Insights connection string** — required by the `azure-monitor-opentelemetry` SDK
+- [ ] **Store the connection string as a Key Vault secret** — so the pipeline can inject it securely into Kubernetes
+- [ ] **Create an Azure DevOps variable group** — linking the Key Vault secret for use in the pipeline
 
-As using Workload Identity Federation, I found the service principal it created from here:
-![](images/deploy-app-aks-1.png)
+## 📋 **Prerequisites**
 
-2. Add the service principal that docker uses to the Azure AD group that was created in the initial setup [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/3-Create-Azure-AD-AKS-Admins.md)
+**✅ Required Knowledge:**
+- [ ] Entra ID group membership management
+- [ ] Azure Key Vault secrets
+- [ ] Azure DevOps variable groups
 
-### 🔍 Verification:
-1. Confirm the service principal appears in the group members list
-![](images/deploy-app-aks-6.png)
+**🔧 Required Tools:**
+- [ ] Azure CLI authenticated (`az login`)
 
-### 🧠 Knowledge Check:
-1. Why is it important to add the service principal to this group?
-2. How does this affect the permissions of the Docker service?
+**🏗️ Infrastructure Dependencies:**
+- [ ] Completed [Lab 3 — Deploy App to ACR](../3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md)
+- [ ] AKS, Key Vault, and Application Insights provisioned by Terraform (Lab 2)
+- [ ] Entra ID group `devopsjourney-aks-group-oct2024` created (Lab 1.3)
 
-#### 💡 Pro Tip: Regularly audit your Azure AD groups to ensure proper access control.
+---
 
-## 2. Get Application Insights Connection String & Add to Key Vault
+## 🚀 **Step-by-Step Implementation**
 
-> ⚠️ **Important**: The app uses the modern `azure-monitor-opentelemetry` SDK which requires the **full Connection String**, not the legacy Instrumentation Key. The Connection String includes the endpoint information needed for the OpenTelemetry exporter.
+### **Step 1: Add the WIF Service Principal to the AKS Admin Group** ⏱️ *5 minutes*
 
-1. Get Azure Application Insights **Connection String** using Az CLI:
-- Change the resource group and app insights name to your values
+The Workload Identity Federation service principal needs to be a member of the `devopsjourney-aks-group-oct2024` group. This grants the pipeline identity **AKS Cluster Admin** RBAC to run `kubectl apply` during the deploy stage.
 
+1. **🔍 Find the WIF service principal**
+
+   In Azure DevOps → **Project Settings** → **Service connections** → click your ARM service connection (e.g., `azure-devops-journey-oct2024`) → **Manage Workload Identity**.
+
+   Note the **Object ID** of the Enterprise Application / Service Principal.
+
+   ![](images/deploy-app-aks-1.png)
+
+   Or find it via CLI:
+   ```bash
+   # List service principals — find the one matching your WIF identity name
+   az ad sp list \
+     --display-name "azure-devops-journey-identity" \
+     --query "[].{Name:displayName, ObjectId:id}" -o table
+   ```
+
+2. **➕ Add the service principal to the AKS admin group**
+
+   ```bash
+   # Get the WIF service principal object ID
+   SP_OBJ_ID=$(az ad sp list \
+     --display-name "azure-devops-journey-identity" \
+     --query "[0].id" -o tsv)
+
+   # Add to the AKS admin group
+   az ad group member add \
+     --group "devopsjourney-aks-group-oct2024" \
+     --member-id "$SP_OBJ_ID"
+
+   echo "✅ Added $SP_OBJ_ID to devopsjourney-aks-group-oct2024"
+   ```
+
+   **✅ Expected Output:**
+   ```
+   ✅ Added a1b2c3d4-... to devopsjourney-aks-group-oct2024
+   ```
+
+3. **🔍 Verify group membership**
+
+   ```bash
+   az ad group member list \
+     --group "devopsjourney-aks-group-oct2024" \
+     --query "[].{Name:displayName, Type:userType}" -o table
+   ```
+
+   ![](images/deploy-app-aks-6.png)
+
+---
+
+### **Step 2: Get the Application Insights Connection String** ⏱️ *5 minutes*
+
+> ⚠️ **Important**: The app uses `azure-monitor-opentelemetry==1.8.7` which requires the **full Connection String** — NOT just the Instrumentation Key. The connection string includes endpoint URLs needed by the OpenTelemetry exporter. The environment variable name is `APPLICATIONINSIGHTS_CONNECTION_STRING`.
+
+1. **📋 Retrieve the connection string via Azure CLI**
+
+   ```bash
+   # Install the extension if not already present
+   az extension add --name application-insights --only-show-errors
+
+   # Get the connection string (update RG and AI name to your values)
+   az monitor app-insights component show \
+     --app devopsjourneyoct2024ai \
+     -g devopsjourneyoct2024-rg \
+     --query connectionString \
+     -o tsv
+   ```
+
+   **✅ Expected Output:**
+   ```
+   InstrumentationKey=8896c09a-a3e3-4a72-9914-f826e85c6a5f;IngestionEndpoint=https://uksouth-1.in.applicationinsights.azure.com/;LiveEndpoint=https://uksouth.livediagnostics.monitor.azure.com/;ApplicationId=abc12345-...
+   ```
+
+   > 💡 You can also find this in the Azure Portal: **Application Insights** → your resource → **Overview** → **Connection String** (copy button).
+
+2. **📋 Save the full connection string**
+
+   Copy the entire value starting with `InstrumentationKey=...` — you will use this in the next step.
+
+---
+
+### **Step 3: Store the Connection String in Key Vault** ⏱️ *5 minutes*
+
+The pipeline reads the connection string from Key Vault and injects it as a Kubernetes secret. The Python app reads `APPLICATIONINSIGHTS_CONNECTION_STRING` at startup.
+
+1. **🔐 Add the secret to Key Vault**
+
+   ```bash
+   # Store the full connection string as secret "AIKEY"
+   CONN_STRING=$(az monitor app-insights component show \
+     --app devopsjourneyoct2024ai \
+     -g devopsjourneyoct2024-rg \
+     --query connectionString \
+     -o tsv)
+
+   az keyvault secret set \
+     --vault-name "devopsjourneyoct2024-kv" \
+     --name "AIKEY" \
+     --value "$CONN_STRING"
+   ```
+
+   **✅ Expected Output:**
+   ```json
+   {
+     "id": "https://devopsjourneyoct2024-kv.vault.azure.net/secrets/AIKEY/...",
+     "name": "AIKEY",
+     "value": "InstrumentationKey=...;IngestionEndpoint=...;LiveEndpoint=..."
+   }
+   ```
+
+2. **✅ Verify the secret**
+
+   ```bash
+   az keyvault secret show \
+     --vault-name "devopsjourneyoct2024-kv" \
+     --name "AIKEY" \
+     --query "{Name:name, Value:value}" \
+     -o table
+   ```
+
+---
+
+### **Step 4: Create an Azure DevOps Variable Group** ⏱️ *5 minutes*
+
+The variable group links to Key Vault and makes the `AIKEY` secret available to pipelines as `$(AIKEY)`.
+
+1. **📚 Navigate to Pipelines → Library**
+
+   In Azure DevOps → **Pipelines** → **Library** → **+ Variable group**.
+
+2. **🔧 Configure the variable group**
+
+   - **Variable group name**: `devopsjourney`
+   - **Link secrets from an Azure key vault as variables**: Toggle **ON**
+   - **Azure subscription**: Select your WIF service connection
+   - **Key vault name**: `devopsjourneyoct2024-kv`
+   - Click **+ Add** → select `AIKEY`
+   - Click **Save**
+
+   ![](images/deploy-app-aks-3.png)
+
+3. **✅ Verify the variable group**
+
+   The variable group `devopsjourney` should show `AIKEY` as a linked Key Vault secret (displayed as `****`).
+
+---
+
+## ✅ **Validation Steps**
+
+**🔍 Infrastructure Validation:**
+- [ ] WIF service principal is a member of `devopsjourney-aks-group-oct2024`
+- [ ] Key Vault secret `AIKEY` contains the full App Insights connection string
+- [ ] Azure DevOps variable group `devopsjourney` is created and linked to Key Vault
+
+**🔧 Technical Validation:**
 ```bash
-az extension add --name application-insights
-az monitor app-insights component show --app devopsjourneyoct2024ai -g devopsjourneyoct2024-rg --query connectionString -o tsv
+# Verify WIF SP is in the group
+az ad group member check \
+  --group "devopsjourney-aks-group-oct2024" \
+  --member-id "$(az ad sp list --display-name 'azure-devops-journey-identity' --query '[0].id' -o tsv)"
+
+# Verify Key Vault secret exists (shows name only, not value)
+az keyvault secret list \
+  --vault-name "devopsjourneyoct2024-kv" \
+  --query "[?name=='AIKEY'].{Name:name, Enabled:attributes.enabled}" -o table
+
+# Verify connection string format
+AIKEY=$(az keyvault secret show \
+  --vault-name "devopsjourneyoct2024-kv" \
+  --name "AIKEY" \
+  --query value -o tsv)
+echo "$AIKEY" | grep -c "InstrumentationKey=" && echo "✅ Connection string format valid"
 ```
 
-Example output:
-```bash
-az monitor app-insights component show --app devopsjourneyoct2024ai -g devopsjourneyoct2024-rg --query connectionString -o tsv
-InstrumentationKey=8896c09a-a3e3-4a72-9914-f826e85c6a5f;IngestionEndpoint=https://uksouth-1.in.applicationinsights.azure.com/;LiveEndpoint=https://uksouth.livediagnostics.monitor.azure.com/
+**✅ Expected Output:**
+```
+{
+  "value": true
+}
+
+Name    Enabled
+------  -------
+AIKEY   True
+
+✅ Connection string format valid
 ```
 
-### 🔍 Verification:
-1. Ensure you receive a valid connection string (starts with `InstrumentationKey=`)
+---
 
-2. Add the **full connection string** to Key Vault as secret `AIKEY`:
-- Change the key vault name to your value and the connection string to the value from the previous step
+## 🚨 **Troubleshooting Guide**
+
+**❌ Common Issues:**
 
 ```bash
-az keyvault secret set --vault-name "devopsjourneyoct2024-kv" --name "AIKEY" --value "InstrumentationKey=<your-full-connection-string>"
+# Problem: "Insufficient privileges" adding SP to group
+# Solution: Use a user with Group Administrator or User Administrator role
+# Or do it in the Azure Portal: Entra ID → Groups → devopsjourney-aks-group-oct2024 → Members → Add
+
+# Problem: Key Vault access denied when setting secret
+# Solution: Ensure your user has Key Vault Administrator RBAC on the vault
+az role assignment create \
+  --assignee "$(az account show --query user.name -o tsv)" \
+  --role "Key Vault Administrator" \
+  --scope "/subscriptions/$(az account show --query id -o tsv)/resourceGroups/devopsjourneyoct2024-rg/providers/Microsoft.KeyVault/vaults/devopsjourneyoct2024-kv"
+
+# Problem: Variable group cannot read Key Vault (pipeline fails)
+# Solution: Ensure the WIF service connection has Key Vault Secrets User role on the Key Vault
+az role assignment create \
+  --assignee "<wif-sp-object-id>" \
+  --role "Key Vault Secrets User" \
+  --scope "/subscriptions/<sub-id>/resourceGroups/devopsjourneyoct2024-rg/providers/Microsoft.KeyVault/vaults/devopsjourneyoct2024-kv"
+
+# Problem: App Insights resource not found by CLI
+# Solution: List all App Insights in the resource group
+az monitor app-insights component list \
+  -g devopsjourneyoct2024-rg \
+  --query "[].{Name:name, Kind:kind}" -o table
 ```
 
-The pipeline injects this as `APPLICATIONINSIGHTS_CONNECTION_STRING` into the Kubernetes pod, which the Python app reads automatically.
+---
 
-### 🧠 Knowledge Check:
-1. Why does the modern OpenTelemetry SDK use a connection string instead of just an instrumentation key?
-2. How does storing the connection string in Key Vault improve security compared to hardcoding it?
+## 💡 **Knowledge Check**
 
-#### 💡 Pro Tip: Use Azure Key Vault references in your application to dynamically retrieve secrets at runtime.
+**🎯 Questions:**
+1. Why does the WIF service principal need to be in the AKS admin AD group?
+2. What is the difference between an **Instrumentation Key** and a **Connection String** for Application Insights?
+3. Why is the connection string stored in Key Vault rather than directly as a pipeline variable?
+4. How does the `azure-monitor-opentelemetry` SDK locate the connection string at runtime in Kubernetes?
 
-## 3. Create a Variable Group in Azure DevOps
+**📝 Answers:**
+1. **The AKS cluster uses Azure RBAC** — the admin group has **Azure Kubernetes Service Cluster Admin** role. The pipeline's WIF service principal must be a group member to run `az aks get-credentials` and execute `kubectl apply` during the deployment stage.
+2. **The Instrumentation Key is just a GUID**; the **Connection String** is the full endpoint configuration (`InstrumentationKey=...;IngestionEndpoint=...;LiveEndpoint=...`). The `azure-monitor-opentelemetry` SDK and the OpenTelemetry Azure Monitor exporter require the connection string to know which regional endpoint to send telemetry to. The instrumentation key alone is legacy and insufficient.
+3. **Key Vault provides secret governance** — rotation, access auditing, RBAC, and soft-delete protection. Pipeline variables (even marked secret) are stored in Azure DevOps and lack the enterprise controls of Key Vault.
+4. **The Kubernetes deployment manifest** (`app.yaml`) references a Kubernetes secret `aikey` with key `aisecret`. The pipeline creates this secret from `$(AIKEY)` (the variable group value). The pod then has `APPLICATIONINSIGHTS_CONNECTION_STRING` injected as an environment variable from the Kubernetes secret, and the SDK reads it automatically at startup.
 
-1. Navigate to Pipelines -> Library in Azure DevOps
-2. Create a new variable group named "devopsjourney"
-3. Add necessary variables, linking to Key Vault secrets where appropriate:
+---
 
-![](images/deploy-app-aks-3.png)
+## 🎯 **Next Steps**
 
-### 🔍 Verification:
-1. Ensure the variable group is created and contains the expected variables
+**✅ Upon Completion:**
+- [ ] WIF service principal added to `devopsjourney-aks-group-oct2024`
+- [ ] Key Vault secret `AIKEY` contains the full App Insights connection string
+- [ ] Azure DevOps variable group `devopsjourney` created and linked to Key Vault
 
-### 🧠 Knowledge Check:
-1. How do variable groups in Azure DevOps enhance pipeline management?
-2. What are the benefits of linking variables to Key Vault secrets?
+**➡️ Continue to:** [Lab 4.2 — Update Pipeline to Deploy App to AKS](./2-Update-Pipeline-Deploy-App-AKS.md)
 
-#### 💡 Pro Tip: Use variable groups to manage environment-specific configurations, making it easier to maintain different deployment stages.
+---
+
+## 📚 **Additional Resources**
+
+- 🔗 [Application Insights — Connection strings](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string)
+- 🔗 [azure-monitor-opentelemetry — PyPI](https://pypi.org/project/azure-monitor-opentelemetry/)
+- 🔗 [Azure DevOps — Link secrets from Key Vault](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault)
+- 🔗 [AKS — Azure RBAC integration](https://learn.microsoft.com/en-us/azure/aks/manage-azure-rbac)
