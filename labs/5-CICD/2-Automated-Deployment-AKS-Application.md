@@ -1,6 +1,5 @@
 # ♻️ Automated Rolling Deployments to AKS
 
-> **Estimated Time:** ⏱️ **15-20 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -27,7 +26,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Understand the Problem with Hardcoded Build IDs** ⏱️ *3 minutes*
+### **Step 1: Understand the Problem with Hardcoded Build IDs**
 
 In Lab 4, the `app.yaml` had a hardcoded image tag:
 
@@ -43,7 +42,7 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
 ---
 
-### **Step 2: Update `app.yaml` to Use `latest` Tag** ⏱️ *5 minutes*
+### **Step 2: Update `app.yaml` to Use `latest` Tag**
 
 1. **📝 Open the Kubernetes manifest**
 
@@ -73,7 +72,7 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
 ---
 
-### **Step 3: Update the Pipeline Tag to `latest`** ⏱️ *3 minutes*
+### **Step 3: Update the Pipeline Tag to `latest`**
 
 1. **📝 Open the pipeline YAML**
 
@@ -97,7 +96,7 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
 ---
 
-### **Step 4: Commit, Push, and Verify** ⏱️ *5 minutes*
+### **Step 4: Commit, Push, and Verify**
 
 1. **💾 Commit all changes**
 

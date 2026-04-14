@@ -1,6 +1,5 @@
 # 📊 Log Analytics & Container Insights
 
-> **Estimated Time:** ⏱️ **15-20 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -47,7 +46,7 @@ AKS Cluster (1.33)
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Navigate to Container Insights** ⏱️ *2 minutes*
+### **Step 1: Navigate to Container Insights**
 
 1. **🌐 Open the Azure Portal**
 
@@ -65,7 +64,7 @@ AKS Cluster (1.33)
 
 ---
 
-### **Step 2: Cluster Perspective** ⏱️ *3 minutes*
+### **Step 2: Cluster Perspective**
 
 The **Cluster** tab shows aggregated performance metrics for the entire cluster.
 
@@ -88,7 +87,7 @@ The **Cluster** tab shows aggregated performance metrics for the entire cluster.
 
 ---
 
-### **Step 3: Nodes Perspective** ⏱️ *3 minutes*
+### **Step 3: Nodes Perspective**
 
 1. **🖥️ Switch to Nodes tab**
 
@@ -104,7 +103,7 @@ The **Cluster** tab shows aggregated performance metrics for the entire cluster.
 
 ---
 
-### **Step 4: Containers Perspective** ⏱️ *3 minutes*
+### **Step 4: Containers Perspective**
 
 1. **📦 Switch to Containers tab**
 
@@ -122,7 +121,7 @@ The **Cluster** tab shows aggregated performance metrics for the entire cluster.
 
 ---
 
-### **Step 5: KQL Queries in Log Analytics** ⏱️ *5 minutes*
+### **Step 5: KQL Queries in Log Analytics**
 
 Container Insights stores all data in Log Analytics — you can query it with KQL.
 
@@ -182,7 +181,7 @@ Container Insights stores all data in Log Analytics — you can query it with KQ
 
 ---
 
-### **Step 6: Create a Log-Based Alert** ⏱️ *3 minutes*
+### **Step 6: Create a Log-Based Alert**
 
 Alert when your application logs contain `ERROR` messages.
 

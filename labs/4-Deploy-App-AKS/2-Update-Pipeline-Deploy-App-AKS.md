@@ -1,6 +1,5 @@
 # 🚢 Deploy Application to AKS
 
-> **Estimated Time:** ⏱️ **20-30 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -29,7 +28,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Update `app.yaml` with Your ACR Image** ⏱️ *5 minutes*
+### **Step 1: Update `app.yaml` with Your ACR Image**
 
 1. **📝 Open the Kubernetes manifest**
 
@@ -47,7 +46,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Add the Deploy Stage to the Pipeline** ⏱️ *10 minutes*
+### **Step 2: Add the Deploy Stage to the Pipeline**
 
 1. **📝 Add the deploy stage**
 
@@ -97,7 +96,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 3: Run the Pipeline** ⏱️ *10 minutes*
+### **Step 3: Run the Pipeline**
 
 1. **💾 Commit and push the updated pipeline and manifests**
 
@@ -125,7 +124,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 4: Test the Deployed Application** ⏱️ *3 minutes*
+### **Step 4: Test the Deployed Application**
 
 1. **🔑 Get AKS credentials**
 

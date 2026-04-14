@@ -1,6 +1,5 @@
 # 📊 Monitor with Application Insights
 
-> **Estimated Time:** ⏱️ **15-20 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -55,7 +54,7 @@ Flask App (pod)
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Navigate to Application Insights** ⏱️ *2 minutes*
+### **Step 1: Navigate to Application Insights**
 
 1. **🌐 Open the Azure Portal**
 
@@ -75,7 +74,7 @@ Flask App (pod)
 
 ---
 
-### **Step 2: Live Metrics** ⏱️ *3 minutes*
+### **Step 2: Live Metrics**
 
 Live Metrics provides near-real-time (< 1 second latency) visibility into your application's performance.
 
@@ -95,7 +94,7 @@ Live Metrics provides near-real-time (< 1 second latency) visibility into your a
 
 ---
 
-### **Step 3: Transaction Search** ⏱️ *3 minutes*
+### **Step 3: Transaction Search**
 
 Transaction Search lets you find and drill into individual telemetry events.
 
@@ -125,7 +124,7 @@ Transaction Search lets you find and drill into individual telemetry events.
 
 ---
 
-### **Step 4: Failures Blade** ⏱️ *3 minutes*
+### **Step 4: Failures Blade**
 
 The Failures blade shows a consolidated view of all HTTP errors and exceptions, making triage fast.
 
@@ -144,7 +143,7 @@ The Failures blade shows a consolidated view of all HTTP errors and exceptions, 
 
 ---
 
-### **Step 5: Application Map** ⏱️ *3 minutes*
+### **Step 5: Application Map**
 
 The Application Map shows all components (services, databases, external APIs) and the call volume and error rate between them.
 
@@ -164,7 +163,7 @@ The Application Map shows all components (services, databases, external APIs) an
 
 ---
 
-### **Step 6: Smart Detection and Alerts** ⏱️ *3 minutes*
+### **Step 6: Smart Detection and Alerts**
 
 Application Insights automatically learns your application's baseline and alerts you when anomalies occur.
 
@@ -194,7 +193,7 @@ Application Insights automatically learns your application's baseline and alerts
 
 ---
 
-### **Step 7: Usage Analysis** ⏱️ *2 minutes*
+### **Step 7: Usage Analysis**
 
 Usage analysis helps you understand how users interact with your application.
 

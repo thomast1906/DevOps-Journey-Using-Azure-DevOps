@@ -1,6 +1,5 @@
 # 📦 Deploy Python/Flask Application to Azure Container Registry
 
-> **Estimated Time:** ⏱️ **20-30 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -29,7 +28,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Test the Docker Image Locally** ⏱️ *5 minutes*
+### **Step 1: Test the Docker Image Locally**
 
 Before pushing to ACR, verify the image builds and runs correctly on your local machine.
 
@@ -51,7 +50,7 @@ curl http://localhost:5000
 
 ---
 
-### **Step 2: Create an ACR Service Connection (WIF)** ⏱️ *5 minutes*
+### **Step 2: Create an ACR Service Connection (WIF)**
 
 The pipeline uses Workload Identity Federation to authenticate to ACR — no passwords or tokens stored.
 
@@ -84,7 +83,7 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 
 ---
 
-### **Step 3: Copy the Application to Your Azure DevOps Repository** ⏱️ *3 minutes*
+### **Step 3: Copy the Application to Your Azure DevOps Repository**
 
 1. **📂 Copy the `app` folder**
 
@@ -105,7 +104,7 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 
 ---
 
-### **Step 4: Update the Pipeline YAML** ⏱️ *5 minutes*
+### **Step 4: Update the Pipeline YAML**
 
 1. **📝 Update pipeline variables**
 
@@ -142,7 +141,7 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 
 ---
 
-### **Step 5: Run the Pipeline and Verify** ⏱️ *10 minutes*
+### **Step 5: Run the Pipeline and Verify**
 
 1. **▶️ Run the pipeline**
 

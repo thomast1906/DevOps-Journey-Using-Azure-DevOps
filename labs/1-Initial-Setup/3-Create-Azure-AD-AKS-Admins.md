@@ -1,6 +1,5 @@
 # 👥 Create Azure AD Group for AKS Admins
 
-> **Estimated Time:** ⏱️ **10 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -27,7 +26,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Run the AD Group Creation Script** ⏱️ *5 minutes*
+### **Step 1: Run the AD Group Creation Script**
 
 1. **▶️ Execute the script**
 
@@ -64,7 +63,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Verify Group Creation in the Portal** ⏱️ *2 minutes*
+### **Step 2: Verify Group Creation in the Portal**
 
 1. **🌐 Navigate to Azure Portal**
 

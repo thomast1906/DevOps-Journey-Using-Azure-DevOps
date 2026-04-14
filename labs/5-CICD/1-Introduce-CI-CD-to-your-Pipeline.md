@@ -1,6 +1,5 @@
 # 🔄 Introduce CI/CD Pipeline Triggers
 
-> **Estimated Time:** ⏱️ **10-15 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -27,7 +26,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Review the Current Trigger Configuration** ⏱️ *2 minutes*
+### **Step 1: Review the Current Trigger Configuration**
 
 Your current pipeline has the following trigger at the top of the YAML:
 
@@ -41,7 +40,7 @@ This means the pipeline will **only run when manually triggered** from the Azure
 
 ---
 
-### **Step 2: Update the Pipeline Trigger** ⏱️ *5 minutes*
+### **Step 2: Update the Pipeline Trigger**
 
 1. **📝 Open your pipeline YAML file**
 
@@ -83,7 +82,7 @@ This means the pipeline will **only run when manually triggered** from the Azure
 
 ---
 
-### **Step 3: Verify Automatic Trigger** ⏱️ *5 minutes*
+### **Step 3: Verify Automatic Trigger**
 
 1. **🔍 Navigate to Pipelines in Azure DevOps**
 

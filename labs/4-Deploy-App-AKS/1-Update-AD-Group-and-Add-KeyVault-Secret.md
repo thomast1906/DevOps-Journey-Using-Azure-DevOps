@@ -1,6 +1,5 @@
 # 🔑 Configure AD Group, App Insights Connection String & Key Vault
 
-> **Estimated Time:** ⏱️ **20-25 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -29,7 +28,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Add the WIF Service Principal to the AKS Admin Group** ⏱️ *5 minutes*
+### **Step 1: Add the WIF Service Principal to the AKS Admin Group**
 
 The Workload Identity Federation service principal needs to be a member of the `devopsjourney-aks-group-oct2024` group. This grants the pipeline identity **AKS Cluster Admin** RBAC to run `kubectl apply` during the deploy stage.
 
@@ -82,7 +81,7 @@ The Workload Identity Federation service principal needs to be a member of the `
 
 ---
 
-### **Step 2: Get the Application Insights Connection String** ⏱️ *5 minutes*
+### **Step 2: Get the Application Insights Connection String**
 
 > ⚠️ **Important**: The app uses `azure-monitor-opentelemetry==1.8.7` which requires the **full Connection String** — NOT just the Instrumentation Key. The connection string includes endpoint URLs needed by the OpenTelemetry exporter. The environment variable name is `APPLICATIONINSIGHTS_CONNECTION_STRING`.
 
@@ -113,7 +112,7 @@ The Workload Identity Federation service principal needs to be a member of the `
 
 ---
 
-### **Step 3: Store the Connection String in Key Vault** ⏱️ *5 minutes*
+### **Step 3: Store the Connection String in Key Vault**
 
 The pipeline reads the connection string from Key Vault and injects it as a Kubernetes secret. The Python app reads `APPLICATIONINSIGHTS_CONNECTION_STRING` at startup.
 
@@ -154,7 +153,7 @@ The pipeline reads the connection string from Key Vault and injects it as a Kube
 
 ---
 
-### **Step 4: Create an Azure DevOps Variable Group** ⏱️ *5 minutes*
+### **Step 4: Create an Azure DevOps Variable Group**
 
 The variable group links to Key Vault and makes the `AIKEY` secret available to pipelines as `$(AIKEY)`.
 

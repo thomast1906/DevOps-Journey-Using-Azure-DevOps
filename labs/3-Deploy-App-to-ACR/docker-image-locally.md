@@ -1,6 +1,5 @@
 # 🐳 Build and Test the Docker Image Locally
 
-> **Estimated Time:** ⏱️ **10-15 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -26,7 +25,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Build the Docker Image** ⏱️ *3 minutes*
+### **Step 1: Build the Docker Image**
 
 1. **📂 Navigate to the app directory**
 
@@ -78,7 +77,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Run the Container Locally** ⏱️ *3 minutes*
+### **Step 2: Run the Container Locally**
 
 1. **▶️ Start the container**
 
@@ -105,7 +104,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 3: Test the Application** ⏱️ *2 minutes*
+### **Step 3: Test the Application**
 
 1. **🌐 Test via curl**
 
@@ -131,7 +130,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 4: Review Container Logs** ⏱️ *1 minute*
+### **Step 4: Review Container Logs**
 
 ```bash
 docker logs devopsjourneyapp-test
@@ -150,7 +149,7 @@ Press CTRL+C to quit
 
 ---
 
-### **Step 5: Stop and Clean Up** ⏱️ *1 minute*
+### **Step 5: Stop and Clean Up**
 
 ```bash
 # Stop the running container

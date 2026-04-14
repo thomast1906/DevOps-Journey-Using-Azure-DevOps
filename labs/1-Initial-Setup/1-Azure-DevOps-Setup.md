@@ -1,6 +1,5 @@
 # 🚀 Azure DevOps Setup
 
-> **Estimated Time:** ⏱️ **20-30 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -27,7 +26,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Create an Azure DevOps Organisation** ⏱️ *5 minutes*
+### **Step 1: Create an Azure DevOps Organisation**
 
 1. **🌐 Sign in to Azure DevOps**
 
@@ -55,7 +54,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Create a Workload Identity Federation Service Connection** ⏱️ *10 minutes*
+### **Step 2: Create a Workload Identity Federation Service Connection**
 
 Workload Identity Federation (WIF/OIDC) is the **recommended, secretless** way to authenticate Azure DevOps pipelines to Azure. No service principal secrets or certificates are stored.
 
@@ -103,7 +102,7 @@ Workload Identity Federation (WIF/OIDC) is the **recommended, secretless** way t
 
 ---
 
-### **Step 3: Assign RBAC Roles to the Workload Identity** ⏱️ *5 minutes*
+### **Step 3: Assign RBAC Roles to the Workload Identity**
 
 The pipeline identity needs sufficient Azure permissions to provision infrastructure.
 

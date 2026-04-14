@@ -1,6 +1,5 @@
 # 🗄️ Configure Terraform Remote State Storage
 
-> **Estimated Time:** ⏱️ **10-15 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -27,7 +26,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Customise the Script Variables** ⏱️ *2 minutes*
+### **Step 1: Customise the Script Variables**
 
 1. **📂 Open the storage creation script**
 
@@ -44,7 +43,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Run the Script** ⏱️ *5 minutes*
+### **Step 2: Run the Script**
 
 1. **▶️ Execute the script**
 
@@ -81,7 +80,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 3: Record Your Backend Values** ⏱️ *2 minutes*
+### **Step 3: Record Your Backend Values**
 
 Make note of the following — you will need them in the pipeline YAML configuration in Lab 2:
 

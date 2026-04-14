@@ -1,6 +1,5 @@
 # 🔔 Configure Application Insights Availability Tests
 
-> **Estimated Time:** ⏱️ **15-20 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -42,7 +41,7 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Get the Application FQDN** ⏱️ *2 minutes*
+### **Step 1: Get the Application FQDN**
 
 1. **🌐 Retrieve the ALB FQDN**
 
@@ -62,7 +61,7 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
 
 ---
 
-### **Step 2: Create a Classic URL Ping Test** ⏱️ *5 minutes*
+### **Step 2: Create a Classic URL Ping Test**
 
 1. **🔔 Navigate to Availability**
 
@@ -92,7 +91,7 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
 
 ---
 
-### **Step 3: Configure an Availability Alert** ⏱️ *5 minutes*
+### **Step 3: Configure an Availability Alert**
 
 1. **🔔 Set up email notifications**
 
@@ -111,7 +110,7 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
 
 ---
 
-### **Step 4: View Test Results** ⏱️ *5 minutes*
+### **Step 4: View Test Results**
 
 After 10-15 minutes, the test has enough data to display meaningful charts.
 

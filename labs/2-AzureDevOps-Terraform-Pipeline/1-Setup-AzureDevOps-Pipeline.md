@@ -1,6 +1,5 @@
 # ⚙️ Set Up Azure DevOps Pipeline for Terraform
 
-> **Estimated Time:** ⏱️ **25-35 minutes**
 
 ## 🎯 **Learning Objectives**
 
@@ -30,7 +29,7 @@ By the end of this lab, you will:
 
 ## 🚀 **Step-by-Step Implementation**
 
-### **Step 1: Install the Terraform Extension** ⏱️ *5 minutes*
+### **Step 1: Install the Terraform Extension**
 
 1. **🔌 Navigate to the Marketplace**
 
@@ -53,7 +52,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Create an Azure DevOps Repository** ⏱️ *5 minutes*
+### **Step 2: Create an Azure DevOps Repository**
 
 1. **📁 Navigate to Repos**
 
@@ -85,7 +84,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 3: Update `production.tfvars`** ⏱️ *5 minutes*
+### **Step 3: Update `production.tfvars`**
 
 1. **📝 Open the tfvars file**
 
@@ -116,7 +115,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 4: Update the Pipeline YAML** ⏱️ *5 minutes*
+### **Step 4: Update the Pipeline YAML**
 
 1. **📝 Open the pipeline YAML**
 
@@ -140,7 +139,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 5: Set Up and Run the Pipeline** ⏱️ *10 minutes*
+### **Step 5: Set Up and Run the Pipeline**
 
 1. **🔧 Create the pipeline in Azure DevOps**
 
