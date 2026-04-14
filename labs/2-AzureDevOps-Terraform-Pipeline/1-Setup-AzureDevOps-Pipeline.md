@@ -46,10 +46,10 @@ Confirm the new repository is visible in your Azure DevOps project
 ## Update the Terraform .tfvars configuration
 
 1. Update the [production.tfvars](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/2-AzureDevOps-Terraform-Pipeline/vars/production.tfvars) file with your values. This file contains the values that will be used by Terraform to create the resources in Azure.
-2. `access_policy_id` is the object group ID that you created as part of initial setup [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/3-Create-Azure-AD-AKS-Admins.md) 
+2. `admin_object_id` is the object group ID of the Azure AD group you created as part of initial setup [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/3-Create-Azure-AD-AKS-Admins.md). This group is granted Key Vault Administrator and AKS admin access via RBAC. 
 
 ```hcl
-access_policy_id = "278cc1b9-653d-464a-90f7-309e02d4b5d1"
+admin_object_id = "278cc1b9-653d-464a-90f7-309e02d4b5d1"
 ```
 
 #### 🔍 Verification:

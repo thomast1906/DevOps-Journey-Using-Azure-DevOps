@@ -22,35 +22,39 @@ As using Workload Identity Federation, I found the service principal it created 
 
 #### 💡 Pro Tip: Regularly audit your Azure AD groups to ensure proper access control.
 
-## 2. Get Application Insights Instrumentation Key & Add Application Insights Key to Key Vault
+## 2. Get Application Insights Connection String & Add to Key Vault
 
-1. Get Azure Application Insights Instrumentation Key using Az CLI:
+> ⚠️ **Important**: The app uses the modern `azure-monitor-opentelemetry` SDK which requires the **full Connection String**, not the legacy Instrumentation Key. The Connection String includes the endpoint information needed for the OpenTelemetry exporter.
+
+1. Get Azure Application Insights **Connection String** using Az CLI:
 - Change the resource group and app insights name to your values
 
 ```bash
 az extension add --name application-insights
-az monitor app-insights component show --app devopsjourneyoct2024ai -g devopsjourneyoct2024-rg --query instrumentationKey -o tsv
+az monitor app-insights component show --app devopsjourneyoct2024ai -g devopsjourneyoct2024-rg --query connectionString -o tsv
 ```
 
 Example output:
 ```bash
-az monitor app-insights component show --app devopsjourneyoct2024ai -g devopsjourneyoct2024-rg --query instrumentationKey -o tsv
-8896c09a-a3e3-4a72-9914-f826e85c6a5f
+az monitor app-insights component show --app devopsjourneyoct2024ai -g devopsjourneyoct2024-rg --query connectionString -o tsv
+InstrumentationKey=8896c09a-a3e3-4a72-9914-f826e85c6a5f;IngestionEndpoint=https://uksouth-1.in.applicationinsights.azure.com/;LiveEndpoint=https://uksouth.livediagnostics.monitor.azure.com/
 ```
 
 ### 🔍 Verification:
-1. Ensure you receive a valid instrumentation key
+1. Ensure you receive a valid connection string (starts with `InstrumentationKey=`)
 
-2. Add This key to Key Vault as secret `AIKEY`
-- Change the key vault name to your value and the key to the value you got from the previous step
+2. Add the **full connection string** to Key Vault as secret `AIKEY`:
+- Change the key vault name to your value and the connection string to the value from the previous step
 
 ```bash
-az keyvault secret set --vault-name "devopsjourneyoct2024-kv" --name "AIKEY" --value "App_insights_key_value"
+az keyvault secret set --vault-name "devopsjourneyoct2024-kv" --name "AIKEY" --value "InstrumentationKey=<your-full-connection-string>"
 ```
 
+The pipeline injects this as `APPLICATIONINSIGHTS_CONNECTION_STRING` into the Kubernetes pod, which the Python app reads automatically.
+
 ### 🧠 Knowledge Check:
-1. Why is it beneficial to store the instrumentation key in Key Vault?
-2. How does this improve the security of your application?
+1. Why does the modern OpenTelemetry SDK use a connection string instead of just an instrumentation key?
+2. How does storing the connection string in Key Vault improve security compared to hardcoding it?
 
 #### 💡 Pro Tip: Use Azure Key Vault references in your application to dynamically retrieve secrets at runtime.
 
