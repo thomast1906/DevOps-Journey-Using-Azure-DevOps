@@ -38,7 +38,6 @@ The Workload Identity Federation service principal needs to be a member of the `
 
    Note the **Object ID** of the Enterprise Application / Service Principal.
 
-   ![](images/deploy-app-aks-1.png)
 
    Or find it via CLI:
    ```bash
@@ -77,7 +76,6 @@ The Workload Identity Federation service principal needs to be a member of the `
      --query "[].{Name:displayName, Type:userType}" -o table
    ```
 
-   ![](images/deploy-app-aks-6.png)
 
 ---
 
@@ -170,7 +168,6 @@ The variable group links to Key Vault and makes the `AIKEY` secret available to 
    - Click **+ Add** → select `AIKEY`
    - Click **Save**
 
-   ![](images/deploy-app-aks-3.png)
 
 3. **✅ Verify the variable group**
 

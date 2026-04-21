@@ -73,7 +73,6 @@ By the end of this lab, you will:
 
    Click the group → **Members** — your user account should appear.
 
-   ![](images/azure-ad-group.png)
 
 ---
 

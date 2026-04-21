@@ -39,7 +39,6 @@ By the end of this lab, you will:
 
    Choose your Azure DevOps organisation (e.g., `devopsjourneyoct2024`) and click **Install**.
 
-   ![](images/terraform-set-devops-org.png)
 
    The extension adds the following pipeline tasks:
    - `TerraformInstaller@1` — downloads and installs a specific Terraform version
@@ -64,7 +63,6 @@ By the end of this lab, you will:
    - Name: `DevOps-Journey` (or your preferred name)
    - Keep **Add a README** checked
 
-   ![](images/azure-devops-repo-setup.png)
 
 3. **📋 Copy the repository contents**
 
@@ -132,7 +130,7 @@ By the end of this lab, you will:
      - name: backendAzureRmContainerName
        value: 'tfstate'
      - name: backendAzureRmKey
-       value: 'production.tfstate'
+       value: 'terraform.tfstate'
    ```
 
    > 💡 These values connect Terraform to the Azure Blob backend you created in Lab 1.2.
@@ -148,13 +146,11 @@ By the end of this lab, you will:
    - Choose **Existing Azure Pipelines YAML file**
    - Select the branch and path to `lab2pipeline.yaml`
 
-   ![](images/azuredevops-terraform-pipeline.png)
 
 2. **💾 Save and run**
 
    Click **Save and run**.
 
-   ![](images/azuredevops-terraform-pipeline-3.png)
 
 3. **📋 Review pipeline stages**
 
@@ -163,7 +159,6 @@ By the end of this lab, you will:
    - **Plan** — `terraform plan` previews all resources to be created
    - **Apply** — `terraform apply` provisions the infrastructure
 
-   ![](images/azuredevops-terraform-pipeline-2.png)
 
    **✅ Expected Output (Terraform Apply stage):**
    ```

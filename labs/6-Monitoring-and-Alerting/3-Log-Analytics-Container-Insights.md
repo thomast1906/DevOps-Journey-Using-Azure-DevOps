@@ -68,7 +68,6 @@ AKS Cluster (1.33)
 
 The **Cluster** tab shows aggregated performance metrics for the entire cluster.
 
-![](images/monitoring-and-alerting-9.PNG)
 
 **The four performance charts:**
 

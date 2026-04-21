@@ -129,7 +129,6 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
    latest
    ```
 
-   ![](images/cicd-1.png)
 
 4. **🔍 Verify new pods are running the `latest` image**
 

@@ -75,7 +75,6 @@ By following this structured approach, you will build a strong foundation in Dev
 
 Learn how to set up and configure a pipeline that incorporates CI/CD practices:
 
-![](images/cicdimage.png)
 
 1. Developer changes code ✍️
 2. Code committed to Azure Repos 📤

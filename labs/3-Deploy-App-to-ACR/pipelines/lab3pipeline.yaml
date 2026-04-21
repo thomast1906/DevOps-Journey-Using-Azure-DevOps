@@ -52,6 +52,13 @@ stages :
             backendAzureRmKey: ${{ variables.backendAzureRmKey }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
         - task: TerraformTaskV4@4
+          displayName: 'validate'
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            environmentServiceNameAzureRM: ${{ variables.backendServiceArm }}
+            workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
+        - task: TerraformTaskV4@4
           displayName: 'plan'
           inputs:
             provider: 'azurerm'

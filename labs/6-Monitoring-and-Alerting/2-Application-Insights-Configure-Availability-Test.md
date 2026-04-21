@@ -83,7 +83,6 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
    | **Content match (optional)** | `DevOps Journey` (a string expected in the response body) |
    | **Alert on test failures** | Enabled — `2 of 5` locations fail |
 
-   ![](images/monitoring-and-alerting-7.PNG)
 
 4. **💾 Click Create**
 
@@ -127,7 +126,6 @@ After 10-15 minutes, the test has enough data to display meaningful charts.
    - **X-axis** — time
    - **Columns** = test locations
 
-   ![](images/monitoring-and-alerting-8.PNG)
 
 3. **📋 Click any dot** to see the request/response details:
    - Request headers sent

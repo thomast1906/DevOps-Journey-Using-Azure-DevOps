@@ -40,7 +40,6 @@ By the end of this lab, you will:
 
    Replace `devopsjourneyoct2024acr` with your ACR name and `626` with the Build ID from the last successful pipeline run.
 
-   ![](images/deploy-app-aks-4.png)
 
    > 💡 You can find the build ID in Azure DevOps → Pipelines → last successful run → the run number is the Build ID used as the image tag.
 
@@ -158,7 +157,6 @@ By the end of this lab, you will:
 
    Or open `http://hgduczcae6bad4g5.fz82.alb.azure.com` in your browser:
 
-   ![](images/deploy-app-aks-5.png)
 
 ---
 

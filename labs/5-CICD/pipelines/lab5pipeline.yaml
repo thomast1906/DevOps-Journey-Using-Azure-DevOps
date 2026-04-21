@@ -57,6 +57,13 @@ stages :
             backendAzureRmKey: ${{ variables.backendAzureRmKey }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
         - task: TerraformTaskV4@4
+          displayName: 'validate'
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            environmentServiceNameAzureRM: ${{ variables.backendServiceArm }}
+            workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
+        - task: TerraformTaskV4@4
           displayName: 'plan'
           inputs:
             provider: 'azurerm'
@@ -96,7 +103,7 @@ stages :
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
 
   - stage: Build
-    # dependsOn: [apply]
+    dependsOn: [apply]
     displayName: Build and push image
     jobs:  
     - job: Build
@@ -109,7 +116,7 @@ stages :
           repository: ${{ variables.repository }}
           dockerfile: ${{ variables.dockerfile }}
           containerRegistry: ${{ variables.containerRegistry }}
-          tags: latest
+          tags: $(Build.BuildId)
 
   - stage: aks_deploy
     dependsOn: [Build]
@@ -143,12 +150,12 @@ stages :
             az aks get-credentials -g $RESOURCE_GROUP -n $AKS_NAME --admin
 
             #create namespace
-            kubectl create namespace $helm_resource_namespace
+            kubectl get namespace $helm_resource_namespace 2>/dev/null || kubectl create namespace $helm_resource_namespace
 
             #Create App Namespace
-            kubectl create namespace $APP_NAMESPACE
+            kubectl get namespace $APP_NAMESPACE 2>/dev/null || kubectl create namespace $APP_NAMESPACE
 
-            helm install alb-controller oci://mcr.microsoft.com/application-lb/charts/alb-controller --namespace $helm_resource_namespace --version $ALB_CONTROLLER_VERSION --set albController.namespace=$helm_resource_namespace --set albController.podIdentity.clientID=$(az identity show -g $RESOURCE_GROUP -n azure-alb-identity --query clientId -o tsv)
+            helm upgrade --install alb-controller oci://mcr.microsoft.com/application-lb/charts/alb-controller --namespace $helm_resource_namespace --version $ALB_CONTROLLER_VERSION --set albController.namespace=$helm_resource_namespace --set albController.podIdentity.clientID=$(az identity show -g $RESOURCE_GROUP -n azure-alb-identity --query clientId -o tsv)
 
             RESOURCE_ID=$(az network alb show --resource-group $RESOURCE_GROUP --name $ALB_RESOURCE_NAME --query id -o tsv)
 
@@ -194,7 +201,7 @@ stages :
             # Create secret for App Insights connection string
             # $(AIKEY) should be the full App Insights Connection String
             # (found in Azure Portal > Application Insights > Overview > Connection String)
-            kubectl -n thomasthorntoncloud create secret generic aikey --from-literal=aisecret=$(AIKEY)
+            kubectl -n thomasthorntoncloud create secret generic aikey --from-literal=aisecret=$(AIKEY) --dry-run=client -o yaml | kubectl apply -f -
 
             # Apply app
             kubectl apply -f pipelines/scripts/app.yaml 

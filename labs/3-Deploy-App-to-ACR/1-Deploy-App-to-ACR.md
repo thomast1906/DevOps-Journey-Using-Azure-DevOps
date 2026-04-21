@@ -72,7 +72,6 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
    - Check **Grant access permission to all pipelines**
    - Click **Save**
 
-   ![](images/deploy-app-to-acr-1.png)
 
    **✅ Expected Output:**
    ```
@@ -129,7 +128,6 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
    - Tags the image with `$(Build.BuildId)` for traceability
    - Pushes the image to `devopsjourneyoct2024acr.azurecr.io/repository:$(Build.BuildId)`
 
-   ![](images/deploy-app-to-acr-5.png)
 
 3. **💾 Push the updated pipeline to your repo**
 
@@ -151,13 +149,11 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 
    You will now see two stages — **Terraform** and **Build**:
 
-   ![](images/deploy-app-to-acr-3.png)
 
 3. **🔍 Verify the image in ACR**
 
    Navigate to **Azure Portal** → **Container registries** → `devopsjourneyoct2024acr` → **Repositories**.
 
-   ![](images/deploy-app-to-acr-2.png)
 
    **✅ Expected Output:**
    ```

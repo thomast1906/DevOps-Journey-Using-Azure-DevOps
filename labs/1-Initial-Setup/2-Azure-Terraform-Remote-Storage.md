@@ -138,7 +138,6 @@ tfstate   None
 
 You can also verify visually in the Azure Portal:
 
-![](images/terraform-storage.png)
 
 ---
 

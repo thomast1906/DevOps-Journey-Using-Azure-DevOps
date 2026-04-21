@@ -88,7 +88,6 @@ Live Metrics provides near-real-time (< 1 second latency) visibility into your a
    - **Server Response Time** — p50/p95/p99 latency
    - **Connected Servers** — how many pods are reporting (should match your replica count)
 
-   ![](images/monitoring-and-alerting-1.PNG)
 
    > 💡 Use Live Metrics during a deployment (`kubectl apply`) to watch requests seamlessly roll over from old pods to new pods.
 
@@ -116,7 +115,6 @@ Transaction Search lets you find and drill into individual telemetry events.
    Search: "GET /"
    ```
 
-   ![](images/monitoring-and-alerting-2.PNG)
 
    **✅ Expected:**
    - HTTP 200 requests to `/` with duration < 500ms
@@ -137,7 +135,6 @@ The Failures blade shows a consolidated view of all HTTP errors and exceptions, 
    - **Exceptions tab** — Python exceptions grouped by exception type
    - **Suggested steps** — AI-powered recommended diagnostics
 
-   ![](images/monitoring-and-alerting-3.PNG)
 
 3. **📋 Click any failure** to see the End-to-End Transaction, including the exact line of Python code that threw the exception.
 
@@ -157,7 +154,6 @@ The Application Map shows all components (services, databases, external APIs) an
    - Red = component with failures
    - Click any component for its performance metrics and failures
 
-   ![](images/monitoring-and-alerting-4.PNG)
 
    > 💡 If your app calls an external API or database, those dependencies appear automatically when the SDK intercepts the outbound calls.
 
@@ -177,7 +173,6 @@ Application Insights automatically learns your application's baseline and alerts
    - Degradation in server response time
    - Memory leak pattern
 
-   ![](images/monitoring-and-alerting-5.PNG)
 
 2. **➕ Create a custom alert**
 
@@ -201,7 +196,6 @@ Usage analysis helps you understand how users interact with your application.
 
    Application Insights → **Usage** section → **Users**, **Sessions**, or **Retention**.
 
-   ![](images/monitoring-and-alerting-6.PNG)
 
 2. **🔍 What to review:**
    - **Users** — unique visitors per day

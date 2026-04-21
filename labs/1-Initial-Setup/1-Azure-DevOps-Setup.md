@@ -44,7 +44,6 @@ By the end of this lab, you will:
    - Set visibility to **Private**
    - Click **Create**
 
-   ![](images/azure-devops-project-creation.png)
 
    **✅ Expected Output:**
    ```
@@ -80,7 +79,6 @@ Workload Identity Federation (WIF/OIDC) is the **recommended, secretless** way t
    - Check **Grant access permission to all pipelines**
    - Click **Save**
 
-   ![](images/azure-devops-workload-identity.png)
 
    **✅ Expected Output:**
    ```
@@ -92,13 +90,11 @@ Workload Identity Federation (WIF/OIDC) is the **recommended, secretless** way t
 
    Click **Manage Workload Identity** to inspect the federated credential in Entra ID.
 
-   ![](images/azure-devops-workload-identity-2.png)
 
 6. **✏️ Rename the Managed Identity**
 
    Inside **Manage Workload Identity**, update the display name to something meaningful (e.g., `azure-devops-journey-identity`) — removing the auto-generated random suffix.
 
-   ![](images/azure-devops-workload-identity-3.png)
 
 ---
 
@@ -127,7 +123,6 @@ The pipeline identity needs sufficient Azure permissions to provision infrastruc
    - Click **Add** → **Add role assignment**
    - Role: **User Access Administrator**, assign to your WIF service principal
 
-   ![](images/azure-devops-workload-identity-4.png)
 
    **✅ Expected Output:**
    ```json

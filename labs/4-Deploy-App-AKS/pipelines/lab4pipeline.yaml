@@ -11,11 +11,11 @@ variables:
   # This eliminates the need for client secrets and enables automatic token rotation.
   # TerraformTaskV4@4, Docker@2, and AzureCLI@2 all natively support WIF service connections.
   - name: backendServiceArm
-    value: 'azure-devops-journey-may2024'
+    value: 'azure-devops-journey-oct2024'
   - name: backendAzureRmResourceGroupName
-    value: 'devops-journey-rg-may2024'
+    value: 'devops-journey-rg-oct2024'
   - name: backendAzureRmStorageAccountName
-    value: 'devopsjourneymay2024'
+    value: 'devopsjourneyoct2024'
   - name: backendAzureRmContainerName
     value: 'tfstate'
   - name: backendAzureRmKey
@@ -25,11 +25,11 @@ variables:
   - name: terraform_version
     value: '1.14.0'
   - name: repository
-    value: 'devopsjourney'
+    value: 'repository'
   - name: dockerfile
     value: '$(Build.SourcesDirectory)/app/Dockerfile'
   - name: containerRegistry
-    value: 'devopsjourneymay2024acr.azurecr.io'
+    value: 'devopsjourneyoct2024acr.azurecr.io'
   - group: devopsjourney
 stages :          
   - stage: plan
@@ -50,6 +50,13 @@ stages :
             backendAzureRmStorageAccountName: ${{ variables.backendAzureRmStorageAccountName }}
             backendAzureRmContainerName: ${{ variables.backendAzureRmContainerName }}
             backendAzureRmKey: ${{ variables.backendAzureRmKey }}
+            workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
+        - task: TerraformTaskV4@4
+          displayName: 'validate'
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            environmentServiceNameAzureRM: ${{ variables.backendServiceArm }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
         - task: TerraformTaskV4@4
           displayName: 'plan'
@@ -138,12 +145,12 @@ stages :
             az aks get-credentials -g $RESOURCE_GROUP -n $AKS_NAME --admin
 
             #create namespace
-            kubectl create namespace $helm_resource_namespace
+            kubectl get namespace $helm_resource_namespace 2>/dev/null || kubectl create namespace $helm_resource_namespace
 
             #Create App Namespace
-            kubectl create namespace $APP_NAMESPACE
+            kubectl get namespace $APP_NAMESPACE 2>/dev/null || kubectl create namespace $APP_NAMESPACE
 
-            helm install alb-controller oci://mcr.microsoft.com/application-lb/charts/alb-controller --namespace $helm_resource_namespace --version $ALB_CONTROLLER_VERSION --set albController.namespace=$helm_resource_namespace --set albController.podIdentity.clientID=$(az identity show -g $RESOURCE_GROUP -n azure-alb-identity --query clientId -o tsv)
+            helm upgrade --install alb-controller oci://mcr.microsoft.com/application-lb/charts/alb-controller --namespace $helm_resource_namespace --version $ALB_CONTROLLER_VERSION --set albController.namespace=$helm_resource_namespace --set albController.podIdentity.clientID=$(az identity show -g $RESOURCE_GROUP -n azure-alb-identity --query clientId -o tsv)
 
             RESOURCE_ID=$(az network alb show --resource-group $RESOURCE_GROUP --name $ALB_RESOURCE_NAME --query id -o tsv)
 
@@ -189,7 +196,7 @@ stages :
             # Create secret for App Insights connection string
             # $(AIKEY) should be the full App Insights Connection String
             # (found in Azure Portal > Application Insights > Overview > Connection String)
-            kubectl -n thomasthorntoncloud create secret generic aikey --from-literal=aisecret=$(AIKEY)
+            kubectl -n thomasthorntoncloud create secret generic aikey --from-literal=aisecret=$(AIKEY) --dry-run=client -o yaml | kubectl apply -f -
 
             # Apply app
             kubectl apply -f pipelines/scripts/app.yaml
