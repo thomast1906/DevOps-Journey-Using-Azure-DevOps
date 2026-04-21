@@ -43,6 +43,11 @@ echo -e "${YELLOW}📋 Deleting main resource group: ${RESOURCE_GROUP}${NC}"
 az group delete --name "$RESOURCE_GROUP" --yes --no-wait 2>/dev/null \
     || echo -e "${YELLOW}⚠️  Resource group not found or already deleted${NC}"
 
+echo -e "${BLUE}ℹ️  Key Vault note: purge protection is enabled (soft-delete retention: 7 days).${NC}"
+echo -e "${BLUE}    If you need to re-run the lab with the same project name within 7 days,${NC}"
+echo -e "${BLUE}    use a different PROJECT_NAME to avoid name conflicts.${NC}"
+echo -e "${BLUE}    After 7 days the soft-deleted vault is automatically purged by Azure.${NC}"
+
 echo -e "${YELLOW}📋 Deleting AKS node resource group: ${PROJECT_NAME}-node-rg${NC}"
 az group delete --name "${PROJECT_NAME}-node-rg" --yes --no-wait 2>/dev/null \
     || echo -e "${YELLOW}⚠️  Node resource group not found or already deleted${NC}"

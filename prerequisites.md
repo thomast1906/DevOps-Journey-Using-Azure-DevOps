@@ -23,6 +23,12 @@ Docker is essential for creating, deploying, and running applications using cont
 1. Download Docker Desktop: Visit the [Docker Desktop download](https://www.docker.com/products/docker-desktop) page and select the version for Windows or macOS.
 2. Install Docker Desktop: Follow the installation instructions to set up Docker Desktop on your machine. Ensure that Docker is running correctly by running docker --version in your terminal.
 
+### kubectl
+kubectl is the command-line tool for interacting with Kubernetes clusters. It is required from Lab 4 onwards to verify deployments and inspect cluster resources.
+
+1. Install kubectl: Follow the official [kubectl installation guide](https://kubernetes.io/docs/tasks/tools/) for your operating system.
+2. Verify the installation by running `kubectl version --client` in your terminal.
+
 
 ## Azure setup
 
@@ -52,6 +58,7 @@ Before proceeding, ensure you have:
 - [ ] Installed and configured Visual Studio Code
 - [ ]  Installed Terraform
 - [ ]  Installed Docker Desktop
+- [ ]  Installed kubectl
 - [ ]  Created an Azure account
 - [ ]  Installed and configured Azure CLI
 

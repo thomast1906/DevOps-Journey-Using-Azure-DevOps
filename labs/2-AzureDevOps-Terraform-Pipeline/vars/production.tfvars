@@ -20,3 +20,7 @@ ssh_public_key     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDrt/GYkYpuQYRxM3lgjO
 environment = "production"
 
 admin_object_id = "278cc1b9-653d-464a-90f7-309e02d4b5d1"
+
+# Object ID of the Azure AD group created in Lab 1 (AKS cluster admins group)
+# Run: az ad group show --group "AKS-Cluster-Admins" --query id -o tsv
+aks_admins_group_object_id = "REPLACE_WITH_AKS_ADMINS_GROUP_OBJECT_ID"

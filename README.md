@@ -48,17 +48,11 @@ By following this structured approach, you will build a strong foundation in Dev
    - Deploy the sample application to the Azure Container Registry
 
 4. [Deploy Application to Azure Kubernetes Cluster](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/4-Deploy-App-AKS) 
-   - [ ] [Add AKS ACR Role assignment](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/1-Add-AKS-ACR-Role-Assignment.md)
-    - Use Terraform to assign roles for AKS managed identity to access the Azure Container Registry
+   - [ ] [Update AD Group and Add KeyVault Secret](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/1-Update-AD-Group-and-Add-KeyVault-Secret.md)
+     - Update the AKS admin AD group and store the Application Insights connection string in Key Vault
 
-   - [ ] [Add Application Insights to Terraform](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/2-Add-Application-Insights.md)
-     - Integrate Application Insights for monitoring the application
-
-   - [ ] [Add Azure Key Vault to Terraform](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/3-Add-KeyVault-to-Terraform.md)
-     - Use Azure Key Vault to store secrets in your Azure DevOps Variable Group
-
-   - [ ] [Update Pipeline to Deploy Application to AKS](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/4-Update-Pipeline-Deploy-App-AKS.md)
-     - Update the pipeline to deploy the application to AKS
+   - [ ] [Update Pipeline to Deploy Application to AKS](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/2-Update-Pipeline-Deploy-App-AKS.md)
+     - Update the pipeline to deploy the application to AKS using Workload Identity Federation
 
 5. [Introduce CI/CD](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/5-CICD) 
    - [ ] [Introducing CI/CD to your pipeline](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/1-Introduce-CI-CD-to-your-Pipeline.md)

@@ -68,3 +68,8 @@ variable "admin_object_id" {
   type        = string
   description = "Object ID of the principal to assign Key Vault Administrator role"
 }
+
+variable "aks_admins_group_object_id" {
+  type        = string
+  description = "Object ID of the Azure AD group to grant AKS cluster admin access (created in Lab 1)"
+}

@@ -28,7 +28,7 @@ variable "max_count" {
 }
 
 variable "aks_admins_group_object_id" {
-  default = "e97b6454-3fa1-499e-8e5c-5d631e9ca4d1"
+  description = "Object ID of the Azure AD group granted AKS admin access"
 }
 
 variable "aks_subnet" {

@@ -31,14 +31,15 @@ module "vnet_aks" {
 }
 
 module "aks" {
-  source             = "./modules/aks"
-  name               = var.general_name
-  kubernetes_version = var.kubernetes_version
-  vm_size            = var.vm_size
-  location           = var.location
-  ssh_public_key     = var.ssh_public_key
-  aks_subnet         = module.vnet_aks.aks_subnet_id
-  environment        = var.environment
+  source                     = "./modules/aks"
+  name                       = var.general_name
+  kubernetes_version         = var.kubernetes_version
+  vm_size                    = var.vm_size
+  location                   = var.location
+  ssh_public_key             = var.ssh_public_key
+  aks_subnet                 = module.vnet_aks.aks_subnet_id
+  environment                = var.environment
+  aks_admins_group_object_id = var.aks_admins_group_object_id
 
   depends_on = [azurerm_resource_group.kubernetes_resource_group]
 }
