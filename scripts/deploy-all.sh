@@ -101,19 +101,21 @@ echo ""
 print_step "3" "Creating Azure AD Group for AKS Admins"
 
 AD_SCRIPT="$REPO_ROOT/labs/1-Initial-Setup/scripts/create-azure-ad-group.sh"
+AKS_GROUP_NAME="devopsjourney-aks-group-oct2024"
 if [ -f "$AD_SCRIPT" ]; then
     chmod +x "$AD_SCRIPT"
     bash "$AD_SCRIPT"
 else
-    GROUP_NAME="AKS-Admins-${PROJECT_NAME}"
-    echo -e "${YELLOW}⚠️  AD group script not found, creating group '${GROUP_NAME}'...${NC}"
-    GROUP_ID=$(az ad group create \
-        --display-name "$GROUP_NAME" \
+    AKS_GROUP_NAME="AKS-Admins-${PROJECT_NAME}"
+    echo -e "${YELLOW}⚠️  AD group script not found, creating group '${AKS_GROUP_NAME}'...${NC}"
+    az ad group create \
+        --display-name "$AKS_GROUP_NAME" \
         --mail-nickname "aks-admins-${PROJECT_NAME}" \
-        --query id -o tsv)
-    echo -e "${YELLOW}⚠️  Created AD Group: ${GROUP_ID}${NC}"
-    echo -e "${YELLOW}    Update admin_object_id in production.tfvars if needed.${NC}"
+        --output none
 fi
+
+AKS_ADMINS_GROUP_ID=$(az ad group show --group "$AKS_GROUP_NAME" --query id -o tsv)
+echo -e "${GREEN}✅ AKS Admins Group ID: ${AKS_ADMINS_GROUP_ID}${NC}"
 
 echo ""
 
@@ -133,6 +135,7 @@ terraform init \
 echo -e "${YELLOW}📋 Running terraform plan...${NC}"
 terraform plan \
     -var-file="../vars/production.tfvars" \
+    -var "aks_admins_group_object_id=${AKS_ADMINS_GROUP_ID}" \
     -out=tfplan
 
 echo -e "${YELLOW}📋 Running terraform apply...${NC}"

@@ -41,7 +41,12 @@ module "aks" {
   environment                = var.environment
   aks_admins_group_object_id = var.aks_admins_group_object_id
 
-  depends_on = [azurerm_resource_group.kubernetes_resource_group]
+  depends_on = [
+    azurerm_resource_group.kubernetes_resource_group,
+    module.loganalytics,
+    module.acr,
+    module.vnet_aks,
+  ]
 }
 
 module "acr" {
