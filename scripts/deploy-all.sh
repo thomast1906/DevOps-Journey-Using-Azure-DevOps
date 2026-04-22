@@ -57,7 +57,7 @@ command_exists() {
 # ── Step 0: Prerequisites ──────────────────────────────────────────────────
 print_step "0" "Checking Prerequisites"
 
-for tool in az terraform docker kubectl; do
+for tool in az terraform docker kubectl kubelogin; do
     if ! command_exists "$tool"; then
         echo -e "${RED}❌ ${tool} not found. Please install it first.${NC}"
         exit 1
@@ -171,6 +171,8 @@ az aks get-credentials \
     --resource-group "${AKS_RG}" \
     --name "$AKS_NAME" \
     --overwrite-existing
+
+kubelogin convert-kubeconfig -l azurecli
 
 echo -e "${GREEN}✅ kubectl configured${NC}"
 echo ""
