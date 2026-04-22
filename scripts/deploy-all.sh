@@ -160,11 +160,15 @@ echo ""
 # ── Step 5: AKS credentials ────────────────────────────────────────────────
 print_step "5" "Getting AKS Credentials"
 
-AKS_NAME=$(terraform -chdir="$TF_DIR" output -raw aks_name 2>/dev/null || echo "${PROJECT_NAME}aks")
+AKS_NAME=$(terraform -chdir="$TF_DIR" output -raw aks_name 2>/dev/null)
+if [ -z "$AKS_NAME" ]; then
+    AKS_NAME=$(grep 'aks_name' "$REPO_ROOT/labs/2-AzureDevOps-Terraform-Pipeline/vars/production.tfvars" | awk -F'"' '{print $2}')
+fi
+AKS_RG=$(terraform -chdir="$TF_DIR" output -raw aks_resource_group 2>/dev/null || echo "${PROJECT_NAME}-rg")
 echo -e "${YELLOW}📋 Fetching credentials for cluster: ${AKS_NAME}${NC}"
 
 az aks get-credentials \
-    --resource-group "${PROJECT_NAME}-rg" \
+    --resource-group "${AKS_RG}" \
     --name "$AKS_NAME" \
     --overwrite-existing
 
