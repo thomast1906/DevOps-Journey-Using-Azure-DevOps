@@ -119,6 +119,17 @@ echo -e "${GREEN}✅ AKS Admins Group ID: ${AKS_ADMINS_GROUP_ID}${NC}"
 
 echo ""
 
+# ── SSH key for AKS nodes ──────────────────────────────────────────────────
+SSH_KEY_FILE="$HOME/.ssh/id_rsa_aks"
+if [ ! -f "${SSH_KEY_FILE}.pub" ]; then
+    echo -e "${YELLOW}🔑 Generating SSH key for AKS nodes...${NC}"
+    ssh-keygen -t rsa -b 4096 -f "$SSH_KEY_FILE" -N "" -q
+fi
+SSH_PUBLIC_KEY=$(cat "${SSH_KEY_FILE}.pub")
+echo -e "${GREEN}✅ SSH public key loaded${NC}"
+
+echo ""
+
 # ── Step 4: Terraform deploy ───────────────────────────────────────────────
 print_step "4" "Deploying Infrastructure with Terraform"
 
@@ -136,6 +147,7 @@ echo -e "${YELLOW}📋 Running terraform plan...${NC}"
 terraform plan \
     -var-file="../vars/production.tfvars" \
     -var "aks_admins_group_object_id=${AKS_ADMINS_GROUP_ID}" \
+    -var "ssh_public_key=${SSH_PUBLIC_KEY}" \
     -out=tfplan
 
 echo -e "${YELLOW}📋 Running terraform apply...${NC}"
