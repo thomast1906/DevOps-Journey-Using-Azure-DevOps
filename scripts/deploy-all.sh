@@ -239,27 +239,106 @@ kubectl rollout status deployment/thomasthornton \
 echo -e "${GREEN}✅ Application deployed${NC}"
 echo ""
 
-# ── Step 10: Get application URL ──────────────────────────────────────────
-print_step "10" "Getting Application URL"
+# ── Step 10: Install ALB Controller and create Gateway ────────────────────
+print_step "10" "Installing ALB Controller and Creating Gateway"
+
+ALB_CONTROLLER_VERSION="${ALB_CONTROLLER_VERSION:-1.9.16}"
+ALB_NAMESPACE="azure-alb-system"
+ALB_RESOURCE_NAME="${PROJECT_NAME}-alb"
+ALB_FRONTEND_NAME="alb-frontend"
+APP_NAMESPACE="thomasthorntoncloud"
+
+ALB_CLIENT_ID=$(az identity show -g "${PROJECT_NAME}-rg" -n "azure-alb-identity" \
+    --query clientId -o tsv 2>/dev/null || true)
+
+if [ -z "$ALB_CLIENT_ID" ]; then
+    monitoring_warn "azure-alb-identity not found — ALB controller cannot be installed. Run Terraform first."
+else
+    kubectl get namespace "$ALB_NAMESPACE" 2>/dev/null || kubectl create namespace "$ALB_NAMESPACE"
+    helm upgrade --install alb-controller \
+        oci://mcr.microsoft.com/application-lb/charts/alb-controller \
+        --namespace "$ALB_NAMESPACE" \
+        --version "$ALB_CONTROLLER_VERSION" \
+        --set albController.namespace="$ALB_NAMESPACE" \
+        --set albController.podIdentity.clientID="$ALB_CLIENT_ID" \
+        --wait --timeout 3m \
+        2>&1 | grep -E "Install|Upgrade|Error|Warning|complete" || true
+    echo -e "${GREEN}✅ ALB controller installed/updated (v${ALB_CONTROLLER_VERSION})${NC}"
+
+    ALB_RESOURCE_ID=$(az network alb show \
+        --resource-group "${PROJECT_NAME}-rg" \
+        --name "$ALB_RESOURCE_NAME" \
+        --query id -o tsv 2>/dev/null || true)
+
+    if [ -z "$ALB_RESOURCE_ID" ]; then
+        monitoring_warn "Azure ALB resource '${ALB_RESOURCE_NAME}' not found — Gateway cannot be created. Run Terraform first."
+    else
+        kubectl apply -f - <<EOF
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gateway-01
+  namespace: ${APP_NAMESPACE}
+  annotations:
+    alb.networking.azure.io/alb-id: ${ALB_RESOURCE_ID}
+spec:
+  gatewayClassName: azure-alb-external
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: Same
+  addresses:
+  - type: alb.networking.azure.io/alb-frontend
+    value: ${ALB_FRONTEND_NAME}
+EOF
+
+        kubectl apply -f - <<EOF
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: traffic-thomasthorntoncloud
+  namespace: ${APP_NAMESPACE}
+spec:
+  parentRefs:
+  - name: gateway-01
+  rules:
+  - backendRefs:
+    - name: thomasthorntoncloud
+      port: 80
+EOF
+        echo -e "${GREEN}✅ Gateway and HTTPRoute applied${NC}"
+    fi
+fi
+echo ""
+
+# ── Step 11: Get application URL ───────────────────────────────────────────
+print_step "11" "Getting Application URL"
 
 APP_URL=""
 
-# Try ALB Gateway API FQDN first (set up by lab4/lab5 pipeline)
-GATEWAY_FQDN=$(kubectl get gateway gateway-01 -n thomasthorntoncloud \
-    -o jsonpath='{.status.addresses[0].value}' 2>/dev/null || true)
-if [ -n "$GATEWAY_FQDN" ]; then
-    APP_URL="http://${GATEWAY_FQDN}"
-    echo -e "${GREEN}✅ ALB Gateway FQDN: ${APP_URL}${NC}"
-fi
+echo -e "${YELLOW}📋 Waiting for ALB Gateway FQDN (up to 3 minutes)...${NC}"
+for _i in $(seq 1 18); do
+    GATEWAY_FQDN=$(kubectl get gateway gateway-01 -n thomasthorntoncloud \
+        -o jsonpath='{.status.addresses[0].value}' 2>/dev/null || true)
+    if [ -n "$GATEWAY_FQDN" ]; then
+        APP_URL="http://${GATEWAY_FQDN}"
+        echo -e "${GREEN}✅ ALB Gateway FQDN: ${APP_URL}${NC}"
+        break
+    fi
+    sleep 10
+done
 
 # Service is ClusterIP — access is via the ALB Gateway API only
 if [ -z "$APP_URL" ]; then
-    echo -e "${YELLOW}⚠️  ALB Gateway not yet ready. Once provisioned, get the FQDN with:${NC}"
-    echo -e "${YELLOW}    kubectl get gateway gateway-01 -n thomasthorntoncloud -o jsonpath='{.status.addresses[0].value}'${NC}"
+    monitoring_warn "ALB Gateway FQDN not yet available after 3 minutes."
+    echo -e "${YELLOW}    Check later: kubectl get gateway gateway-01 -n thomasthorntoncloud -o jsonpath='{.status.addresses[0].value}'${NC}"
 fi
 
 if [ -n "$APP_URL" ]; then
-    if curl -sf --max-time 10 "$APP_URL" >/dev/null; then
+    if curl -sf --max-time 15 "$APP_URL" >/dev/null; then
         echo -e "${GREEN}✅ Application is responding at ${APP_URL}${NC}"
     else
         echo -e "${YELLOW}⚠️  Application may still be warming up. Try: ${APP_URL}${NC}"
@@ -270,8 +349,8 @@ else
 fi
 echo ""
 
-# ── Step 11: Verify Application Insights (Lab 6) ──────────────────────────
-print_step "11" "Verifying Application Insights Configuration (Lab 6)"
+# ── Step 12: Verify Application Insights (Lab 6) ──────────────────────────
+print_step "12" "Verifying Application Insights Configuration (Lab 6)"
 
 # Check Kubernetes secret
 if kubectl get secret aikey -n thomasthorntoncloud &>/dev/null; then
@@ -298,8 +377,8 @@ else
 fi
 echo ""
 
-# ── Step 12: Verify Container Insights (Lab 6) ────────────────────────────
-print_step "12" "Verifying Container Insights (Lab 6)"
+# ── Step 13: Verify Container Insights (Lab 6) ────────────────────────────
+print_step "13" "Verifying Container Insights (Lab 6)"
 
 # Azure-side check — definitive proof Container Insights is enabled
 OMS_STATUS=$(az aks show \
@@ -337,8 +416,8 @@ kubectl top pods -n thomasthorntoncloud 2>/dev/null \
 kubectl top nodes 2>/dev/null || true
 echo ""
 
-# ── Step 13: Generate test traffic for App Insights telemetry (Lab 6) ─────
-print_step "13" "Generating Test Traffic for Telemetry (Lab 6)"
+# ── Step 14: Generate test traffic for App Insights telemetry (Lab 6) ─────
+print_step "14" "Generating Test Traffic for Telemetry (Lab 6)"
 
 if [ -n "$APP_URL" ]; then
     echo -e "${YELLOW}📋 Sending 20 requests to ${APP_URL} to seed App Insights telemetry...${NC}"
