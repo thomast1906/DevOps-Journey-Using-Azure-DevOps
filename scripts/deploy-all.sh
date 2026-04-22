@@ -8,7 +8,7 @@
 #
 # Prerequisites: az, terraform, docker, kubectl
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -151,8 +151,7 @@ echo -e "${YELLOW}📋 Fetching credentials for cluster: ${AKS_NAME}${NC}"
 az aks get-credentials \
     --resource-group "${PROJECT_NAME}-rg" \
     --name "$AKS_NAME" \
-    --overwrite-existing \
-    --admin
+    --overwrite-existing
 
 echo -e "${GREEN}✅ kubectl configured${NC}"
 echo ""
@@ -232,26 +231,10 @@ if [ -n "$GATEWAY_FQDN" ]; then
     echo -e "${GREEN}✅ ALB Gateway FQDN: ${APP_URL}${NC}"
 fi
 
-# Fall back to LoadBalancer Service IP or hostname
+# Service is ClusterIP — access is via the ALB Gateway API only
 if [ -z "$APP_URL" ]; then
-    echo -e "${YELLOW}📋 Waiting for LoadBalancer IP/hostname...${NC}"
-    for i in $(seq 1 12); do
-        EXTERNAL_IP=$(kubectl get svc thomasthorntoncloud \
-            -n thomasthorntoncloud \
-            -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
-        if [ -z "$EXTERNAL_IP" ]; then
-            EXTERNAL_IP=$(kubectl get svc thomasthorntoncloud \
-                -n thomasthorntoncloud \
-                -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || true)
-        fi
-        if [ -n "$EXTERNAL_IP" ]; then
-            APP_URL="http://${EXTERNAL_IP}"
-            echo -e "${GREEN}✅ LoadBalancer URL: ${APP_URL}${NC}"
-            break
-        fi
-        echo -e "${YELLOW}  Waiting... (${i}/12)${NC}"
-        sleep 15
-    done
+    echo -e "${YELLOW}⚠️  ALB Gateway not yet ready. Once provisioned, get the FQDN with:${NC}"
+    echo -e "${YELLOW}    kubectl get gateway gateway-01 -n thomasthorntoncloud -o jsonpath='{.status.addresses[0].value}'${NC}"
 fi
 
 if [ -n "$APP_URL" ]; then
