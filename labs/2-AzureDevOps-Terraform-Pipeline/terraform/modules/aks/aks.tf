@@ -17,7 +17,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   workload_identity_enabled = true
   node_resource_group       = "${var.name}-node-rg"
   automatic_upgrade_channel = "patch"
-  local_account_disabled    = false
+  local_account_disabled    = true
 
   linux_profile {
     admin_username = "ubuntu"

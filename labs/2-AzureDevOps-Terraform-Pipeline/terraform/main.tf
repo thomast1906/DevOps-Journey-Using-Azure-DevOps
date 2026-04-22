@@ -49,6 +49,8 @@ module "acr" {
   name        = var.general_name
   location    = var.location
   environment = var.environment
+
+  depends_on = [azurerm_resource_group.kubernetes_resource_group]
 }
 
 module "appinsights" {
