@@ -199,10 +199,10 @@ echo ""
 # ── Step 7: Update app.yaml image reference ────────────────────────────────
 print_step "7" "Updating Kubernetes Manifest with Image Reference"
 
-sed -i.bak "s|image: .*\.azurecr\.io/.*|image: ${FULL_IMAGE}|g" "$APP_YAML"
-rm -f "${APP_YAML}.bak"
+RENDERED_YAML=$(mktemp /tmp/app-rendered.XXXXXX.yaml)
+sed "s|IMAGE_TAG_PLACEHOLDER|${FULL_IMAGE}|g" "$APP_YAML" > "$RENDERED_YAML"
 
-echo -e "${GREEN}✅ app.yaml updated with image: ${FULL_IMAGE}${NC}"
+echo -e "${GREEN}✅ Rendered app.yaml with image: ${FULL_IMAGE}${NC}"
 echo ""
 
 # ── Step 8: Create App Insights secret in Kubernetes ──────────────────────
@@ -229,7 +229,7 @@ echo ""
 print_step "9" "Deploying Application to AKS"
 
 echo -e "${YELLOW}📋 Applying Kubernetes manifest...${NC}"
-kubectl apply -f "$APP_YAML"
+kubectl apply -f "$RENDERED_YAML"
 
 echo -e "${YELLOW}📋 Waiting for deployment to be ready (up to 5 minutes)...${NC}"
 kubectl rollout status deployment/thomasthornton \
@@ -468,3 +468,6 @@ fi
 echo ""
 echo -e "${BLUE}📋 Clean up when done:${NC}"
 echo "  ./scripts/cleanup-all.sh"
+
+# Clean up temp files
+rm -f "$RENDERED_YAML"
