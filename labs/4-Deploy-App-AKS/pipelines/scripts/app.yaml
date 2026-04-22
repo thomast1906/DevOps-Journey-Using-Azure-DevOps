@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: thomasthorntoncloud
-        image: devopsjourneyoct2024acr.azurecr.io/repository:IMAGE_TAG_PLACEHOLDER
+        image: devopsjourneyoct2024acr.azurecr.io/thomasthorntoncloud:71535c1
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -26,6 +26,7 @@ spec:
             secretKeyRef:
               name: aikey
               key: aisecret
+              optional: true
         resources:
           requests:
             cpu: 100m
