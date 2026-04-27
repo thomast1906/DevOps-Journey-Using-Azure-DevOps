@@ -12,7 +12,7 @@ appgw_subnet_address_name   = "appgw"
 
 # AKS
 aks_name           = "devopsjourneyaks"
-kubernetes_version = "1.33"
+kubernetes_version = "1.35"
 vm_size            = "Standard_D2s_v3"
 ssh_public_key     = "<replace-with-your-ssh-public-key>"
 

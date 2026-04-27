@@ -23,7 +23,7 @@ variables:
   - name: environment
     value: 'production'
   - name: terraform_version
-    value: '1.14.0'
+    value: '1.14.9'
 
 stages :          
   - stage: plan

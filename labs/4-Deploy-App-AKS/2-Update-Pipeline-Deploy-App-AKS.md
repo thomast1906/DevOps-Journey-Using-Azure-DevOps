@@ -63,7 +63,7 @@ By the end of this lab, you will:
    APP_NAMESPACE='thomasthorntoncloud'           # K8s namespace for the app
    helm_resource_namespace="azure-alb-system"   # ALB system namespace (do not change)
    ALB_SUBNET_NAME="appgw"                      # ALB subnet name (do not change)
-   ALB_CONTROLLER_VERSION="1.0.0"               # ALB controller version (do not change)
+   ALB_CONTROLLER_VERSION="1.10.21"              # ALB controller version (do not change)
    ALB_FRONTEND_NAME='alb-frontend'             # ALB frontend name (do not change)
    ```
 

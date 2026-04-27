@@ -23,13 +23,13 @@ variables:
   - name: environment
     value: 'production'
   - name: terraform_version
-    value: '1.14.0'
+    value: '1.14.9'
   - name: repository
     value: 'repository'
   - name: dockerfile
     value: '$(Build.SourcesDirectory)/app/Dockerfile'
   - name: containerRegistry
-    value: 'devopsjourneyoct2024acr.azurecr.io'
+    value: 'devopsjourneyoct2024acr'
   - group: devopsjourney
 stages :          
   - stage: plan
@@ -126,7 +126,6 @@ stages :
           azureSubscription: ${{ variables.backendServiceArm }}
           scriptType: bash
           scriptLocation: inlineScript
-          addSpnToEnvironment: true
           inlineScript: |
             #!/usr/bin/env bash
             set -euo pipefail
@@ -136,13 +135,14 @@ stages :
             helm_resource_namespace="azure-alb-system"
             VNET_NAME="devopsjourneyoct2024-vnet"
             ALB_SUBNET_NAME="appgw"
-            ALB_CONTROLLER_VERSION="1.9.16"
+            ALB_CONTROLLER_VERSION="1.10.21"
             ALB_RESOURCE_NAME='devopsjourneyoct2024-alb'
             ALB_FRONTEND_NAME='alb-frontend'
             APP_NAMESPACE='thomasthorntoncloud'
 
             # Get AKS Credentials
-            az aks get-credentials -g $RESOURCE_GROUP -n $AKS_NAME
+            az aks get-credentials -g $RESOURCE_GROUP -n $AKS_NAME --overwrite-existing
+            kubelogin convert-kubeconfig -l azurecli
 
             #create namespace
             kubectl get namespace $helm_resource_namespace 2>/dev/null || kubectl create namespace $helm_resource_namespace
@@ -199,6 +199,6 @@ stages :
             kubectl -n thomasthorntoncloud create secret generic aikey --from-literal=aisecret=$(AIKEY) --dry-run=client -o yaml | kubectl apply -f -
 
             # Apply app
-            sed -i "s|IMAGE_TAG_PLACEHOLDER|$(Build.BuildId)|g" pipelines/scripts/app.yaml
-            kubectl apply -f pipelines/scripts/app.yaml
+            sed -i "s|IMAGE_TAG_PLACEHOLDER|${ACR_NAME}.azurecr.io/repository:$(Build.BuildId)|g" labs/4-Deploy-App-AKS/pipelines/scripts/app.yaml
+            kubectl apply -f labs/4-Deploy-App-AKS/pipelines/scripts/app.yaml
             kubectl rollout status deployment/thomasthornton -n thomasthorntoncloud

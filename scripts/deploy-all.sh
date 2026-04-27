@@ -213,15 +213,30 @@ kubectl create namespace thomasthorntoncloud --dry-run=client -o yaml | kubectl 
 
 AI_CONN_STR=$(az keyvault secret show --vault-name "$KV_NAME" --name "AIKEY" \
     --query value -o tsv 2>/dev/null || true)
+
+if [ -z "$AI_CONN_STR" ]; then
+    echo -e "${YELLOW}📋 AIKEY not in Key Vault — auto-fetching from App Insights...${NC}"
+    AI_RESOURCE_ID="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${PROJECT_NAME}-rg/providers/microsoft.insights/components/${PROJECT_NAME}ai"
+    AI_CONN_STR=$(az resource show --ids "$AI_RESOURCE_ID" \
+        --query "properties.ConnectionString" -o tsv 2>/dev/null || true)
+    if [ -n "$AI_CONN_STR" ]; then
+        az keyvault secret set --vault-name "$KV_NAME" --name "AIKEY" \
+            --value "$AI_CONN_STR" --output none 2>/dev/null || \
+            monitoring_warn "Could not write AIKEY to Key Vault '${KV_NAME}' — check RBAC permissions"
+        echo -e "${GREEN}✅ AIKEY fetched from App Insights and stored in Key Vault${NC}"
+    fi
+fi
+
+AIKEY_SECRET_UPDATED=false
 if [ -n "$AI_CONN_STR" ]; then
     kubectl create secret generic aikey \
         --from-literal=aisecret="$AI_CONN_STR" \
         --namespace thomasthorntoncloud \
         --dry-run=client -o yaml | kubectl apply -f -
     echo -e "${GREEN}✅ aikey secret created/updated in thomasthorntoncloud namespace${NC}"
+    AIKEY_SECRET_UPDATED=true
 else
-    monitoring_warn "AIKEY not found in Key Vault '${KV_NAME}'. App will start but telemetry will not be sent."
-    echo -e "${YELLOW}    Fix: az keyvault secret set --vault-name ${KV_NAME} --name AIKEY --value 'InstrumentationKey=...'${NC}"
+    monitoring_warn "AIKEY not found in Key Vault '${KV_NAME}' and could not be fetched from App Insights. App will start but telemetry will not be sent."
 fi
 echo ""
 
@@ -236,13 +251,19 @@ kubectl rollout status deployment/thomasthornton \
     -n thomasthorntoncloud \
     --timeout=300s
 
+if [ "$AIKEY_SECRET_UPDATED" = "true" ]; then
+    echo -e "${YELLOW}📋 Restarting pods to pick up the aikey secret...${NC}"
+    kubectl rollout restart deployment/thomasthornton -n thomasthorntoncloud 2>/dev/null || true
+    kubectl rollout status deployment/thomasthornton -n thomasthorntoncloud --timeout=300s
+fi
+
 echo -e "${GREEN}✅ Application deployed${NC}"
 echo ""
 
 # ── Step 10: Install ALB Controller and create Gateway ────────────────────
 print_step "10" "Installing ALB Controller and Creating Gateway"
 
-ALB_CONTROLLER_VERSION="${ALB_CONTROLLER_VERSION:-1.9.16}"
+ALB_CONTROLLER_VERSION="${ALB_CONTROLLER_VERSION:-1.10.21}"
 ALB_NAMESPACE="azure-alb-system"
 ALB_RESOURCE_NAME="${PROJECT_NAME}-alb"
 ALB_FRONTEND_NAME="alb-frontend"
@@ -384,7 +405,7 @@ print_step "13" "Verifying Container Insights (Lab 6)"
 OMS_STATUS=$(az aks show \
     --resource-group "${PROJECT_NAME}-rg" \
     --name "$AKS_NAME" \
-    --query "addonProfiles.omsAgent.enabled" -o tsv 2>/dev/null || true)
+    --query "addonProfiles.omsagent.enabled" -o tsv 2>/dev/null || true)
 if [ "$OMS_STATUS" = "true" ]; then
     echo -e "${GREEN}✅ Container Insights (omsAgent) is enabled on cluster '${AKS_NAME}'${NC}"
 else
@@ -402,7 +423,7 @@ fi
 
 # Node readiness
 NOT_READY=$(kubectl get nodes --no-headers 2>/dev/null \
-    | grep -cv " Ready" || echo "unknown")
+    | awk '$2 !~ /^Ready/ {c++} END {print c+0}' || echo "unknown")
 if [ "$NOT_READY" = "0" ]; then
     echo -e "${GREEN}✅ All AKS nodes are Ready${NC}"
 else
