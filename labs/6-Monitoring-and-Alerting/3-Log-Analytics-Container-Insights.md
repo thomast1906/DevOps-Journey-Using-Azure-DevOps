@@ -31,7 +31,7 @@ AKS Cluster (1.33)
   └── Container Insights add-on
         ├── Collects: container stdout/stderr logs
         ├── Collects: CPU/memory metrics per pod and node
-        └── Sends to: Log Analytics Workspace (devopsjourneyoct2024-law)
+        └── Sends to: Log Analytics Workspace (devopsjourneyapr2026-law)
               ├── Table: ContainerLog / ContainerLogV2
               ├── Table: KubePodInventory
               ├── Table: KubeNodeInventory
@@ -48,7 +48,7 @@ AKS Cluster (1.33)
 
 1. **🌐 Open the Azure Portal**
 
-   Go to [portal.azure.com](https://portal.azure.com) → **Kubernetes services** → `devopsjourneyoct2024aks`.
+   Go to [portal.azure.com](https://portal.azure.com) → **Kubernetes services** → `devopsjourneyapr2026aks`.
 
 2. **📊 Open Insights**
 
@@ -124,7 +124,7 @@ Container Insights stores all data in Log Analytics — you can query it with KQ
 
 1. **🔍 Open Log Analytics**
 
-   Azure Portal → **Log Analytics workspaces** → `devopsjourneyoct2024-law` → **Logs**.
+   Azure Portal → **Log Analytics workspaces** → `devopsjourneyapr2026-law` → **Logs**.
 
 2. **📋 Useful KQL queries:**
 
@@ -257,8 +257,8 @@ kubectl get pods -n kube-system | grep -E "omsagent|ama-logs"
 # Expected: Running pods; if not, the add-on may not be enabled
 
 # Solution 2: Verify the AKS cluster has Container Insights enabled
-az aks show --resource-group devopsjourneyoct2024 \
-  --name devopsjourneyoct2024aks \
+az aks show --resource-group devopsjourneyapr2026 \
+  --name devopsjourneyapr2026aks \
   --query "addonProfiles.omsAgent" -o json
 # Expected: { "enabled": true, "config": { "logAnalyticsWorkspaceResourceID": "..." } }
 
@@ -269,7 +269,7 @@ az aks show --resource-group devopsjourneyoct2024 \
 # Problem: KubePodInventory table is empty
 # Solution: Check if diagnostic settings are enabled on the AKS cluster
 az monitor diagnostic-settings list \
-  --resource $(az aks show -g devopsjourneyoct2024 -n devopsjourneyoct2024aks --query id -o tsv) \
+  --resource $(az aks show -g devopsjourneyapr2026 -n devopsjourneyapr2026aks --query id -o tsv) \
   -o table
 
 # Problem: Pod shows high memory but application seems normal

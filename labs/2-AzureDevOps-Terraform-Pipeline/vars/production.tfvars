@@ -1,5 +1,5 @@
 # General Variables
-general_name = "devopsjourneyoct2024"
+general_name = "devopsjourneyapr2026"
 location     = "uksouth"
 
 # Virtual Network

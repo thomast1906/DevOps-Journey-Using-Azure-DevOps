@@ -14,9 +14,9 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Configuration — must match what was used in deploy-all.sh
-PROJECT_NAME="${PROJECT_NAME:-devopsjourneyoct2024}"
+PROJECT_NAME="${PROJECT_NAME:-devopsjourneyapr2026}"
 RESOURCE_GROUP="${PROJECT_NAME}-rg"
-TF_RG="devops-journey-rg-oct2024"
+TF_RG="devops-journey-rg-apr2026"
 
 echo -e "${RED}🗑️  DevOps Journey Using Azure DevOps - CLEANUP${NC}"
 echo -e "${RED}⚠️  WARNING: This will DELETE ALL resources!${NC}"

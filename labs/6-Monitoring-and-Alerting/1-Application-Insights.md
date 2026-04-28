@@ -56,7 +56,7 @@ Flask App (pod)
 
 1. **🌐 Open the Azure Portal**
 
-   Go to [portal.azure.com](https://portal.azure.com) → search for **Application Insights** → select `devopsjourneyoct2024ai`.
+   Go to [portal.azure.com](https://portal.azure.com) → search for **Application Insights** → select `devopsjourneyapr2026ai`.
 
 2. **📋 Verify connection string**
 
@@ -250,13 +250,13 @@ kubectl get secret aikey -n thomasthorntoncloud -o jsonpath='{.data.aisecret}' \
   | base64 --decode | grep "InstrumentationKey="
 
 # Solution 3: Verify the secret value in Key Vault matches what the pod receives
-az keyvault secret show --vault-name devopsjourneyoct2024-kv --name AIKEY \
+az keyvault secret show --vault-name devopsjourneyapr2026-kv --name AIKEY \
   --query value -o tsv | grep "InstrumentationKey="
 
 # Problem: Connection string using wrong format (just GUID, not full string)
 # Solution: The secret should start with "InstrumentationKey=" not just the GUID
 # Update Key Vault secret with the full connection string from Azure Portal
-az keyvault secret set --vault-name devopsjourneyoct2024-kv --name AIKEY \
+az keyvault secret set --vault-name devopsjourneyapr2026-kv --name AIKEY \
   --value "InstrumentationKey=...;IngestionEndpoint=...;LiveEndpoint=..."
 
 # Problem: App Insights data appears with 2-5 minute delay

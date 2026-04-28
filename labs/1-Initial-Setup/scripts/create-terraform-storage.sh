@@ -1,7 +1,7 @@
 #!/bin/sh
 
-RESOURCE_GROUP_NAME="devops-journey-rg-oct2024"
-STORAGE_ACCOUNT_NAME="devopsjourneyoct2024"
+RESOURCE_GROUP_NAME="devops-journey-rg-apr2026"
+STORAGE_ACCOUNT_NAME="devopsjourneyapr2026"
 
 # Check if Resource Group exists
 RESOURCE_GROUP_EXISTS=$(az group exists --name $RESOURCE_GROUP_NAME)

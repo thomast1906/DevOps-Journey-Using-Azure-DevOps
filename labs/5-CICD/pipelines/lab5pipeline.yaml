@@ -15,11 +15,11 @@ variables:
   # This eliminates the need for client secrets and enables automatic token rotation.
   # TerraformTaskV4@4, Docker@2, and AzureCLI@2 all natively support WIF service connections.
   - name: backendServiceArm
-    value: 'azure-devops-journey-oct2024'
+    value: 'azure-devops-journey-apr2026'
   - name: backendAzureRmResourceGroupName
-    value: 'devops-journey-rg-oct2024'
+    value: 'devops-journey-rg-apr2026'
   - name: backendAzureRmStorageAccountName
-    value: 'devopsjourneyoct2024'
+    value: 'devopsjourneyapr2026'
   - name: backendAzureRmContainerName
     value: 'tfstate'
   - name: backendAzureRmKey
@@ -33,7 +33,7 @@ variables:
   - name: dockerfile
     value: '$(Build.SourcesDirectory)/app/Dockerfile'
   - name: containerRegistry
-    value: 'devopsjourneyoct2024acr'
+    value: 'devopsjourneyapr2026acr'
   - group: devopsjourney
 
 stages :          
@@ -135,13 +135,13 @@ stages :
             #!/usr/bin/env bash
             set -euo pipefail
 
-            RESOURCE_GROUP="devopsjourneyoct2024-rg"
-            AKS_NAME="devopsjourneyoct2024"
+            RESOURCE_GROUP="devopsjourneyapr2026-rg"
+            AKS_NAME="devopsjourneyapr2026"
             helm_resource_namespace="azure-alb-system"
-            VNET_NAME="devopsjourneyoct2024-vnet"
+            VNET_NAME="devopsjourneyapr2026-vnet"
             ALB_SUBNET_NAME="appgw"
             ALB_CONTROLLER_VERSION="1.10.21"
-            ALB_RESOURCE_NAME='devopsjourneyoct2024-alb'
+            ALB_RESOURCE_NAME='devopsjourneyapr2026-alb'
             ALB_FRONTEND_NAME='alb-frontend'
             APP_NAMESPACE='thomasthorntoncloud'
 

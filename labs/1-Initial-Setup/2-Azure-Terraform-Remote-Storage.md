@@ -31,8 +31,8 @@ Before starting, ensure you have:
    Open [`scripts/create-terraform-storage.sh`](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/scripts/create-terraform-storage.sh) and update the following variables to match your environment:
 
    ```bash
-   RESOURCE_GROUP_NAME="devops-journey-rg-oct2024"
-   STORAGE_ACCOUNT_NAME="devopsjourneyoct2024"
+   RESOURCE_GROUP_NAME="devops-journey-rg-apr2026"
+   STORAGE_ACCOUNT_NAME="devopsjourneyapr2026"
    LOCATION="uksouth"
    CONTAINER_NAME="tfstate"
    ```
@@ -53,20 +53,20 @@ Before starting, ensure you have:
 
    **✅ Expected Output:**
    ```
-   Creating resource group: devops-journey-rg-oct2024
+   Creating resource group: devops-journey-rg-apr2026
    {
-     "id": "/subscriptions/.../resourceGroups/devops-journey-rg-oct2024",
+     "id": "/subscriptions/.../resourceGroups/devops-journey-rg-apr2026",
      "location": "uksouth",
-     "name": "devops-journey-rg-oct2024"
+     "name": "devops-journey-rg-apr2026"
    }
-   Creating storage account: devopsjourneyoct2024
+   Creating storage account: devopsjourneyapr2026
    Storage account created successfully.
    Creating blob container: tfstate
    Blob container created successfully.
 
    ✅ Terraform backend resources created:
-      Resource Group : devops-journey-rg-oct2024
-      Storage Account: devopsjourneyoct2024
+      Resource Group : devops-journey-rg-apr2026
+      Storage Account: devopsjourneyapr2026
       Container      : tfstate
    ```
 
@@ -85,8 +85,8 @@ Make note of the following — you will need them in the pipeline YAML configura
 ```bash
 # Retrieve storage account key (needed for Terraform backend config)
 az storage account keys list \
-  --resource-group devops-journey-rg-oct2024 \
-  --account-name devopsjourneyoct2024 \
+  --resource-group devops-journey-rg-apr2026 \
+  --account-name devopsjourneyapr2026 \
   --query "[0].value" -o tsv
 ```
 
@@ -97,24 +97,24 @@ az storage account keys list \
 ## ✅ Validation
 
 **Infrastructure checklist:**
-- Resource group `devops-journey-rg-oct2024` exists in Azure Portal
-- Storage account `devopsjourneyoct2024` is present within the resource group
+- Resource group `devops-journey-rg-apr2026` exists in Azure Portal
+- Storage account `devopsjourneyapr2026` is present within the resource group
 - Blob container `tfstate` exists inside the storage account
 
 ```bash
 # Validate resource group
-az group show --name devops-journey-rg-oct2024 --query "{Name:name, Location:location, State:properties.provisioningState}" -o table
+az group show --name devops-journey-rg-apr2026 --query "{Name:name, Location:location, State:properties.provisioningState}" -o table
 
 # Validate storage account
 az storage account show \
-  --name devopsjourneyoct2024 \
-  --resource-group devops-journey-rg-oct2024 \
+  --name devopsjourneyapr2026 \
+  --resource-group devops-journey-rg-apr2026 \
   --query "{Name:name, SKU:sku.name, HTTPS:enableHttpsTrafficOnly}" -o table
 
 # Validate blob container
 az storage container show \
   --name tfstate \
-  --account-name devopsjourneyoct2024 \
+  --account-name devopsjourneyapr2026 \
   --auth-mode login \
   --query "{Name:name, PublicAccess:properties.publicAccess}" -o table
 ```
@@ -123,11 +123,11 @@ az storage container show \
 ```
 Name                       Location    State
 -------------------------  ----------  ---------
-devops-journey-rg-oct2024  uksouth     Succeeded
+devops-journey-rg-apr2026  uksouth     Succeeded
 
 Name                    SKU         HTTPS
 ----------------------  ----------  -------
-devopsjourneyoct2024    Standard_LRS  True
+devopsjourneyapr2026    Standard_LRS  True
 
 Name      PublicAccess
 --------  ------------
@@ -146,7 +146,7 @@ You can also verify visually in the Azure Portal:
 # Problem: Storage account name already taken
 # Solution: Choose a different, more unique name
 # The name must be 3-24 lowercase alphanumeric characters and globally unique
-STORAGE_ACCOUNT_NAME="devopsjourneyoct2024v2"
+STORAGE_ACCOUNT_NAME="devopsjourneyapr2026v2"
 
 # Problem: Insufficient permissions to create resource group
 # Solution: Ensure your account has Contributor or Owner on the subscription
@@ -158,7 +158,7 @@ az role assignment list --assignee "$(az account show --query user.name -o tsv)"
 az role assignment create \
   --assignee "$(az account show --query user.name -o tsv)" \
   --role "Storage Blob Data Contributor" \
-  --scope "/subscriptions/$(az account show --query id -o tsv)/resourceGroups/devops-journey-rg-oct2024/providers/Microsoft.Storage/storageAccounts/devopsjourneyoct2024"
+  --scope "/subscriptions/$(az account show --query id -o tsv)/resourceGroups/devops-journey-rg-apr2026/providers/Microsoft.Storage/storageAccounts/devopsjourneyapr2026"
 ```
 
 </details>

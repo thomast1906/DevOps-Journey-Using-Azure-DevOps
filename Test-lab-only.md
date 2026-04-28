@@ -25,7 +25,7 @@ az account set --subscription "<your-subscription-id>"
 The deploy script uses these environment variables (defaults shown):
 
 ```bash
-export PROJECT_NAME="devopsjourneyoct2024"   # Prefix for all Azure resources
+export PROJECT_NAME="devopsjourneyapr2026"   # Prefix for all Azure resources
 export LOCATION="uksouth"                     # Azure region
 ```
 
@@ -55,7 +55,7 @@ cd DevOps-Journey-Using-Azure-DevOps
 The deploy script will:
 1. Check all prerequisites (az, terraform, docker, kubectl)
 2. Verify Azure authentication
-3. Create Terraform remote state storage (`devops-journey-rg-oct2024`)
+3. Create Terraform remote state storage (`devops-journey-rg-apr2026`)
 4. Create an Azure AD group for AKS admins
 5. Run `terraform init / plan / apply` for all infrastructure (ACR, VNet, Log Analytics, AKS, Key Vault, App Insights) in a single apply
 6. Fetch AKS credentials (`kubectl` context configured automatically)
@@ -68,12 +68,12 @@ The deploy script will:
 
 | Resource | Name |
 |----------|------|
-| Resource Group | `devopsjourneyoct2024-rg` |
-| AKS Cluster | `devopsjourneyoct2024aks` (K8s 1.33) |
-| ACR | `devopsjourneyoct2024acr` |
-| Key Vault | `devopsjourneyoct2024kv` |
+| Resource Group | `devopsjourneyapr2026-rg` |
+| AKS Cluster | `devopsjourneyapr2026aks` (K8s 1.33) |
+| ACR | `devopsjourneyapr2026acr` |
+| Key Vault | `devopsjourneyapr2026kv` |
 | App Insights | Workspace-based, connection string |
-| Log Analytics | `devopsjourneyoct2024` workspace |
+| Log Analytics | `devopsjourneyapr2026` workspace |
 | VNet | `devopsjourney-vnet` (192.168.0.0/16) |
 | App | Python 3.13 / Flask 3.1.3 on port 5000 |
 

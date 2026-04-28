@@ -35,7 +35,7 @@ Before starting, ensure you have:
 
 2. **🏢 Select your organisation**
 
-   Choose your Azure DevOps organisation (e.g., `devopsjourneyoct2024`) and click **Install**.
+   Choose your Azure DevOps organisation (e.g., `devopsjourneyapr2026`) and click **Install**.
 
 
    The extension adds the following pipeline tasks:
@@ -101,12 +101,12 @@ Before starting, ensure you have:
 
    Other values to review and update in the tfvars file:
    ```hcl
-   resource_group_name    = "devopsjourneyoct2024-rg"
+   resource_group_name    = "devopsjourneyapr2026-rg"
    location               = "uksouth"
-   cluster_name           = "devopsjourneyoct2024"
+   cluster_name           = "devopsjourneyapr2026"
    kubernetes_version     = "1.33"
-   acr_name               = "devopsjourneyoct2024acr"
-   key_vault_name         = "devopsjourneyoct2024-kv"
+   acr_name               = "devopsjourneyapr2026acr"
+   key_vault_name         = "devopsjourneyapr2026-kv"
    ```
 
 ---
@@ -120,11 +120,11 @@ Before starting, ensure you have:
    ```yaml
    variables:
      - name: backendServiceArm
-       value: 'azure-devops-journey-oct2024'        # ← Your WIF service connection name
+       value: 'azure-devops-journey-apr2026'        # ← Your WIF service connection name
      - name: backendAzureRmResourceGroupName
-       value: 'devops-journey-rg-oct2024'           # ← Your Terraform state RG
+       value: 'devops-journey-rg-apr2026'           # ← Your Terraform state RG
      - name: backendAzureRmStorageAccountName
-       value: 'devopsjourneyoct2024'                # ← Your storage account name
+       value: 'devopsjourneyapr2026'                # ← Your storage account name
      - name: backendAzureRmContainerName
        value: 'tfstate'
      - name: backendAzureRmKey
@@ -163,10 +163,10 @@ Before starting, ensure you have:
    Apply complete! Resources: 25 added, 0 changed, 0 destroyed.
 
    Outputs:
-     aks_cluster_name       = "devopsjourneyoct2024"
-     acr_name               = "devopsjourneyoct2024acr"
-     key_vault_name         = "devopsjourneyoct2024-kv"
-     resource_group_name    = "devopsjourneyoct2024-rg"
+     aks_cluster_name       = "devopsjourneyapr2026"
+     acr_name               = "devopsjourneyapr2026acr"
+     key_vault_name         = "devopsjourneyapr2026-kv"
+     resource_group_name    = "devopsjourneyapr2026-rg"
    ```
 
 ---
@@ -175,28 +175,28 @@ Before starting, ensure you have:
 
 **Infrastructure checklist:**
 - Pipeline completes all stages (Validate, Plan, Apply) with green ticks
-- AKS cluster `devopsjourneyoct2024` visible in Azure Portal
-- ACR `devopsjourneyoct2024acr` created
-- Key Vault `devopsjourneyoct2024-kv` created with RBAC access control enabled
+- AKS cluster `devopsjourneyapr2026` visible in Azure Portal
+- ACR `devopsjourneyapr2026acr` created
+- Key Vault `devopsjourneyapr2026-kv` created with RBAC access control enabled
 - Application Insights workspace-based resource created
 
 **Technical validation:**
 ```bash
 # Verify AKS cluster
 az aks show \
-  --name devopsjourneyoct2024 \
-  --resource-group devopsjourneyoct2024-rg \
+  --name devopsjourneyapr2026 \
+  --resource-group devopsjourneyapr2026-rg \
   --query "{Name:name, K8sVersion:kubernetesVersion, State:provisioningState}" -o table
 
 # Verify ACR
 az acr show \
-  --name devopsjourneyoct2024acr \
+  --name devopsjourneyapr2026acr \
   --query "{Name:name, LoginServer:loginServer, SKU:sku.name}" -o table
 
 # Verify Key Vault (RBAC-based)
 az keyvault show \
-  --name devopsjourneyoct2024-kv \
-  --resource-group devopsjourneyoct2024-rg \
+  --name devopsjourneyapr2026-kv \
+  --resource-group devopsjourneyapr2026-rg \
   --query "{Name:name, RBAC:properties.enableRbacAuthorization}" -o table
 ```
 
@@ -204,15 +204,15 @@ az keyvault show \
 ```
 Name                   K8sVersion    State
 ---------------------  ------------  ---------
-devopsjourneyoct2024   1.33.x        Succeeded
+devopsjourneyapr2026   1.33.x        Succeeded
 
 Name                     LoginServer                              SKU
 -----------------------  ---------------------------------------  ------
-devopsjourneyoct2024acr  devopsjourneyoct2024acr.azurecr.io       Premium
+devopsjourneyapr2026acr  devopsjourneyapr2026acr.azurecr.io       Premium
 
 Name                      RBAC
 ------------------------  ------
-devopsjourneyoct2024-kv   True
+devopsjourneyapr2026-kv   True
 ```
 
 ---
@@ -229,7 +229,7 @@ az role assignment list \
 
 # Problem: "admin_object_id is not set" or Terraform variable error
 # Solution: Check production.tfvars — ensure admin_object_id is populated with the correct group ID
-az ad group show --group "devopsjourney-aks-group-oct2024" --query id -o tsv
+az ad group show --group "devopsjourney-aks-group-apr2026" --query id -o tsv
 
 # Problem: AKS version "1.33" not available in your region
 # Solution: List available versions
@@ -240,7 +240,7 @@ az aks get-versions --location uksouth --query "values[].version" -o tsv | sort 
 az role assignment create \
   --assignee "<wif-sp-object-id>" \
   --role "Storage Blob Data Contributor" \
-  --scope "/subscriptions/<sub-id>/resourceGroups/devops-journey-rg-oct2024/providers/Microsoft.Storage/storageAccounts/devopsjourneyoct2024"
+  --scope "/subscriptions/<sub-id>/resourceGroups/devops-journey-rg-apr2026/providers/Microsoft.Storage/storageAccounts/devopsjourneyapr2026"
 ```
 
 </details>

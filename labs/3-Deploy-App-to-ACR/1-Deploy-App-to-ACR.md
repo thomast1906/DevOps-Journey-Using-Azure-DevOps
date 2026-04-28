@@ -19,7 +19,7 @@ Before starting, ensure you have:
 - **Docker Desktop** installed (for local testing in [docker-image-locally.md](./docker-image-locally.md))
 - **Azure CLI** authenticated
 - **Completed [Lab 2 — Terraform Pipeline](../2-AzureDevOps-Terraform-Pipeline/1-Setup-AzureDevOps-Pipeline.md)** — ACR provisioned
-- **ACR name** from Terraform output: `devopsjourneyoct2024acr`
+- **ACR name** from Terraform output: `devopsjourneyapr2026acr`
 - **Azure DevOps project and repository** from Lab 2
 
 ---
@@ -65,17 +65,17 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
    - Registry type: **Azure Container Registry**
    - Authentication type: **Workload Identity Federation (automatic)**
    - Select your Azure **Subscription**
-   - Select your **Azure Container Registry**: `devopsjourneyoct2024acr`
-   - Service connection name: `devopsjourneyoct2024acr`
+   - Select your **Azure Container Registry**: `devopsjourneyapr2026acr`
+   - Service connection name: `devopsjourneyapr2026acr`
    - Check **Grant access permission to all pipelines**
    - Click **Save**
 
 
    **✅ Expected Output:**
    ```
-   Service connection "devopsjourneyoct2024acr" created.
+   Service connection "devopsjourneyapr2026acr" created.
    Authentication type: Workload Identity Federation
-   Registry: devopsjourneyoct2024acr.azurecr.io
+   Registry: devopsjourneyapr2026acr.azurecr.io
    ```
 
 ---
@@ -114,7 +114,7 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
      - name: dockerfile
        value: '$(Build.SourcesDirectory)/app/Dockerfile'
      - name: containerRegistry
-       value: 'devopsjourneyoct2024acr'          # ← Your ACR service connection name
+       value: 'devopsjourneyapr2026acr'          # ← Your ACR service connection name
      - name: tag
        value: '$(Build.BuildId)'
    ```
@@ -124,7 +124,7 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
    The pipeline includes a **Build** stage that:
    - Uses `Docker@2` task to build the image from the `app/Dockerfile`
    - Tags the image with `$(Build.BuildId)` for traceability
-   - Pushes the image to `devopsjourneyoct2024acr.azurecr.io/repository:$(Build.BuildId)`
+   - Pushes the image to `devopsjourneyapr2026acr.azurecr.io/repository:$(Build.BuildId)`
 
 
 3. **💾 Push the updated pipeline to your repo**
@@ -150,7 +150,7 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 
 3. **🔍 Verify the image in ACR**
 
-   Navigate to **Azure Portal** → **Container registries** → `devopsjourneyoct2024acr` → **Repositories**.
+   Navigate to **Azure Portal** → **Container registries** → `devopsjourneyapr2026acr` → **Repositories**.
 
 
    **✅ Expected Output:**
@@ -173,16 +173,16 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 ```bash
 # List images in ACR
 az acr repository show-tags \
-  --name devopsjourneyoct2024acr \
+  --name devopsjourneyapr2026acr \
   --repository repository \
   --orderby time_desc \
   --top 5 \
   -o table
 
 # Pull the image to verify it works (optional)
-az acr login --name devopsjourneyoct2024acr
-docker pull devopsjourneyoct2024acr.azurecr.io/repository:latest
-docker run -d -p 5000:5000 devopsjourneyoct2024acr.azurecr.io/repository:latest
+az acr login --name devopsjourneyapr2026acr
+docker pull devopsjourneyapr2026acr.azurecr.io/repository:latest
+docker run -d -p 5000:5000 devopsjourneyapr2026acr.azurecr.io/repository:latest
 curl http://localhost:5000
 ```
 
@@ -210,7 +210,7 @@ ls $(Build.SourcesDirectory)/app/Dockerfile
 # Solution: Verify the ACR service connection is configured with WIF and the
 # WIF identity has AcrPush role on the ACR
 az role assignment list \
-  --scope "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/devopsjourneyoct2024acr" \
+  --scope "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/devopsjourneyapr2026acr" \
   --query "[].{Principal:principalName, Role:roleDefinitionName}" -o table
 
 # Problem: Python build fails with "No matching distribution found"

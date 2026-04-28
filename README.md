@@ -108,13 +108,13 @@ All Azure resources are provisioned by Terraform in Lab 2:
 
 | Resource | Name | Purpose |
 |----------|------|---------|
-| Resource Group | `devopsjourneyoct2024-rg` | Container for all resources |
-| AKS Cluster | `devopsjourneyoct2024` | Kubernetes cluster |
-| Azure Container Registry | `devopsjourneyoct2024acr` | Docker image registry |
+| Resource Group | `devopsjourneyapr2026-rg` | Container for all resources |
+| AKS Cluster | `devopsjourneyapr2026` | Kubernetes cluster |
+| Azure Container Registry | `devopsjourneyapr2026acr` | Docker image registry |
 | Key Vault | (from Terraform output) | Secrets management |
 | Application Insights | (from Terraform output) | App telemetry |
 | Log Analytics Workspace | (from Terraform output) | Centralised logging |
-| ALB (App Gateway for Containers) | `devopsjourneyoct2024-alb` | Ingress / load balancing |
+| ALB (App Gateway for Containers) | `devopsjourneyapr2026-alb` | Ingress / load balancing |
 
 ---
 

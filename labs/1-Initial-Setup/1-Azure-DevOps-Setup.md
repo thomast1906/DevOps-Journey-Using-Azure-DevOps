@@ -34,7 +34,7 @@ Before starting, ensure you have:
 
 2. **🏢 Create a new organisation** (if you don't already have one)
 
-   Click **New organization**, accept the terms of service, and choose a unique organisation name (e.g., `devopsjourneyoct2024`).
+   Click **New organization**, accept the terms of service, and choose a unique organisation name (e.g., `devopsjourneyapr2026`).
 
 3. **📁 Create a new project**
 
@@ -75,14 +75,14 @@ Workload Identity Federation (WIF/OIDC) is the **recommended, secretless** way t
 
    - Choose your Azure **Subscription**
    - Leave Resource Group blank (subscription-scope)
-   - Enter a meaningful **Service Connection Name** (e.g., `azure-devops-journey-oct2024`)
+   - Enter a meaningful **Service Connection Name** (e.g., `azure-devops-journey-apr2026`)
    - Check **Grant access permission to all pipelines**
    - Click **Save**
 
 
    **✅ Expected Output:**
    ```
-   Service connection "azure-devops-journey-oct2024" created.
+   Service connection "azure-devops-journey-apr2026" created.
    Authentication type: Workload Identity Federation
    ```
 

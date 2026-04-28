@@ -28,9 +28,9 @@ monitoring_warn() {
 }
 
 # Configuration — override with environment variables
-PROJECT_NAME="${PROJECT_NAME:-devopsjourneyoct2024}"
+PROJECT_NAME="${PROJECT_NAME:-devopsjourneyapr2026}"
 LOCATION="${LOCATION:-uksouth}"
-TF_RG="devops-journey-rg-oct2024"
+TF_RG="devops-journey-rg-apr2026"
 TF_SA="${PROJECT_NAME}"
 TF_CONTAINER="tfstate"
 TF_DIR="$REPO_ROOT/labs/2-AzureDevOps-Terraform-Pipeline/terraform"
@@ -101,7 +101,7 @@ echo ""
 print_step "3" "Creating Azure AD Group for AKS Admins"
 
 AD_SCRIPT="$REPO_ROOT/labs/1-Initial-Setup/scripts/create-azure-ad-group.sh"
-AKS_GROUP_NAME="devopsjourney-aks-group-oct2024"
+AKS_GROUP_NAME="devopsjourney-aks-group-apr2026"
 if [ -f "$AD_SCRIPT" ]; then
     chmod +x "$AD_SCRIPT"
     bash "$AD_SCRIPT"

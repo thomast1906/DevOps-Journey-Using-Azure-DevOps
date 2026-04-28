@@ -63,7 +63,7 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
 
 1. **🔔 Navigate to Availability**
 
-   Azure Portal → Application Insights (`devopsjourneyoct2024ai`) → **Availability** (left pane).
+   Azure Portal → Application Insights (`devopsjourneyapr2026ai`) → **Availability** (left pane).
 
 2. **➕ Add Classic Test**
 

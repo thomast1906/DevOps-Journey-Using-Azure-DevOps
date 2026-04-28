@@ -36,7 +36,7 @@ Before starting, ensure you have:
 
    **✅ Expected Output:**
    ```
-   Creating Azure AD group: devopsjourney-aks-group-oct2024
+   Creating Azure AD group: devopsjourney-aks-group-apr2026
    Azure AD Group created successfully.
    Group ID: 278cc1b9-653d-464a-90f7-309e02d4b5d1
 
@@ -44,12 +44,12 @@ Before starting, ensure you have:
    User added successfully.
 
    ✅ Group setup complete:
-      Group Name : devopsjourney-aks-group-oct2024
+      Group Name : devopsjourney-aks-group-apr2026
       Group ID   : 278cc1b9-653d-464a-90f7-309e02d4b5d1
    ```
 
    **What the script does:**
-   - Creates an Entra ID security group named `devopsjourney-aks-group-oct2024`
+   - Creates an Entra ID security group named `devopsjourney-aks-group-apr2026`
    - Adds the currently authenticated Azure CLI user as a group member
    - Outputs the **Group Object ID** — copy this, you will need it in Lab 2
 
@@ -65,7 +65,7 @@ Before starting, ensure you have:
 
 1. **🌐 Navigate to Azure Portal**
 
-   Go to **Microsoft Entra ID** → **Groups** → search for `devopsjourney-aks-group-oct2024`.
+   Go to **Microsoft Entra ID** → **Groups** → search for `devopsjourney-aks-group-apr2026`.
 
 2. **✅ Confirm membership**
 
@@ -77,7 +77,7 @@ Before starting, ensure you have:
 ## ✅ Validation
 
 **Infrastructure checklist:**
-- Group `devopsjourney-aks-group-oct2024` visible in Entra ID → Groups
+- Group `devopsjourney-aks-group-apr2026` visible in Entra ID → Groups
 - Your user account appears as a member
 - Group Object ID has been recorded
 
@@ -85,12 +85,12 @@ Before starting, ensure you have:
 ```bash
 # Verify the group exists and get its ID
 az ad group show \
-  --group "devopsjourney-aks-group-oct2024" \
+  --group "devopsjourney-aks-group-apr2026" \
   --query "{Name:displayName, ID:id}" -o table
 
 # Verify your user is a member
 az ad group member list \
-  --group "devopsjourney-aks-group-oct2024" \
+  --group "devopsjourney-aks-group-apr2026" \
   --query "[].{UPN:userPrincipalName, Name:displayName}" -o table
 ```
 
@@ -98,7 +98,7 @@ az ad group member list \
 ```
 Name                               ID
 ---------------------------------  ------------------------------------
-devopsjourney-aks-group-oct2024    278cc1b9-653d-464a-90f7-309e02d4b5d1
+devopsjourney-aks-group-apr2026    278cc1b9-653d-464a-90f7-309e02d4b5d1
 
 UPN                            Name
 -----------------------------  ---------------
@@ -117,17 +117,17 @@ you@yourdomain.com             Your Name
 
 # Problem: Script completes but group ID is not printed
 # Solution: Query it manually
-az ad group show --group "devopsjourney-aks-group-oct2024" --query id -o tsv
+az ad group show --group "devopsjourney-aks-group-apr2026" --query id -o tsv
 
 # Problem: Cannot add yourself to the group (no permission)
 # Solution: Add via portal or have a Global Admin add you
 az ad group member add \
-  --group "devopsjourney-aks-group-oct2024" \
+  --group "devopsjourney-aks-group-apr2026" \
   --member-id "$(az ad signed-in-user show --query id -o tsv)"
 
 # Problem: Group already exists from a previous run
 # Solution: Retrieve the existing group ID
-az ad group show --group "devopsjourney-aks-group-oct2024" --query id -o tsv
+az ad group show --group "devopsjourney-aks-group-apr2026" --query id -o tsv
 ```
 
 </details>
@@ -138,7 +138,7 @@ az ad group show --group "devopsjourney-aks-group-oct2024" --query id -o tsv
 
 1. **Group-based access is scalable and auditable** — adding or removing team members only requires group membership changes, not infrastructure re-deployments. Groups also simplify access reviews.
 2. **`admin_object_id` is passed to Terraform** to create two RBAC assignments: (a) **Key Vault Administrator** so the group can manage secrets, and (b) **Azure Kubernetes Service Cluster Admin** so members can run `kubectl` commands against the cluster.
-3. **To add the WIF service principal later**: retrieve the SP created by the WIF service connection from Azure DevOps → Project Settings → Service Connections → Manage Workload Identity, then run: `az ad group member add --group devopsjourney-aks-group-oct2024 --member-id <sp-object-id>`
+3. **To add the WIF service principal later**: retrieve the SP created by the WIF service connection from Azure DevOps → Project Settings → Service Connections → Manage Workload Identity, then run: `az ad group member add --group devopsjourney-aks-group-apr2026 --member-id <sp-object-id>`
 4. **Entra ID RBAC** integrates with your organisation's identity provider — SSO, MFA, and conditional access apply. **Local accounts** (`--disable-local-accounts`) are legacy and bypass Entra ID controls; disabling them is a security best practice.
 
 ---

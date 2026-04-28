@@ -29,7 +29,7 @@ Before starting, ensure you have:
 In Lab 4, the `app.yaml` had a hardcoded image tag:
 
 ```yaml
-image: devopsjourneyoct2024acr.azurecr.io/repository:626
+image: devopsjourneyapr2026acr.azurecr.io/repository:626
 ```
 
 **Problems with this approach:**
@@ -50,12 +50,12 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
    Change:
    ```yaml
-   image: devopsjourneyoct2024acr.azurecr.io/repository:626
+   image: devopsjourneyapr2026acr.azurecr.io/repository:626
    ```
 
    To:
    ```yaml
-   image: devopsjourneyoct2024acr.azurecr.io/repository:latest
+   image: devopsjourneyapr2026acr.azurecr.io/repository:latest
    imagePullPolicy: Always
    ```
 
@@ -114,7 +114,7 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
    ```bash
    az acr repository show-tags \
-     --name devopsjourneyoct2024acr \
+     --name devopsjourneyapr2026acr \
      --repository repository \
      --orderby time_desc \
      --top 3 -o table
@@ -141,7 +141,7 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
    **✅ Expected Output:**
    ```
-   Image: devopsjourneyoct2024acr.azurecr.io/repository:latest
+   Image: devopsjourneyapr2026acr.azurecr.io/repository:latest
    ```
 
 ---
@@ -160,7 +160,7 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 #!/bin/bash
 echo "=== Checking ACR for latest tag ==="
 az acr repository show-tags \
-  --name devopsjourneyoct2024acr \
+  --name devopsjourneyapr2026acr \
   --repository repository \
   --orderby time_desc --top 3 -o table
 
@@ -202,7 +202,7 @@ kubectl describe deployment -n thomasthorntoncloud | grep -A5 "Readiness"
 # Problem: "ErrImagePull" in pods after tag change
 # Solution: Verify the WIF service principal has AcrPull role
 az role assignment list \
-  --scope "$(az acr show --name devopsjourneyoct2024acr --query id -o tsv)" \
+  --scope "$(az acr show --name devopsjourneyapr2026acr --query id -o tsv)" \
   --query "[].{Principal:principalName,Role:roleDefinitionName}" -o table
 ```
 

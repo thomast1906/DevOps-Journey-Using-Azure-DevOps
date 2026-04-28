@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: thomasthorntoncloud
-        image: devopsjourneyoct2024acr.azurecr.io/repository:IMAGE_TAG_PLACEHOLDER
+        image: devopsjourneyapr2026acr.azurecr.io/repository:IMAGE_TAG_PLACEHOLDER
         imagePullPolicy: Always
         ports:
         - containerPort: 5000

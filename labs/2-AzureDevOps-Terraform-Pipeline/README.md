@@ -29,7 +29,7 @@ You will:
 
 ### Key Configuration File
 `vars/production.tfvars` — update all values for your environment:
-- `general_name` — unique prefix for all resources (e.g. `devopsjourneyoct2024`)
+- `general_name` — unique prefix for all resources (e.g. `devopsjourneyapr2026`)
 - `admin_object_id` — Object ID for Key Vault Administrator role (your user or service principal)
 - `aks_admins_group_object_id` — Object ID of the AKS admins AD group created in Lab 1
   ```bash

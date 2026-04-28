@@ -11,11 +11,11 @@ variables:
   # This eliminates the need for client secrets and enables automatic token rotation.
   # TerraformTaskV4@4 and Docker@2 both natively support WIF service connections.
   - name: backendServiceArm
-    value: 'azure-devops-journey-oct2024'
+    value: 'azure-devops-journey-apr2026'
   - name: backendAzureRmResourceGroupName
-    value: 'devops-journey-rg-oct2024'
+    value: 'devops-journey-rg-apr2026'
   - name: backendAzureRmStorageAccountName
-    value: 'devopsjourneyoct2024'
+    value: 'devopsjourneyapr2026'
   - name: backendAzureRmContainerName
     value: 'tfstate'
   - name: backendAzureRmKey
@@ -29,7 +29,7 @@ variables:
   - name: dockerfile
     value: '$(Build.SourcesDirectory)/app/Dockerfile'
   - name: containerRegistry
-    value: 'devopsjourneyoct2024acr'
+    value: 'devopsjourneyapr2026acr'
 
 stages :          
   - stage: plan

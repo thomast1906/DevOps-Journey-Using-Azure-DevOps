@@ -33,10 +33,10 @@ Before starting, ensure you have:
    Open [`labs/4-Deploy-App-AKS/pipelines/scripts/app.yaml`](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/pipelines/scripts/app.yaml) and update the image reference:
 
    ```yaml
-   image: devopsjourneyoct2024acr.azurecr.io/repository:626
+   image: devopsjourneyapr2026acr.azurecr.io/repository:626
    ```
 
-   Replace `devopsjourneyoct2024acr` with your ACR name and `626` with the Build ID from the last successful pipeline run.
+   Replace `devopsjourneyapr2026acr` with your ACR name and `626` with the Build ID from the last successful pipeline run.
 
 
    > 💡 You can find the build ID in Azure DevOps → Pipelines → last successful run → the run number is the Build ID used as the image tag.
@@ -54,10 +54,10 @@ Before starting, ensure you have:
    Find and update the environment variable block in the deploy stage:
 
    ```bash
-   RESOURCE_GROUP="devopsjourneyoct2024-rg"     # AKS Resource Group
-   AKS_NAME="devopsjourneyoct2024"              # AKS Cluster Name
-   VNET_NAME="devopsjourneyoct2024-vnet"        # VNet Name
-   ALB_RESOURCE_NAME='devopsjourneyoct2024-alb' # Azure ALB name (do not change)
+   RESOURCE_GROUP="devopsjourneyapr2026-rg"     # AKS Resource Group
+   AKS_NAME="devopsjourneyapr2026"              # AKS Cluster Name
+   VNET_NAME="devopsjourneyapr2026-vnet"        # VNet Name
+   ALB_RESOURCE_NAME='devopsjourneyapr2026-alb' # Azure ALB name (do not change)
    APP_NAMESPACE='thomasthorntoncloud'           # K8s namespace for the app
    helm_resource_namespace="azure-alb-system"   # ALB system namespace (do not change)
    ALB_SUBNET_NAME="appgw"                      # ALB subnet name (do not change)
@@ -110,7 +110,7 @@ Before starting, ensure you have:
 
    **✅ Expected Output (Deploy stage logs):**
    ```
-   Merged "devopsjourneyoct2024" as current context in /home/vsts/.kube/config
+   Merged "devopsjourneyapr2026" as current context in /home/vsts/.kube/config
    namespace/thomasthorntoncloud created (or unchanged)
    secret/aikey configured
    deployment.apps/thomasthornton configured
@@ -127,8 +127,8 @@ Before starting, ensure you have:
 
    ```bash
    az aks get-credentials \
-     --name devopsjourneyoct2024 \
-     --resource-group devopsjourneyoct2024-rg \
+     --name devopsjourneyapr2026 \
+     --resource-group devopsjourneyapr2026-rg \
      --overwrite-existing
    ```
 
@@ -169,7 +169,7 @@ Before starting, ensure you have:
 **Technical validation:**
 ```bash
 # Get AKS credentials
-az aks get-credentials --name devopsjourneyoct2024 --resource-group devopsjourneyoct2024-rg
+az aks get-credentials --name devopsjourneyapr2026 --resource-group devopsjourneyapr2026-rg
 
 # Check pod status
 kubectl get pods -n thomasthorntoncloud
@@ -208,7 +208,7 @@ kubectl logs -n thomasthorntoncloud \
 # Problem: ImagePullBackOff — cannot pull from ACR
 # Solution: Verify AKS has AcrPull role on the ACR (set by Terraform)
 az role assignment list \
-  --scope "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/devopsjourneyoct2024acr" \
+  --scope "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/devopsjourneyapr2026acr" \
   --query "[?principalType=='ServicePrincipal'].{Principal:principalName, Role:roleDefinitionName}" -o table
 
 # Problem: FQDN returns 503 or no response
@@ -218,7 +218,7 @@ kubectl describe httproute http-route -n thomasthorntoncloud
 
 # Problem: kubectl commands fail with "Forbidden"
 # Solution: Ensure your user or the WIF SP is in the AKS admin group
-az ad group member list --group "devopsjourney-aks-group-oct2024" \
+az ad group member list --group "devopsjourney-aks-group-apr2026" \
   --query "[].displayName" -o tsv
 ```
 

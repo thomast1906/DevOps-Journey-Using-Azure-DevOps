@@ -19,7 +19,7 @@ Before starting, ensure you have:
 - **Azure CLI** authenticated (`az login`)
 - **Completed [Lab 3 — Deploy App to ACR](../3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md)**
 - **AKS, Key Vault, and Application Insights** provisioned by Terraform (Lab 2)
-- **Entra ID group** `devopsjourney-aks-group-oct2024` created (Lab 1.3)
+- **Entra ID group** `devopsjourney-aks-group-apr2026` created (Lab 1.3)
 
 ---
 
@@ -27,11 +27,11 @@ Before starting, ensure you have:
 
 ### Step 1: Add the WIF Service Principal to the AKS Admin Group
 
-The Workload Identity Federation service principal needs to be a member of the `devopsjourney-aks-group-oct2024` group. This grants the pipeline identity **AKS Cluster Admin** RBAC to run `kubectl apply` during the deploy stage.
+The Workload Identity Federation service principal needs to be a member of the `devopsjourney-aks-group-apr2026` group. This grants the pipeline identity **AKS Cluster Admin** RBAC to run `kubectl apply` during the deploy stage.
 
 1. **🔍 Find the WIF service principal**
 
-   In Azure DevOps → **Project Settings** → **Service connections** → click your ARM service connection (e.g., `azure-devops-journey-oct2024`) → **Manage Workload Identity**.
+   In Azure DevOps → **Project Settings** → **Service connections** → click your ARM service connection (e.g., `azure-devops-journey-apr2026`) → **Manage Workload Identity**.
 
    Note the **Object ID** of the Enterprise Application / Service Principal.
 
@@ -54,22 +54,22 @@ The Workload Identity Federation service principal needs to be a member of the `
 
    # Add to the AKS admin group
    az ad group member add \
-     --group "devopsjourney-aks-group-oct2024" \
+     --group "devopsjourney-aks-group-apr2026" \
      --member-id "$SP_OBJ_ID"
 
-   echo "✅ Added $SP_OBJ_ID to devopsjourney-aks-group-oct2024"
+   echo "✅ Added $SP_OBJ_ID to devopsjourney-aks-group-apr2026"
    ```
 
    **✅ Expected Output:**
    ```
-   ✅ Added a1b2c3d4-... to devopsjourney-aks-group-oct2024
+   ✅ Added a1b2c3d4-... to devopsjourney-aks-group-apr2026
    ```
 
 3. **🔍 Verify group membership**
 
    ```bash
    az ad group member list \
-     --group "devopsjourney-aks-group-oct2024" \
+     --group "devopsjourney-aks-group-apr2026" \
      --query "[].{Name:displayName, Type:userType}" -o table
    ```
 
@@ -88,8 +88,8 @@ The Workload Identity Federation service principal needs to be a member of the `
 
    # Get the connection string (update RG and AI name to your values)
    az monitor app-insights component show \
-     --app devopsjourneyoct2024ai \
-     -g devopsjourneyoct2024-rg \
+     --app devopsjourneyapr2026ai \
+     -g devopsjourneyapr2026-rg \
      --query connectionString \
      -o tsv
    ```
@@ -116,13 +116,13 @@ The pipeline reads the connection string from Key Vault and injects it as a Kube
    ```bash
    # Store the full connection string as secret "AIKEY"
    CONN_STRING=$(az monitor app-insights component show \
-     --app devopsjourneyoct2024ai \
-     -g devopsjourneyoct2024-rg \
+     --app devopsjourneyapr2026ai \
+     -g devopsjourneyapr2026-rg \
      --query connectionString \
      -o tsv)
 
    az keyvault secret set \
-     --vault-name "devopsjourneyoct2024-kv" \
+     --vault-name "devopsjourneyapr2026-kv" \
      --name "AIKEY" \
      --value "$CONN_STRING"
    ```
@@ -130,7 +130,7 @@ The pipeline reads the connection string from Key Vault and injects it as a Kube
    **✅ Expected Output:**
    ```json
    {
-     "id": "https://devopsjourneyoct2024-kv.vault.azure.net/secrets/AIKEY/...",
+     "id": "https://devopsjourneyapr2026-kv.vault.azure.net/secrets/AIKEY/...",
      "name": "AIKEY",
      "value": "InstrumentationKey=...;IngestionEndpoint=...;LiveEndpoint=..."
    }
@@ -140,7 +140,7 @@ The pipeline reads the connection string from Key Vault and injects it as a Kube
 
    ```bash
    az keyvault secret show \
-     --vault-name "devopsjourneyoct2024-kv" \
+     --vault-name "devopsjourneyapr2026-kv" \
      --name "AIKEY" \
      --query "{Name:name, Value:value}" \
      -o table
@@ -161,7 +161,7 @@ The variable group links to Key Vault and makes the `AIKEY` secret available to 
    - **Variable group name**: `devopsjourney`
    - **Link secrets from an Azure key vault as variables**: Toggle **ON**
    - **Azure subscription**: Select your WIF service connection
-   - **Key vault name**: `devopsjourneyoct2024-kv`
+   - **Key vault name**: `devopsjourneyapr2026-kv`
    - Click **+ Add** → select `AIKEY`
    - Click **Save**
 
@@ -175,7 +175,7 @@ The variable group links to Key Vault and makes the `AIKEY` secret available to 
 ## ✅ Validation
 
 **Infrastructure checklist:**
-- WIF service principal is a member of `devopsjourney-aks-group-oct2024`
+- WIF service principal is a member of `devopsjourney-aks-group-apr2026`
 - Key Vault secret `AIKEY` contains the full App Insights connection string
 - Azure DevOps variable group `devopsjourney` is created and linked to Key Vault
 
@@ -183,17 +183,17 @@ The variable group links to Key Vault and makes the `AIKEY` secret available to 
 ```bash
 # Verify WIF SP is in the group
 az ad group member check \
-  --group "devopsjourney-aks-group-oct2024" \
+  --group "devopsjourney-aks-group-apr2026" \
   --member-id "$(az ad sp list --display-name 'azure-devops-journey-identity' --query '[0].id' -o tsv)"
 
 # Verify Key Vault secret exists (shows name only, not value)
 az keyvault secret list \
-  --vault-name "devopsjourneyoct2024-kv" \
+  --vault-name "devopsjourneyapr2026-kv" \
   --query "[?name=='AIKEY'].{Name:name, Enabled:attributes.enabled}" -o table
 
 # Verify connection string format
 AIKEY=$(az keyvault secret show \
-  --vault-name "devopsjourneyoct2024-kv" \
+  --vault-name "devopsjourneyapr2026-kv" \
   --name "AIKEY" \
   --query value -o tsv)
 echo "$AIKEY" | grep -c "InstrumentationKey=" && echo "✅ Connection string format valid"
@@ -220,26 +220,26 @@ AIKEY   True
 ```bash
 # Problem: "Insufficient privileges" adding SP to group
 # Solution: Use a user with Group Administrator or User Administrator role
-# Or do it in the Azure Portal: Entra ID → Groups → devopsjourney-aks-group-oct2024 → Members → Add
+# Or do it in the Azure Portal: Entra ID → Groups → devopsjourney-aks-group-apr2026 → Members → Add
 
 # Problem: Key Vault access denied when setting secret
 # Solution: Ensure your user has Key Vault Administrator RBAC on the vault
 az role assignment create \
   --assignee "$(az account show --query user.name -o tsv)" \
   --role "Key Vault Administrator" \
-  --scope "/subscriptions/$(az account show --query id -o tsv)/resourceGroups/devopsjourneyoct2024-rg/providers/Microsoft.KeyVault/vaults/devopsjourneyoct2024-kv"
+  --scope "/subscriptions/$(az account show --query id -o tsv)/resourceGroups/devopsjourneyapr2026-rg/providers/Microsoft.KeyVault/vaults/devopsjourneyapr2026-kv"
 
 # Problem: Variable group cannot read Key Vault (pipeline fails)
 # Solution: Ensure the WIF service connection has Key Vault Secrets User role on the Key Vault
 az role assignment create \
   --assignee "<wif-sp-object-id>" \
   --role "Key Vault Secrets User" \
-  --scope "/subscriptions/<sub-id>/resourceGroups/devopsjourneyoct2024-rg/providers/Microsoft.KeyVault/vaults/devopsjourneyoct2024-kv"
+  --scope "/subscriptions/<sub-id>/resourceGroups/devopsjourneyapr2026-rg/providers/Microsoft.KeyVault/vaults/devopsjourneyapr2026-kv"
 
 # Problem: App Insights resource not found by CLI
 # Solution: List all App Insights in the resource group
 az monitor app-insights component list \
-  -g devopsjourneyoct2024-rg \
+  -g devopsjourneyapr2026-rg \
   --query "[].{Name:name, Kind:kind}" -o table
 ```
 
