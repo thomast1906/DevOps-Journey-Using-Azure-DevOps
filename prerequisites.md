@@ -55,12 +55,12 @@ By ensuring these prerequisites are met, you will be well-prepared to proceed wi
 ## ✅ Checklist
 
 Before proceeding, ensure you have:
-- [ ] Installed and configured Visual Studio Code
-- [ ]  Installed Terraform
-- [ ]  Installed Docker Desktop
-- [ ]  Installed kubectl
-- [ ]  Created an Azure account
-- [ ]  Installed and configured Azure CLI
+- Installed and configured Visual Studio Code
+- Installed Terraform
+- Installed Docker Desktop
+- Installed kubectl
+- Created an Azure account
+- Installed and configured Azure CLI
 
 ## 🚀 Ready to Begin?
 

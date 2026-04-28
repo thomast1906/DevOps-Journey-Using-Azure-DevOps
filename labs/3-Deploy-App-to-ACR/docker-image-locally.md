@@ -1,31 +1,28 @@
 # 🐳 Build and Test the Docker Image Locally
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Build the Python/Flask Docker image locally** — using `python:3.13-slim` as the base
-- [ ] **Run the container locally** — and verify the application responds on port `5000`
-- [ ] **Understand the image structure** — layers, base image, and exposed ports
+By the end of this guide, you'll be able to:
 
-## 📋 **Prerequisites**
+- Build the Python/Flask Docker image locally — using `python:3.13-slim` as the base
+- Run the container locally — and verify the application responds on port `5000`
+- Understand the image structure — layers, base image, and exposed ports
 
-**✅ Required Knowledge:**
-- [ ] Basic Docker concepts (build, run, images, containers)
-- [ ] Understanding of Python/Flask applications
+> ⏱️ **Estimated Time**: ~10 minutes
 
-**🔧 Required Tools:**
-- [ ] Docker Desktop installed and running
-- [ ] Terminal / Bash
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] `app/` folder present (Flask app + Dockerfile)
+Before starting, ensure you have:
+
+- **Docker Desktop** installed and running
+- **`app/` folder** present (Flask app + Dockerfile)
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Build the Docker Image**
+### Step 1: Build the Docker Image
 
 1. **📂 Navigate to the app directory**
 
@@ -77,7 +74,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Run the Container Locally**
+### Step 2: Run the Container Locally
 
 1. **▶️ Start the container**
 
@@ -104,7 +101,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 3: Test the Application**
+### Step 3: Test the Application
 
 1. **🌐 Test via curl**
 
@@ -130,7 +127,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 4: Review Container Logs**
+### Step 4: Review Container Logs
 
 ```bash
 docker logs devopsjourneyapp-test
@@ -149,7 +146,7 @@ Press CTRL+C to quit
 
 ---
 
-### **Step 5: Stop and Clean Up**
+### Step 5: Stop and Clean Up
 
 ```bash
 # Stop the running container
@@ -161,15 +158,15 @@ docker rm devopsjourneyapp-test
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Local Validation:**
-- [ ] Image appears in `docker image ls` with the correct tag
-- [ ] Container starts without errors
-- [ ] `curl http://localhost:5000` returns an HTML response
-- [ ] `docker logs` shows Flask startup messages with no errors
+**Local validation:**
+- Image appears in `docker image ls` with the correct tag
+- Container starts without errors
+- `curl http://localhost:5000` returns an HTML response
+- `docker logs` shows Flask startup messages with no errors
 
-**🔧 Full Validation Script:**
+**Full validation script:**
 ```bash
 #!/bin/bash
 echo "=== Building Docker image ==="
@@ -197,9 +194,10 @@ echo "✅ Container stopped and removed"
 
 ---
 
-## 🚨 **Troubleshooting Guide**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
-**❌ Common Issues:**
+**Common issues:**
 
 ```bash
 # Problem: "port is already allocated" — port 5000 in use
@@ -229,36 +227,28 @@ docker container ls --filter "name=devopsjourneyapp-test"
 sleep 5 && curl http://localhost:5000
 ```
 
+</details>
+
 ---
 
-## 💡 **Knowledge Check**
+## 🔑 Key Takeaways
 
-**🎯 Questions:**
-1. Why does the Dockerfile use `python:3.13-slim` rather than `python:3.13`?
-2. What does the `--platform=linux/amd64` flag do, and when is it needed?
-3. What is the difference between `-d` and `-it` when running a container?
-4. Why is `APPLICATIONINSIGHTS_CONNECTION_STRING` not set during local testing?
-
-**📝 Answers:**
-1. **`python:3.13-slim` reduces image size** — the slim variant strips non-essential OS packages, reducing the image from ~1GB to ~137MB. Smaller images pull faster in AKS and present a smaller security attack surface.
-2. **`--platform=linux/amd64` cross-compiles the image** for AMD64 architecture. On Apple Silicon (ARM64) Macs, Docker defaults to `linux/arm64`. AKS nodes run on AMD64, so the flag ensures the image is compatible with the cluster when deployed.
-3. **`-d` runs detached** (background); **`-it` runs interactive** (attaches your terminal to the container's stdin/stdout). Use `-d` for services you want to keep running in the background, `-it` for debugging or shells.
+1. **`python:3.13-slim` reduces image size** — the slim variant strips non-essential OS packages, reducing the image from ~1GB to ~137MB. Smaller images pull faster in AKS and reduce the security attack surface.
+2. **`--platform=linux/amd64` cross-compiles the image** for AMD64 architecture. On Apple Silicon (ARM64) Macs, Docker defaults to `linux/arm64`. AKS nodes run on AMD64, so the flag ensures the image is compatible with the cluster.
+3. **`-d` runs detached** (background); **`-it` runs interactive** (attaches your terminal to stdin/stdout). Use `-d` for services you want running in the background, `-it` for debugging or shells.
 4. **Application Insights is not configured locally** — `APPLICATIONINSIGHTS_CONNECTION_STRING` is injected by Kubernetes as a secret at runtime (via the `aikey` K8s secret). Locally, the `azure-monitor-opentelemetry` SDK detects the missing variable and disables telemetry gracefully.
 
 ---
 
-## 🎯 **Next Steps**
+## ➡️ What's Next
 
-**✅ Upon Completion:**
-- [ ] Docker image builds successfully from `python:3.13-slim`
-- [ ] Container runs and responds on port 5000
-- [ ] Local testing confirmed before pushing to ACR
+Your image builds and runs correctly locally. Head to the pipeline lab to push it to ACR via Azure DevOps.
 
-**➡️ Continue to:** [Lab 3.1 — Deploy App to ACR via Pipeline](./1-Deploy-App-to-ACR.md)
+**[← Back to Lab 3 Overview](./README.md)** | **[Continue to Lab 3.1 →](./1-Deploy-App-to-ACR.md)**
 
 ---
 
-## 📚 **Additional Resources**
+## 📚 Additional Resources
 
 - 🔗 [Docker — Build your Python image](https://docs.docker.com/language/python/build-images/)
 - 🔗 [Python 3.13 slim Docker image](https://hub.docker.com/_/python)
