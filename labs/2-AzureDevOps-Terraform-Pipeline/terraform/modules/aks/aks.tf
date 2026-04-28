@@ -16,6 +16,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   oidc_issuer_enabled       = true
   workload_identity_enabled = true
   node_resource_group       = "${var.name}-node-rg"
+  automatic_upgrade_channel = "patch"
+  local_account_disabled    = true
 
   linux_profile {
     admin_username = "ubuntu"
@@ -27,12 +29,15 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
   default_node_pool {
     name                 = "agentpool"
-    node_count           = var.agent_count
     vm_size              = var.vm_size
     vnet_subnet_id       = var.aks_subnet
     type                 = "VirtualMachineScaleSets"
     orchestrator_version = var.kubernetes_version
     os_sku               = "AzureLinux"
+    auto_scaling_enabled = true
+    min_count            = var.min_count
+    max_count            = var.max_count
+    zones                = ["1", "2", "3"]
   }
 
   identity {
@@ -46,10 +51,11 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   network_profile {
     load_balancer_sku = "standard"
     network_plugin    = "azure"
+    network_policy    = "azure"
   }
 
   azure_active_directory_role_based_access_control {
-    azure_rbac_enabled     = false
+    azure_rbac_enabled     = true
     admin_group_object_ids = [var.aks_admins_group_object_id]
   }
 

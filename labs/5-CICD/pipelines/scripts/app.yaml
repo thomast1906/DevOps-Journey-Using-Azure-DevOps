@@ -16,16 +16,17 @@ spec:
     spec:
       containers:
       - name: thomasthorntoncloud
-        image: devopsjourneyoct2024acr.azurecr.io/repository:latest # Update this line
+        image: devopsjourneyoct2024acr.azurecr.io/repository:IMAGE_TAG_PLACEHOLDER
         imagePullPolicy: Always
         ports:
-        - containerPort: 80
+        - containerPort: 5000
         env:
-        - name: APPINSIGHTS_INSTRUMENTATIONKEY
+        - name: APPLICATIONINSIGHTS_CONNECTION_STRING
           valueFrom:
             secretKeyRef:
               name: aikey
               key: aisecret
+              optional: true
         resources:
           requests:
             cpu: 100m
@@ -33,6 +34,18 @@ spec:
           limits:
             cpu: 250m
             memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
@@ -40,8 +53,9 @@ metadata:
   name: thomasthorntoncloud
   namespace: thomasthorntoncloud
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - port: 80
+    targetPort: 5000
   selector:
     app: thomasthorntoncloud

@@ -1,16 +1,15 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build-env
+FROM python:3.13-slim
+
 WORKDIR /app
 
-# Copy csproj and restore as distinct layers
-COPY *.csproj ./
-RUN dotnet restore
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy everything else and build
-COPY . ./
-RUN dotnet publish -c Release -o out
+COPY . .
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim 
-WORKDIR /app
-COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "aspnet-core-dotnet-core.dll"]
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
+
+EXPOSE 5000
+
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]

@@ -1,101 +1,293 @@
-# Using Application Insights to View Telemetry Data
+# 📊 Monitor with Application Insights
 
-## 🎯 Purpose
-Understand and utilize Application Insights to monitor and analyze your application's performance and user behaviour.
 
-## 1. What is Application Insights?
+## 🎯 Learning Objectives
 
-Application Insights, a feature of Azure Monitor, is an extensible Application Performance Management (APM) service tailored for developers and DevOps professionals. It helps monitor live applications, automatically detects performance anomalies, and includes robust analytics tools to diagnose issues and understand user interactions. Application Insights is designed to continuously enhance your application's performance and usability.
+By the end of this lab, you'll be able to:
 
-### 🔍 Verification:
-1. Confirm you can access your Application Insights resource in the Azure portal
+- Understand what Application Insights collects — requests, exceptions, dependencies, custom metrics, and usage
+- Use Live Metrics — to monitor real-time request rates and failures during a deployment
+- Use Transaction Search — to inspect individual HTTP requests and exceptions
+- Use Failures blade — to diagnose HTTP errors and exceptions at a glance
+- Use Application Map — to visualise dependencies and performance bottlenecks
+- Configure Smart Detection and Alerts — to be notified of anomalies automatically
 
-### 🧠 Knowledge Check:
-1. How does Application Insights differ from traditional monitoring tools?
-2. What types of data can Application Insights collect?
+> ⏱️ **Estimated Time**: ~25 minutes
 
-#### 💡 Pro Tip: Integrate Application Insights early in your development process for comprehensive monitoring from the start. 
+## ✅ Prerequisites
 
-## 2. Live Metrics
-When deploying a new build, monitor near-real-time performance indicators to ensure everything operates as expected.
+Before starting, ensure you have:
 
-![](images/monitoring-and-alerting-1.PNG)
+- **Azure Portal** access
+- **Application deployed to AKS** (Labs 4–5)
+- **Completed [Lab 5 — CI/CD](../5-CICD/2-Automated-Deployment-AKS-Application.md)**
+- **Application Insights resource** provisioned (workspace-based, created by Terraform in Lab 2)
+- **`APPLICATIONINSIGHTS_CONNECTION_STRING`** injected into the running pods (Lab 4)
 
-### 🔍 Verification:
-1. Check that you can see incoming requests and other live metrics
+---
 
-### 🧠 Knowledge Check:
-1. How can live metrics help during a deployment?
-2. What key metrics should you focus on in real-time?
+## 🏗️ How Application Insights Works in This Lab
 
-#### 💡 Pro Tip: Use live metrics to quickly identify and respond to performance issues during critical deployments.
+The Python/Flask application uses `azure-monitor-opentelemetry==1.8.7`:
 
-## 3. Transaction search for instance data
-Search and filter events such as requests, exceptions, dependency calls, log traces, and page views to examine specific transactions.
+```python
+# app.py
+from azure.monitor.opentelemetry import configure_azure_monitor
+configure_azure_monitor()  # reads APPLICATIONINSIGHTS_CONNECTION_STRING automatically
+```
 
-![](images/monitoring-and-alerting-2.PNG)
+Telemetry flows:
+```
+Flask App (pod)
+  → OpenTelemetry SDK
+    → Azure Monitor Exporter
+      → App Insights Ingestion Endpoint (from connection string)
+        → Log Analytics Workspace (workspace-based)
+          → Application Insights blades in Azure Portal
+```
 
-### 🔍 Verification:
-1. Successfully filter and find a specific request or exception
+> ⚠️ Always use the **Connection String** (not the Instrumentation Key) with `azure-monitor-opentelemetry`. The connection string is stored as the `AIKEY` secret in Key Vault and injected as `APPLICATIONINSIGHTS_CONNECTION_STRING`.
 
-### 🧠 Knowledge Check:
-1. What types of events can you search for?
-2. How can transaction search help in debugging?
+---
 
-#### 💡 Pro Tip: Create saved queries for commonly searched patterns to speed up your diagnostic process.
+## 🚀 Step-by-Step Implementation
 
-## 4. Viewing failures easily
-Quickly identify and review failures within the Application Insights pane.
+### Step 1: Navigate to Application Insights
 
-![](images/monitoring-and-alerting-3.PNG)
+1. **🌐 Open the Azure Portal**
 
-### 🔍 Verification:
-1. Locate the failures section and review any recent exceptions
+   Go to [portal.azure.com](https://portal.azure.com) → search for **Application Insights** → select `devopsjourneyoct2024ai`.
 
-### 🧠 Knowledge Check:
-1. How does Application Insights categorize failures?
-2. What information is provided for each failure?
+2. **📋 Verify connection string**
 
-#### 💡 Pro Tip: Set up alerts for sudden increases in failure rates to catch issues early. 
+   On the **Overview** page, locate the **Connection String** field. This is the value stored in Key Vault as `AIKEY` and injected into your pods.
 
-## 5. Application map
-Explore your application's components, along with key metrics and alerts, through the Application Map.
+   ```bash
+   # Generate some test traffic first
+   fqdn=$(kubectl get gateway gateway-01 -n thomasthorntoncloud \
+     -o jsonpath='{.status.addresses[0].value}')
+   for i in {1..20}; do curl -s http://$fqdn > /dev/null; done
+   echo "✅ 20 test requests sent — wait 1-2 minutes for data to appear in App Insights"
+   ```
 
-![](images/monitoring-and-alerting-4.PNG)
+---
 
-### 🔍 Verification:
-1. Identify all major components of your application in the map
+### Step 2: Live Metrics
 
-### 🧠 Knowledge Check:
-1. How does the application map help in understanding system architecture?
-2. What performance metrics are displayed on the map?
+Live Metrics provides near-real-time (< 1 second latency) visibility into your application's performance.
 
-#### 💡 Pro Tip: Use the application map to identify dependencies and potential bottlenecks in your system.
+1. **📊 Open Live Metrics**
 
-## 6. Smart detection and manual alerts
-Set up automatic alerts that adapt to your application's normal telemetry patterns and trigger when anomalies occur. Additionally, you can create alerts based on specific custom or standard metric thresholds.
+   In Application Insights → left pane → **Live Metrics**.
 
-![](images/monitoring-and-alerting-5.PNG)
+2. **🔍 What to look for:**
+   - **Incoming Requests/sec** — current request throughput
+   - **Failed Requests/sec** — any 4xx/5xx errors
+   - **Server Response Time** — p50/p95/p99 latency
+   - **Connected Servers** — how many pods are reporting (should match your replica count)
 
-### 🔍 Verification:
-1. Create a custom alert based on a specific metric
 
-### 🧠 Knowledge Check:
-1. How do smart detection alerts differ from manual alerts?
-2. What scenarios are best suited for each type of alert?
+   > 💡 Use Live Metrics during a deployment (`kubectl apply`) to watch requests seamlessly roll over from old pods to new pods.
 
-#### 💡 Pro Tip: Start with broader alerts and refine them over time based on your application's patterns and needs.
+---
 
-## 6. Usage analysis
-Analyse user segmentation and retention to understand user behavior and improve user experience.
+### Step 3: Transaction Search
 
-![](images/monitoring-and-alerting-6.PNG)
+Transaction Search lets you find and drill into individual telemetry events.
 
-### 🔍 Verification:
-1. Review user retention data and identify common user paths
+1. **🔍 Open Transaction Search**
 
-### 🧠 Knowledge Check:
-1. How can usage analysis inform product decisions?
-2. What metrics are most valuable for understanding user behavior?
+   Application Insights → **Transaction search** (or **Search**).
 
-#### 💡 Pro Tip: Combine usage analysis with A/B testing to make data-driven UX improvements.
+2. **🔎 Filter by event type:**
+   - **Request** — individual HTTP requests with URL, status code, and duration
+   - **Exception** — caught/uncaught Python exceptions with stack traces
+   - **Dependency** — outbound calls (e.g., HTTP to external APIs)
+   - **Trace** — custom log messages from `logging` module
+
+3. **📋 Find a specific request:**
+
+   ```
+   Event type: Request
+   Time range: Last 30 minutes
+   Search: "GET /"
+   ```
+
+
+   **✅ Expected:**
+   - HTTP 200 requests to `/` with duration < 500ms
+   - Operation ID for end-to-end tracing
+
+---
+
+### Step 4: Failures Blade
+
+The Failures blade shows a consolidated view of all HTTP errors and exceptions, making triage fast.
+
+1. **❌ Open Failures**
+
+   Application Insights → **Failures**.
+
+2. **🔍 Key sections:**
+   - **Operations tab** — failed HTTP requests grouped by URL and status code
+   - **Exceptions tab** — Python exceptions grouped by exception type
+   - **Suggested steps** — AI-powered recommended diagnostics
+
+
+3. **📋 Click any failure** to see the End-to-End Transaction, including the exact line of Python code that threw the exception.
+
+---
+
+### Step 5: Application Map
+
+The Application Map shows all components (services, databases, external APIs) and the call volume and error rate between them.
+
+1. **🗺️ Open Application Map**
+
+   Application Insights → **Application map**.
+
+2. **🔍 What to review:**
+   - Each circle = a component (your Flask app, any external dependencies)
+   - Arrow thickness = call volume
+   - Red = component with failures
+   - Click any component for its performance metrics and failures
+
+
+   > 💡 If your app calls an external API or database, those dependencies appear automatically when the SDK intercepts the outbound calls.
+
+---
+
+### Step 6: Smart Detection and Alerts
+
+Application Insights automatically learns your application's baseline and alerts you when anomalies occur.
+
+1. **🔔 Review Smart Detection**
+
+   Application Insights → **Smart detection** (or **Alerts** → **Smart detector alert rules**).
+
+   Smart Detection automatically monitors for:
+   - Abnormal rise in failed request rate
+   - Abnormal rise in server response time
+   - Degradation in server response time
+   - Memory leak pattern
+
+
+2. **➕ Create a custom alert**
+
+   Application Insights → **Alerts** → **+ New alert rule**:
+
+   | Setting | Value |
+   |---------|-------|
+   | Signal | `Failed requests` (metric) |
+   | Operator | Greater than |
+   | Threshold | `5` (requests in 5 minutes) |
+   | Severity | `Sev 2 — Warning` |
+   | Action | Email notification |
+
+---
+
+### Step 7: Usage Analysis
+
+Usage analysis helps you understand how users interact with your application.
+
+1. **📈 Open Usage**
+
+   Application Insights → **Usage** section → **Users**, **Sessions**, or **Retention**.
+
+
+2. **🔍 What to review:**
+   - **Users** — unique visitors per day
+   - **Sessions** — session duration and depth
+   - **Retention** — percentage of users who return after first visit
+
+---
+
+## ✅ Validation
+
+**Telemetry checklist:**
+- Application Insights receives data (requests visible in Transaction Search)
+- Live Metrics shows connected server count matching AKS replica count
+- No unexpected exceptions in Failures blade
+
+**Technical validation:**
+```bash
+# Generate test traffic
+fqdn=$(kubectl get gateway gateway-01 -n thomasthorntoncloud \
+  -o jsonpath='{.status.addresses[0].value}')
+for i in {1..10}; do curl -s "http://$fqdn" > /dev/null; sleep 1; done
+
+# Verify APPLICATIONINSIGHTS_CONNECTION_STRING is set in the pod
+POD=$(kubectl get pods -n thomasthorntoncloud -o jsonpath='{.items[0].metadata.name}')
+kubectl exec "$POD" -n thomasthorntoncloud -- \
+  env | grep APPLICATIONINSIGHTS_CONNECTION_STRING
+
+# Verify connection string starts with InstrumentationKey=
+kubectl exec "$POD" -n thomasthorntoncloud -- \
+  env | grep "APPLICATIONINSIGHTS_CONNECTION_STRING" | grep -c "InstrumentationKey=" \
+  && echo "✅ Connection string format valid"
+```
+
+**✅ Expected Output:**
+```
+APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=...;IngestionEndpoint=...;LiveEndpoint=...
+✅ Connection string format valid
+```
+
+---
+
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
+
+**Common issues:**
+
+```bash
+# Problem: No data appears in Application Insights (Live Metrics shows 0 servers)
+# Solution 1: Check APPLICATIONINSIGHTS_CONNECTION_STRING is set in the pod
+kubectl exec "$POD" -n thomasthorntoncloud -- env | grep APPLICATIONINSIGHTS
+
+# Solution 2: Check the aikey Kubernetes secret exists and is correctly set
+kubectl get secret aikey -n thomasthorntoncloud -o jsonpath='{.data.aisecret}' \
+  | base64 --decode | grep "InstrumentationKey="
+
+# Solution 3: Verify the secret value in Key Vault matches what the pod receives
+az keyvault secret show --vault-name devopsjourneyoct2024-kv --name AIKEY \
+  --query value -o tsv | grep "InstrumentationKey="
+
+# Problem: Connection string using wrong format (just GUID, not full string)
+# Solution: The secret should start with "InstrumentationKey=" not just the GUID
+# Update Key Vault secret with the full connection string from Azure Portal
+az keyvault secret set --vault-name devopsjourneyoct2024-kv --name AIKEY \
+  --value "InstrumentationKey=...;IngestionEndpoint=...;LiveEndpoint=..."
+
+# Problem: App Insights data appears with 2-5 minute delay
+# Solution: This is normal for the standard ingestion pipeline
+# Live Metrics shows near-real-time; other blades have 2-5 min lag
+```
+
+</details>
+
+---
+
+## � Key Takeaways
+
+1. **`azure-monitor-opentelemetry` requires the connection string** — the SDK reads `APPLICATIONINSIGHTS_CONNECTION_STRING` (not the legacy `APPINSIGHTS_INSTRUMENTATIONKEY`) to configure the correct regional ingestion endpoint for the OpenTelemetry Azure Monitor exporter.
+2. **Workspace-based App Insights** stores data in a Log Analytics workspace, enabling KQL queries, cross-resource queries, longer retention, and integration with Azure Monitor. All new deployments should use workspace-based (this lab’s Terraform creates it by default).
+3. **The SDK reads `APPLICATIONINSIGHTS_CONNECTION_STRING` at startup** via `configure_azure_monitor()`. The connection string includes the `IngestionEndpoint` and `LiveEndpoint` URLs, which the SDK uses to route telemetry to the correct region.
+4. **Smart Detection** automatically learns your app’s baseline and alerts on anomalies without a threshold to configure. **Manual alert rules** fire when a metric crosses a fixed threshold you define. Use Smart Detection as an early warning system and manual alerts for business-critical SLAs.
+
+---
+
+## ➡️ What's Next
+
+You can now navigate Application Insights to view live traffic, trace individual requests, diagnose failures, and create alerts. In the next lab you'll configure Availability Tests to automatically verify your application is reachable from multiple regions.
+
+**[← Back to Lab 5.2](../5-CICD/2-Automated-Deployment-AKS-Application.md)** | **[Continue to Lab 6.2 →](./2-Application-Insights-Configure-Availability-Test.md)**
+
+---
+
+## 📚 Additional Resources
+
+- 🔗 [Application Insights overview](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
+- 🔗 [azure-monitor-opentelemetry — Python SDK](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=python)
+- 🔗 [Application Insights connection strings](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string)
+- 🔗 [Smart Detection in Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/proactive-diagnostics)

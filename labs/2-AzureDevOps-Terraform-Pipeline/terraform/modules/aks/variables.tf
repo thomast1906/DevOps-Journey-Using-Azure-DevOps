@@ -1,54 +1,55 @@
 
 
 variable "name" {
+  type        = string
+  description = "Base name used for all AKS resources"
 }
 
 variable "location" {
-  default = "uksouth"
+  type        = string
+  description = "Azure region for AKS resources"
+  default     = "uksouth"
 }
 
 variable "ssh_public_key" {
-  default = "~/.ssh/id_rsa.pub"
+  type        = string
+  description = "SSH public key for AKS Linux node access"
+  default     = "~/.ssh/id_rsa.pub"
 }
 
 variable "kubernetes_version" {
-}
-
-variable "agent_count" {
+  type        = string
+  description = "Kubernetes version for the AKS cluster"
 }
 
 variable "vm_size" {
+  type        = string
+  description = "VM SKU for AKS system node pool"
 }
 
-variable "dns_prefix" {
-  default = "tamopsdns"
+variable "min_count" {
+  type        = number
+  description = "Minimum node count for auto-scaling"
+  default     = 1
 }
 
-variable "kubernetes_cluster_rbac_enabled" {
-  default = "true"
+variable "max_count" {
+  type        = number
+  description = "Maximum node count for auto-scaling"
+  default     = 3
 }
 
 variable "aks_admins_group_object_id" {
-  default = "e97b6454-3fa1-499e-8e5c-5d631e9ca4d1"
-}
-
-variable "addons" {
-  description = "Defines which addons will be activated."
-  type = object({
-    oms_agent                   = bool
-    azure_policy                = bool
-    ingress_application_gateway = bool
-  })
-}
-
-variable "log_analytics_workspace_id" {
+  type        = string
+  description = "Object ID of the Azure AD group granted AKS admin access"
 }
 
 variable "aks_subnet" {
-}
-
-variable "agic_subnet_id" {
+  type        = string
+  description = "Resource ID of the subnet for AKS nodes"
 }
 
 variable "environment" {
+  type        = string
+  description = "Deployment environment label (e.g. production)"
 }

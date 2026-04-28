@@ -12,12 +12,15 @@ appgw_subnet_address_name   = "appgw"
 
 # AKS
 aks_name           = "devopsjourneyaks"
-kubernetes_version = "1.30"
-agent_count        = 3
+kubernetes_version = "1.35"
 vm_size            = "Standard_D2s_v3"
-ssh_public_key     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDrt/GYkYpuQYRxM3lgjOr3Wqx8g5nQIbrg6Mr53wZGb35+ft+PibDMqxXZ7xq7fC3YuLnnO022IPgEjkF9fP03ZmfUeLjJJvw8YcutN9DD/2cx93BpKFPNUsqEB+za1iJ16kMsCojy35c1R64O+rw20D6iP96rmDAyIc5FR03y00eyAzQ8vo7/u9+VPwpdGEI7QCokZROcj6iNVz1V/1t6G4AEufPLokdj8J0gla/dN+tvnSLRQVBTDiD4jmVGImpWFqqKaH6R9SSXmRzj0uhvJUmSiZAZCb1caPEYgPEvNITuGQFdykPoY/4Z/3B+x/ipEQbWy8yL7bDFSXZTYhVKlPVyPbUtN5QFt7QtCtg84xDAZ6GA6AnONTtMxX2jvdzB9yh1ZsteNrOZ/Jo3ecuie573syQfG23Tu6qTqak8O7ZTOLY9iPx2ego3KvTWH/Q3lIvjnlpfCQtFtSgkNxjalMBk+NwwEgZHWRREOHwJmQIKVN0gSitN1KXobrqwxNk= tamops@Synth"
+ssh_public_key     = "<replace-with-your-ssh-public-key>"
 
 
 environment = "production"
 
-access_policy_id = "278cc1b9-653d-464a-90f7-309e02d4b5d1"
+admin_object_id = "278cc1b9-653d-464a-90f7-309e02d4b5d1"
+
+# Object ID of the Azure AD group created in Lab 1 (AKS cluster admins group)
+# Run: az ad group show --group "AKS-Cluster-Admins" --query id -o tsv
+aks_admins_group_object_id = "REPLACE_WITH_AKS_ADMINS_GROUP_OBJECT_ID"

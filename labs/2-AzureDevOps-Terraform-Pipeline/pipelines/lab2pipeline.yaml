@@ -6,6 +6,10 @@ trigger: none
 pr: none
 
 variables:
+  # NOTE: The service connection referenced by backendServiceArm must be configured as
+  # "Workload Identity Federation" (OIDC) in Azure DevOps > Project Settings > Service Connections.
+  # This eliminates the need for client secrets and enables automatic token rotation.
+  # TerraformTaskV4@4 and AzureCLI@2 both natively support WIF service connections.
   - name: backendServiceArm
     value: 'azure-devops-journey-oct2024'
   - name: backendAzureRmResourceGroupName
@@ -19,7 +23,7 @@ variables:
   - name: environment
     value: 'production'
   - name: terraform_version
-    value: '1.9.6'
+    value: '1.14.9'
 
 stages :          
   - stage: plan
@@ -40,6 +44,13 @@ stages :
             backendAzureRmStorageAccountName: ${{ variables.backendAzureRmStorageAccountName }}
             backendAzureRmContainerName: ${{ variables.backendAzureRmContainerName }}
             backendAzureRmKey: ${{ variables.backendAzureRmKey }}
+            workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
+        - task: TerraformTaskV4@4
+          displayName: 'validate'
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            environmentServiceNameAzureRM: ${{ variables.backendServiceArm }}
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/'
         - task: TerraformTaskV4@4
           displayName: 'plan'

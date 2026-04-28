@@ -1,57 +1,223 @@
-# Configure Availability Tests Using Application Insights
-
-# 🎯 Purpose
-Set up recurring tests to monitor your application's availability and responsiveness using Application Insights.
-
-You can set up recurring tests to monitor the availability and responsiveness of your application using Application Insights. These tests send web requests to your application at regular intervals from various locations around the world and alert you if your application is unresponsive or slow.
-
-Availability tests can be configured for any HTTP or HTTPS endpoint accessible from the public internet. No modifications to the website being tested are necessary, and the site does not need to be owned by you. For example, you can test the availability of a REST API that your service depends on.
-
-## Types of tests
-
-There are four types of availability tests:
-
-1. **URL Ping Test (Classic):** This simple test can be created through the portal to check if an endpoint is responding and measure the performance of the response. You can set custom success criteria and utilize advanced features such as parsing dependent requests and allowing retries.
-
-2. **Standard Test (Preview):** Similar to the URL ping test, this single request test includes additional features such as SSL certificate validity checks, proactive lifetime checks, various HTTP request verbs (e.g., GET, HEAD, POST), custom headers, and custom data associated with your HTTP request.
-
-3. **Multi-Step Web Test (Classic):** This test involves recording a sequence of web requests to simulate more complex scenarios. Multi-step web tests are created in Visual Studio Enterprise and uploaded to the portal for execution.
-
-4. **Custom TrackAvailability Test:** For custom applications running availability tests, the TrackAvailability() method can be used to send test results to Application Insights.
-
-### 🔍 Verification:
-1. Confirm you understand the differences between each test type
-
-### 🧠 Knowledge Check:
-1. Which test type is best suited for complex scenarios?
-2. What unique features does the Standard Test (Preview) offer?
-
-#### 💡 Pro Tip: Choose the test type that best matches your application's complexity and your monitoring needs.
+# 🔔 Configure Application Insights Availability Tests
 
 
-# 1. Configuring a clasic test and viewing results
+## 🎯 Learning Objectives
 
-To configure a classic availability test, follow these steps:
+By the end of this lab, you'll be able to:
 
-1. Navigate to **Availability** and select **Add Classic Test**
-2. Enter the necessary details, including the URL of the endpoint you wish to test. The URL should be the ingress IP used to access the test application.
+- Understand availability test types — URL Ping, Standard, Multi-Step, and Custom TrackAvailability
+- Configure a classic URL Ping test — to monitor your application's external availability from multiple regions
+- Interpret availability test results — response times, failure locations, and test history
+- Set up availability alerts — to be notified when the application becomes unreachable
 
-![](images/monitoring-and-alerting-7.PNG)
+> ⏱️ **Estimated Time**: ~15 minutes
 
-After configuring the test, you will be able to view detailed testing information over time.
+## ✅ Prerequisites
 
-![](images/monitoring-and-alerting-8.PNG)
+Before starting, ensure you have:
 
-## 🔍 Verification:
-1. Successfully create a new classic test
-2. Confirm the test appears in the Availability tests list
-3. Check that test results are being recorded and displayed correctly
+- **Azure Portal** access
+- **Completed [Lab 6.1 — Application Insights](./1-Application-Insights.md)**
+- **Application accessible via public FQDN** from Lab 4 (Azure Application Gateway for Containers)
 
-## 🧠 Knowledge Check:
+---
 
-1. What parameters can you configure for a classic test?
-2. How does the test frequency affect your monitoring strategy?
-3. What metrics are most important when reviewing availability test results?
-4. How can you use these results to improve your application's reliability?
+## 🏗️ Availability Test Types
 
-#### 💡 Pro Tip: Start with a higher test frequency during initial setup or after major changes, then adjust based on your application's stability.
+Application Insights supports four availability test types:
+
+| Type | Best For | Complexity |
+|------|----------|-----------|
+| **URL Ping (Classic)** | Simple HTTP endpoint check | ⭐ Low |
+| **Standard Test** | SSL expiry check + custom headers + HTTP verbs | ⭐⭐ Medium |
+| **Multi-Step Web Test** | Complex user journey simulation | ⭐⭐⭐ High |
+| **Custom TrackAvailability** | Fully custom test logic via SDK | ⭐⭐⭐⭐ Expert |
+
+This lab uses the **URL Ping (Classic)** test — the simplest and most common starting point for availability monitoring.
+
+---
+
+## 🚀 Step-by-Step Implementation
+
+### Step 1: Get the Application FQDN
+
+1. **🌐 Retrieve the ALB FQDN**
+
+   ```bash
+   fqdn=$(kubectl get gateway gateway-01 \
+     -n thomasthorntoncloud \
+     -o jsonpath='{.status.addresses[0].value}')
+   echo "Application URL: http://$fqdn"
+   ```
+
+   **✅ Expected Output:**
+   ```
+   Application URL: http://hgduczcae6bad4g5.fz82.alb.azure.com
+   ```
+
+   > ⚠️ Availability tests require a **publicly accessible** URL. The Azure Application Gateway for Containers FQDN is public — use this as the test URL.
+
+---
+
+### Step 2: Create a Classic URL Ping Test
+
+1. **🔔 Navigate to Availability**
+
+   Azure Portal → Application Insights (`devopsjourneyoct2024ai`) → **Availability** (left pane).
+
+2. **➕ Add Classic Test**
+
+   Click **Add Classic Test**.
+
+3. **🔧 Configure the test**
+
+   | Setting | Value |
+   |---------|-------|
+   | **Test name** | `DevOps Journey App - Homepage` |
+   | **URL** | `http://<your-fqdn>` (from Step 1) |
+   | **Test frequency** | `5 minutes` |
+   | **Test locations** | Select 5 locations (e.g., UK South, West Europe, East US, South East Asia, Australia East) |
+   | **Success criteria — HTTP status code** | `200` |
+   | **Content match (optional)** | `DevOps Journey` (a string expected in the response body) |
+   | **Alert on test failures** | Enabled — `2 of 5` locations fail |
+
+
+4. **💾 Click Create**
+
+   The test begins running from all selected locations within 2-3 minutes.
+
+---
+
+### Step 3: Configure an Availability Alert
+
+1. **🔔 Set up email notifications**
+
+   After creating the test, click the test name → **Alert rules** → **Edit**.
+
+   Configure:
+   - **Aggregation**: Count of locations failed
+   - **Operator**: Greater than or equal to
+   - **Threshold**: `2` (out of 5 locations)
+   - **Frequency**: Every `5 minutes`
+   - **Action group**: Create one with your email address
+
+2. **💾 Save the alert rule**
+
+   Now if 2 or more test locations report failure, you will receive an email alert within 5-10 minutes.
+
+---
+
+### Step 4: View Test Results
+
+After 10-15 minutes, the test has enough data to display meaningful charts.
+
+1. **📊 Navigate to Availability**
+
+   Application Insights → **Availability**.
+
+2. **🔍 Review the scatter chart**
+
+   Each dot represents a test result:
+   - **Green dot** — successful response within SLA
+   - **Red dot** — failed response (non-200 or timeout)
+   - **Y-axis** — response time in milliseconds
+   - **X-axis** — time
+   - **Columns** = test locations
+
+
+3. **📋 Click any dot** to see the request/response details:
+   - Request headers sent
+   - Response code received
+   - Response time
+   - Test location that ran the test
+
+---
+
+## ✅ Validation
+
+**Availability test checklist:**
+- Test appears in the Availability tests list
+- Test shows green results from all 5 locations
+- Response time < 2000ms from all locations
+- Alert rule created and action group configured
+
+**Technical validation:**
+```bash
+# Verify the application is publicly accessible (simulating what the test does)
+fqdn=$(kubectl get gateway gateway-01 \
+  -n thomasthorntoncloud \
+  -o jsonpath='{.status.addresses[0].value}')
+
+# Test from multiple simulated locations using different DNS paths
+curl -s -o /dev/null -w "Status: %{http_code} | Time: %{time_total}s\n" "http://$fqdn"
+
+# Generate consistent traffic to populate availability charts
+for i in {1..30}; do
+  curl -s -o /dev/null "http://$fqdn"
+  sleep 5
+done
+echo "✅ 30 requests sent over 2.5 minutes — check Availability blade"
+```
+
+**✅ Expected Output:**
+```
+Status: 200 | Time: 0.145s
+✅ 30 requests sent over 2.5 minutes — check Availability blade
+```
+
+---
+
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
+
+**Common issues:**
+
+```bash
+# Problem: Availability test shows all failures (red dots)
+# Solution 1: Verify the FQDN is publicly accessible
+curl -v "http://<your-fqdn>"
+# Expected: HTTP/1.1 200 OK
+
+# Solution 2: If using HTTPS, ensure SSL certificate is valid
+curl -v "https://<your-fqdn>" 2>&1 | grep "SSL certificate"
+
+# Problem: Test shows "Cannot parse response" as failure
+# Solution: Ensure the "Content match" string exactly matches text in the response body
+curl "http://<your-fqdn>" | grep -i "DevOps Journey"
+
+# Problem: Availability alerts fire too frequently (noise)
+# Solution: Increase the threshold — require 3/5 locations to fail rather than 2/5
+# Or increase test frequency to 15 minutes to reduce alert sensitivity
+
+# Problem: High response times from Asia Pacific locations
+# Solution: This is expected for UK-hosted apps due to geography
+# Consider deploying to additional Azure regions to improve global latency
+```
+
+</details>
+
+---
+
+## � Key Takeaways
+
+1. **Availability tests run from Azure infrastructure** — the test agents make real HTTP requests from the public internet, so the URL must be publicly accessible. For internal endpoints, use Custom TrackAvailability from within your network.
+2. **Geographic distribution reveals regional issues** — a CDN misconfiguration, DNS propagation issue, or regional Azure outage may affect some locations but not others. Five test locations give you early warning of regional problems before your global users notice.
+3. **Standard Test** is better when you need SSL certificate expiry warnings, custom HTTP request headers, specific HTTP verbs (POST), or content-type matching — URL Ping only does simple GET requests with basic success criteria.
+4. **`2/5 locations failed`** means 2 of 5 geographic test locations received a non-200 response or timeout. The `2/5` threshold reduces false positives — a single transient failure from one location is noise; failures from multiple locations indicate a real outage.
+
+---
+
+## ➡️ What's Next
+
+Your application is now monitored from multiple geographic locations around the clock. In the next lab you'll explore Log Analytics and Container Insights to query AKS cluster and container-level metrics.
+
+**[← Back to Lab 6.1](./1-Application-Insights.md)** | **[Continue to Lab 6.3 →](./3-Log-Analytics-Container-Insights.md)**
+
+---
+
+## 📚 Additional Resources
+
+- 🔗 [Application Insights — Availability overview](https://learn.microsoft.com/en-us/azure/azure-monitor/app/availability-overview)
+- 🔗 [Application Insights — URL Ping test](https://learn.microsoft.com/en-us/azure/azure-monitor/app/monitor-web-app-availability)
+- 🔗 [Application Insights — Standard test](https://learn.microsoft.com/en-us/azure/azure-monitor/app/availability-standard-tests)
+- 🔗 [Application Insights — Custom TrackAvailability](https://learn.microsoft.com/en-us/azure/azure-monitor/app/availability-azure-functions)

@@ -1,105 +1,135 @@
-# DevOps Journey using Azure DevOps
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)&ensp;
+[![Blog](https://img.shields.io/badge/Blog-thomasthornton.cloud-blue?style=flat-square&logo=hashnode)](https://thomasthornton.cloud/)&ensp;
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Thomas_Thornton-0077b5?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/thomas-thornton-21a86b75/)&ensp;
+[![X / Twitter](https://img.shields.io/badge/X-tamstar1234-000000?style=flat-square&logo=x)](https://twitter.com/tamstar1234)
 
-Welcome to your interactive guide through a DevOps journey using Azure DevOps! 🚀
+🎯 [What You'll Learn](#-what-youll-learn) &ensp; ✅ [Prerequisites](#-prerequisites) &ensp; 🗺️ [Lab Sequence](#-lab-sequence) &ensp; 🔄 [CI/CD Flow](#-cicd-flow) &ensp; 🙋 [Getting Help](#-getting-help)
 
-This tutorial will walk you through the entire process, from setting up your pipeline to deploying an application on your Azure Kubernetes cluster.
+# DevOps Journey Using Azure DevOps
 
-## What you will learn
+> **✨ A hands-on, end-to-end DevOps course — from zero pipeline to a fully monitored AKS application.**
 
-- 🛠️ Azure DevOps Setup: Learn how to set up Azure DevOps to begin deploying to Azure using Pipelines as code.
-- 🏗️ Terraform Deployment: Discover how to deploy Azure resources using Terraform modules for efficient infrastructure management.
-- 🚢 Application Deployment to AKS: Deploy a test application to Azure Kubernetes Service (AKS) and understand the deployment process.
-- 🔄 CI/CD Fundamentals: Grasp the concepts of Continuous Integration and Continuous Deployment (CI/CD) with automated application deployments.
-- 📊 Monitoring and Alerting: Explore monitoring and alerting solutions using Application Insights and Container Insights to keep track of your application's health and performance.
+This course walks you through a real-world DevOps setup using Azure DevOps, Terraform, AKS, and Application Insights. Every lab builds on the last, so by the end you'll have a production-style CI/CD pipeline deploying a containerised Python app to Kubernetes — with monitoring and alerting configured.
 
-This setup is designed to reflect a real-world scenario, providing you with practical, applicable skills.
+**No prior Azure DevOps experience required.** If you're comfortable with the Azure portal and a terminal, you're ready.
 
-## 🧭 Tutorial Format
+This course is designed for:
 
-1. Before you begin, please ensure you have reviewed the [prerequisites](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/prerequisites.md). This step is crucial to ensure you have all necessary tools and configurations in place.
-- [ ] Yes
-- [ ] No (Please do so before continuing)
+- **Cloud engineers** who want hands-on Azure DevOps and AKS experience
+- **Developers** looking to understand infrastructure-as-code with Terraform
+- **Teams** wanting a reference implementation for CI/CD on Azure
 
-2. The labs are organised sequentially. You can find them [here](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs). Please complete each lab in order: 1, 2, 3, etc.
+---
 
-By following this structured approach, you will build a strong foundation in DevOps practices using Azure DevOps. This journey is not only about learning but also about applying your knowledge to real-life scenarios. Enjoy your DevOps journey!
+## 🎯 What You'll Learn
 
-## 🗺️ Lab Sequence
+| Topic | Skills Gained |
+|-------|--------------|
+| 🛠️ **Azure DevOps** | Organisations, projects, pipelines-as-code, Workload Identity Federation |
+| 🏗️ **Terraform on Azure** | Remote state, modules, AKS, ACR, VNet, Key Vault, Application Insights |
+| 🐳 **Containers & ACR** | Docker builds, pushing images, service connections |
+| 🚀 **AKS Deployment** | Helm, ALB Controller, Gateway API, kubelogin |
+| 🔄 **CI/CD** | Trigger configuration, automated rollouts, rollout status gating |
+| 📊 **Monitoring** | Application Insights, availability tests, Log Analytics Container Insights |
 
-1. [Initial Setup](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/1-Initial-Setup) starts you off with setting up:
-   - [Azure DevOps Setup](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/1-Azure-DevOps-Setup.md)
-     - [ ] Create an Azure DevOps organisation
-     - [ ] Create a new Azure DevOps project
-     - [ ] Create Azure Workload Identity
+---
 
-2. [Azure Terraform setup](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/2-Azure-Terraform-Remote-Storage.md)
-     - [ ] Create a Blob Storage location for the Terraform state file
-     - [ ] [Create Azure AD Group for AKS Admins](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/1-Initial-Setup/3-Create-Azure-AD-AKS-Admins.md)
-     - [ ] Create an Azure AD group for AKS administrators
+## ✅ Prerequisites
 
-   [Setup Azure DevOps Pipeline](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/2-AzureDevOps-Terraform-Pipeline) The purpose of this lab is to create all of the Azure cloud services you'll need from an environment/infrastructure perspective to run the test application.
-   - [ ] [Pipeline setup](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/2-AzureDevOps-Terraform-Pipeline/1-Setup-AzureDevOps-Pipeline.md)
-   - Configure the Azure DevOps pipeline to create necessary Azure cloud services for your environment
+Before starting, review the full [prerequisites guide](./prerequisites.md). You'll need:
 
-3. [Deploy Application to Azure Container Registry](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/3-Deploy-App-to-ACR) Deploy sample Application to Container Registry.
-   - [ ] [Deploy Application to Azure Container Registry](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md)
-   - Build the Docker image locally
-   - Run the Docker image locally
-   - Deploy the sample application to the Azure Container Registry
+- **Azure subscription** with Contributor access
+- **Azure DevOps organisation** — [create one free](https://dev.azure.com/)
+- **Azure CLI** — `az` installed and authenticated
+- **Terraform** — v1.14+
+- **Docker Desktop** — for local image testing
+- **kubectl** and **kubelogin**
+- **Helm** — v3+
 
-4. [Deploy Application to Azure Kubernetes Cluster](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/4-Deploy-App-AKS) 
-   - [ ] [Add AKS ACR Role assignment](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/1-Add-AKS-ACR-Role-Assignment.md)
-    - Use Terraform to assign roles for AKS managed identity to access the Azure Container Registry
+---
 
-   - [ ] [Add Application Insights to Terraform](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/2-Add-Application-Insights.md)
-     - Integrate Application Insights for monitoring the application
+## 📚 Lab Sequence
 
-   - [ ] [Add Azure Key Vault to Terraform](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/3-Add-KeyVault-to-Terraform.md)
-     - Use Azure Key Vault to store secrets in your Azure DevOps Variable Group
+Complete the labs in order — each builds on the previous.
 
-   - [ ] [Update Pipeline to Deploy Application to AKS](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/4-Deploy-App-AKS/4-Update-Pipeline-Deploy-App-AKS.md)
-     - Update the pipeline to deploy the application to AKS
+| Lab | Title | What You'll Do |
+|:---:|-------|----------------|
+| 1a | 🔧 [Azure DevOps Setup](./labs/1-Initial-Setup/1-Azure-DevOps-Setup.md) | Create org, project, and WIF service connection |
+| 1b | 🗄️ [Terraform Remote State](./labs/1-Initial-Setup/2-Azure-Terraform-Remote-Storage.md) | Create Azure Storage for Terraform state |
+| 1c | 👥 [AKS Admin AD Group](./labs/1-Initial-Setup/3-Create-Azure-AD-AKS-Admins.md) | Create Azure AD group for AKS administrators |
+| 2  | ⚙️ [Terraform Pipeline](./labs/2-AzureDevOps-Terraform-Pipeline/1-Setup-AzureDevOps-Pipeline.md) | Deploy all Azure infrastructure via pipeline |
+| 3  | 📦 [Deploy App to ACR](./labs/3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md) | Build and push Docker image to Azure Container Registry |
+| 4a | 🔑 [Key Vault Secret](./labs/4-Deploy-App-AKS/1-Update-AD-Group-and-Add-KeyVault-Secret.md) | Store App Insights connection string in Key Vault |
+| 4b | 🚀 [Deploy App to AKS](./labs/4-Deploy-App-AKS/2-Update-Pipeline-Deploy-App-AKS.md) | Deploy the containerised app to AKS |
+| 5a | 🔄 [Introduce CI/CD](./labs/5-CICD/1-Introduce-CI-CD-to-your-Pipeline.md) | Add pipeline triggers for automatic runs on push |
+| 5b | 🤖 [Automated Deployments](./labs/5-CICD/2-Automated-Deployment-AKS-Application.md) | Fully automated deploy on every merge to main |
+| 6a | 📊 [Application Insights](./labs/6-Monitoring-and-Alerting/1-Application-Insights.md) | View live telemetry from your running app |
+| 6b | 🔔 [Availability Tests](./labs/6-Monitoring-and-Alerting/2-Application-Insights-Configure-Availability-Test.md) | Configure uptime alerting |
+| 6c | 📋 [Container Insights](./labs/6-Monitoring-and-Alerting/3-Log-Analytics-Container-Insights.md) | Review AKS logs and metrics in Log Analytics |
 
-5. [Introduce CI/CD](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/5-CICD) 
-   - [ ] [Introducing CI/CD to your pipeline](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/1-Introduce-CI-CD-to-your-Pipeline.md)
-     - Configure pipeline triggers for automatic runs
+---
 
-   - [ ] [Automated deployment of your AKS Application](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/5-CICD/2-Automated-Deployment-AKS-Application.md)
-     - Automate the application deployment process to AKS, ensuring updates each time the pipeline runs
+## 📖 How Each Lab Works
 
-6. [Monitoring and Alerting](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/tree/main/labs/6-Monitoring-and-Alerting) 
-   - [ ] [Azure Application Insights](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Monitoring-and-Alerting/1-Application-Insights.md)
-     - Use Application Insights to view telemetry data
+Every lab follows the same pattern:
 
-   - [ ] [Azure Application Insights Availability Tests](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Monitoring-and-Alerting/2-Application-Insights-Configure-Availability-Test.md)
-     - Configure availability tests using Application Insights
+1. **Context** — why this step matters in a real DevOps workflow
+2. **Step-by-step instructions** — exact commands and portal steps
+3. **Expected output** — what success looks like
+4. **Validation** — how to confirm the step worked before moving on
 
-   - [ ] [Log Analytics Container Insights](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/blob/main/labs/6-Monitoring-and-Alerting/3-Log-Analytics-Container-Insights.md)
-     - Review Log Analytics Container Insights
+---
 
-# CI/CD
+## 🔄 CI/CD Flow
 
-Learn how to set up and configure a pipeline that incorporates CI/CD practices:
+Once all labs are complete, your pipeline works like this:
 
-![](images/cicdimage.png)
+```
+Developer pushes to main
+        ↓
+Azure DevOps CI triggers
+        ↓
+Terraform plan → apply  (infrastructure updated)
+        ↓
+Docker build → push to ACR  (new image tagged with Build ID)
+        ↓
+kubectl apply to AKS  (rolling update)
+        ↓
+kubectl rollout status  (pipeline waits for healthy pods)
+        ↓
+Application Insights + Container Insights  (monitoring active)
+```
 
-1. Developer changes code ✍️
-2. Code committed to Azure Repos 📤
-3. CI triggers build 🏗️ : Continuous integration triggers an application build.
-4. CD triggers deployment 🚀 : Continuous deployment within Azure Pipelines triggers an automated deployment with environment-specific configuration values.
-5. App deployed to Kubernetes 🎯 :  Updated application is deployed to an environment-specific Kubernetes cluster.
-6. Monitoring begins 📊 : Application Insights collects and analyzes health, performance, and usage data.
-7. Monitoring continues 📊 : Azure Monitor collects and analyzes health, performance, and usage data.
+---
 
-# Thank you
-Thank you for participating in this tutorial/labs. Your feedback is valuable!
+## 🏗️ Infrastructure Overview
 
-Connect with me on social media:
-<a href= "https://twitter.com/tamstar1234"><img src="https://img.icons8.com/nolan/50/twitter.png"/></a>
-<a href= "https://www.linkedin.com/in/thomas-thornton-21a86b75/"><img src="https://img.icons8.com/nolan/50/linkedin.png"/></a>
+All Azure resources are provisioned by Terraform in Lab 2:
 
-Feel free to check out my blog for more awesome content!
-https://thomasthornton.cloud/ 
+| Resource | Name | Purpose |
+|----------|------|---------|
+| Resource Group | `devopsjourneyoct2024-rg` | Container for all resources |
+| AKS Cluster | `devopsjourneyoct2024` | Kubernetes cluster |
+| Azure Container Registry | `devopsjourneyoct2024acr` | Docker image registry |
+| Key Vault | (from Terraform output) | Secrets management |
+| Application Insights | (from Terraform output) | App telemetry |
+| Log Analytics Workspace | (from Terraform output) | Centralised logging |
+| ALB (App Gateway for Containers) | `devopsjourneyoct2024-alb` | Ingress / load balancing |
 
-Did you find this helpful? Please star and share this repository! ⭐
+---
+
+## 🙋 Getting Help
+
+- 🐛 **Found a bug or issue?** [Open an Issue](https://github.com/thomast1906/DevOps-Journey-Using-Azure-DevOps/issues)
+- 🤝 **Want to contribute?** PRs are welcome!
+- 📝 **Blog posts and deeper dives:** [thomasthornton.cloud](https://thomasthornton.cloud/)
+- 💬 **Connect:** [LinkedIn](https://www.linkedin.com/in/thomas-thornton-21a86b75/) · [X / Twitter](https://twitter.com/tamstar1234)
+
+---
+
+Did you find this helpful? Please ⭐ star and share the repository!
+
+## License
+
+This project is licensed under the terms of the MIT open source license. Please refer to the [LICENSE](./LICENSE) file for the full terms.
 
