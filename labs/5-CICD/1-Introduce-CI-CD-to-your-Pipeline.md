@@ -1,32 +1,30 @@
 # 🔄 Introduce CI/CD Pipeline Triggers
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Understand why `trigger: none` prevents automatic runs** — and when that is intentional
-- [ ] **Configure a branch-based trigger** — so every push to `main` automatically kicks off the pipeline
-- [ ] **Understand `batch: true`** — and how it prevents overlapping pipeline runs
-- [ ] **Verify the CI trigger works** — by making a test commit and observing automatic execution
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Understand why `trigger: none` prevents automatic runs — and when that is intentional
+- Configure a branch-based trigger — so every push to `main` automatically kicks off the pipeline
+- Understand `batch: true` — and how it prevents overlapping pipeline runs
+- Verify the CI trigger works — by making a test commit and observing automatic execution
 
-**✅ Required Knowledge:**
-- [ ] Azure DevOps pipeline YAML basics
-- [ ] Git branching and push workflows
+> ⏱️ **Estimated Time**: ~10 minutes
 
-**🔧 Required Tools:**
-- [ ] Git
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 4 — Deploy App to AKS](../4-Deploy-App-AKS/2-Update-Pipeline-Deploy-App-AKS.md)
-- [ ] Working pipeline that successfully runs all stages manually
+Before starting, ensure you have:
+
+- **Git** installed
+- **Completed [Lab 4 — Deploy App to AKS](../4-Deploy-App-AKS/2-Update-Pipeline-Deploy-App-AKS.md)**
+- **Working pipeline** that successfully runs all stages manually
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Review the Current Trigger Configuration**
+### Step 1: Review the Current Trigger Configuration
 
 Your current pipeline has the following trigger at the top of the YAML:
 
@@ -40,7 +38,7 @@ This means the pipeline will **only run when manually triggered** from the Azure
 
 ---
 
-### **Step 2: Update the Pipeline Trigger**
+### Step 2: Update the Pipeline Trigger
 
 1. **📝 Open your pipeline YAML file**
 
@@ -82,7 +80,7 @@ This means the pipeline will **only run when manually triggered** from the Azure
 
 ---
 
-### **Step 3: Verify Automatic Trigger**
+### Step 3: Verify Automatic Trigger
 
 1. **🔍 Navigate to Pipelines in Azure DevOps**
 
@@ -105,15 +103,15 @@ This means the pipeline will **only run when manually triggered** from the Azure
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 CI/CD Validation:**
-- [ ] Trigger changed from `none` to branch-based
-- [ ] Push to `main` automatically starts a new pipeline run
-- [ ] Pipeline run shows "CI" as the trigger source (not "Manual")
-- [ ] All pipeline stages complete successfully
+**CI/CD checklist:**
+- Trigger changed from `none` to branch-based
+- Push to `main` automatically starts a new pipeline run
+- Pipeline run shows "CI" as the trigger source (not "Manual")
+- All pipeline stages complete successfully
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # Verify the trigger is set correctly in the YAML
 grep -A 5 "^trigger:" pipelines/lab5pipeline.yaml
@@ -140,9 +138,8 @@ inProgress  batchedCI refs/heads/main
 
 ---
 
-## 🚨 **Troubleshooting Guide**
-
-**❌ Common Issues:**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
 ```bash
 # Problem: Push to main does not trigger the pipeline
@@ -174,47 +171,28 @@ trigger:
 # Solution: Ensure batch: true is set to merge concurrent pushes into one run
 ```
 
----
-
-## 💡 **Knowledge Check**
-
-**🎯 Questions:**
-1. What does `trigger: none` mean, and when is it useful?
-2. What does `batch: true` do when multiple commits arrive during a pipeline run?
-3. How would you configure the trigger to only run on changes to the `app/` directory?
-4. What is the difference between a CI trigger and a PR trigger in Azure Pipelines?
-
-**📝 Answers:**
-1. **`trigger: none` disables automatic triggering** — the pipeline only runs when manually started from the Azure DevOps UI. It is useful during initial setup, debugging, or when you want full control over when deployments happen (e.g., production gated deployments).
-2. **`batch: true` queues concurrent commits** — if commits are pushed while a pipeline run is in progress, they are batched together and processed as a single run once the current run finishes. Without batching, every commit would queue its own run, potentially causing a backlog of redundant deployments.
-3. **Use the `paths` filter** in the trigger:
-   ```yaml
-   trigger:
-     batch: true
-     branches:
-       include:
-         - main
-     paths:
-       include:
-         - app/**
-   ```
-   This only triggers the pipeline when files inside `app/` change.
-4. **CI trigger (`trigger:`)** fires on pushes directly to the specified branch. **PR trigger (`pr:`)** fires when a pull request is opened or updated targeting the specified branch. CI triggers are for merged code; PR triggers are for code review validation before merge.
+</details>
 
 ---
 
-## 🎯 **Next Steps**
+## � Key Takeaways
 
-**✅ Upon Completion:**
-- [ ] Pipeline trigger changed from `none` to branch-based (`main`)
-- [ ] `batch: true` configured to prevent run overlap
-- [ ] Automatic pipeline run confirmed after push
-
-**➡️ Continue to:** [Lab 5.2 — Automated AKS Application Deployment](./2-Automated-Deployment-AKS-Application.md)
+1. **`trigger: none` disables automatic triggering** — the pipeline only runs when manually started. It is useful during initial setup or when you want full control over when deployments happen.
+2. **`batch: true` queues concurrent commits** — if commits are pushed while a pipeline run is in progress, they are batched together and processed as a single run once the current run finishes. Without batching, every commit would queue its own run.
+3. **Use the `paths` filter** to only trigger on relevant changes, for example `app/**` to skip doc-only commits.
+4. **CI trigger (`trigger:`) fires on pushes** to the specified branch. **PR trigger (`pr:`)** fires when a pull request is opened or updated targeting the specified branch — for code review validation before merge.
 
 ---
 
-## 📚 **Additional Resources**
+## ➡️ What's Next
+
+Your pipeline now triggers automatically on every push to `main`. In the next lab you'll switch to the `latest` Docker tag so every pipeline run automatically rolls out the newest image to AKS.
+
+**[← Back to Lab 4.2](../4-Deploy-App-AKS/2-Update-Pipeline-Deploy-App-AKS.md)** | **[Continue to Lab 5.2 →](./2-Automated-Deployment-AKS-Application.md)**
+
+---
+
+## 📚 Additional Resources
 
 - 🔗 [Azure Pipelines — Triggers](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/trigger)
 - 🔗 [Azure Pipelines — CI trigger batching](https://learn.microsoft.com/en-us/azure/devops/pipelines/build/triggers?view=azure-devops#batching-ci-runs)

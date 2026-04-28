@@ -1,34 +1,32 @@
 # 📦 Deploy Python/Flask Application to Azure Container Registry
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Create an ACR service connection using WIF** — secretless Docker registry authentication in Azure Pipelines
-- [ ] **Update pipeline variables** — point the build stage at your ACR and Dockerfile
-- [ ] **Copy the app folder to your Azure DevOps repo** — so the pipeline can build the image
-- [ ] **Run the pipeline** — to build and push the Python/Flask Docker image to ACR
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Create an ACR service connection using WIF — secretless Docker registry authentication in Azure Pipelines
+- Update pipeline variables — point the build stage at your ACR and Dockerfile
+- Copy the app folder to your Azure DevOps repo — so the pipeline can build the image
+- Run the pipeline — to build and push the Python/Flask Docker image to ACR
 
-**✅ Required Knowledge:**
-- [ ] Basic Docker concepts (images, containers, tags)
-- [ ] Azure Container Registry concepts
+> ⏱️ **Estimated Time**: ~20 minutes
 
-**🔧 Required Tools:**
-- [ ] Docker Desktop installed (for local testing in [docker-image-locally.md](./docker-image-locally.md))
-- [ ] Azure CLI authenticated
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 2 — Terraform Pipeline](../2-AzureDevOps-Terraform-Pipeline/1-Setup-AzureDevOps-Pipeline.md) — ACR provisioned
-- [ ] ACR name from Terraform output: `devopsjourneyoct2024acr`
-- [ ] Azure DevOps project and repository from Lab 2
+Before starting, ensure you have:
+
+- **Docker Desktop** installed (for local testing in [docker-image-locally.md](./docker-image-locally.md))
+- **Azure CLI** authenticated
+- **Completed [Lab 2 — Terraform Pipeline](../2-AzureDevOps-Terraform-Pipeline/1-Setup-AzureDevOps-Pipeline.md)** — ACR provisioned
+- **ACR name** from Terraform output: `devopsjourneyoct2024acr`
+- **Azure DevOps project and repository** from Lab 2
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Test the Docker Image Locally**
+### Step 1: Test the Docker Image Locally
 
 Before pushing to ACR, verify the image builds and runs correctly on your local machine.
 
@@ -50,7 +48,7 @@ curl http://localhost:5000
 
 ---
 
-### **Step 2: Create an ACR Service Connection (WIF)**
+### Step 2: Create an ACR Service Connection (WIF)
 
 The pipeline uses Workload Identity Federation to authenticate to ACR — no passwords or tokens stored.
 
@@ -82,7 +80,7 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 
 ---
 
-### **Step 3: Copy the Application to Your Azure DevOps Repository**
+### Step 3: Copy the Application to Your Azure DevOps Repository
 
 1. **📂 Copy the `app` folder**
 
@@ -103,7 +101,7 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 
 ---
 
-### **Step 4: Update the Pipeline YAML**
+### Step 4: Update the Pipeline YAML
 
 1. **📝 Update pipeline variables**
 
@@ -139,7 +137,7 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 
 ---
 
-### **Step 5: Run the Pipeline and Verify**
+### Step 5: Run the Pipeline and Verify
 
 1. **▶️ Run the pipeline**
 
@@ -164,14 +162,14 @@ The pipeline uses Workload Identity Federation to authenticate to ACR — no pas
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Infrastructure Validation:**
-- [ ] ACR service connection appears in Project Settings → Service connections
-- [ ] Pipeline Build stage completes with green tick
-- [ ] Image tag visible in ACR repository
+**Infrastructure checklist:**
+- ACR service connection appears in Project Settings → Service connections
+- Pipeline Build stage completes with green tick
+- Image tag visible in ACR repository
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # List images in ACR
 az acr repository show-tags \
@@ -199,9 +197,8 @@ Result
 
 ---
 
-## 🚨 **Troubleshooting Guide**
-
-**❌ Common Issues:**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
 ```bash
 # Problem: Docker build fails with "cannot find Dockerfile"
@@ -228,37 +225,28 @@ docker run -d -p 5000:5000 devopsjourneyapp:local
 curl http://localhost:5000
 ```
 
+</details>
+
 ---
 
-## 💡 **Knowledge Check**
+## � Key Takeaways
 
-**🎯 Questions:**
-1. Why is Workload Identity Federation preferred over a username/password Docker registry connection?
-2. What is the purpose of tagging the Docker image with `$(Build.BuildId)`?
-3. What base image does the Python/Flask application use, and why `slim`?
-4. Why must the `app/` folder be committed to the Azure DevOps repository rather than referenced from GitHub?
-
-**📝 Answers:**
-1. **WIF uses short-lived OIDC tokens** — there are no credentials to store, rotate, or leak. The Azure DevOps identity federates with Entra ID to obtain a token at pipeline runtime.
+1. **WIF uses short-lived OIDC tokens** — no credentials to store, rotate, or leak. The Azure DevOps identity federates with Entra ID to obtain a token at pipeline runtime.
 2. **`$(Build.BuildId)` creates unique, traceable tags** — each pipeline run produces a uniquely tagged image. This enables rollbacks to any previous build and ensures you know exactly which pipeline run produced a given image.
-3. **`python:3.13-slim`** — `slim` variants contain only the minimum packages needed to run Python, resulting in significantly smaller images (~70MB vs ~1GB for full). Smaller images mean faster pulls, smaller attack surface, and lower registry storage costs.
+3. **`python:3.13-slim` keeps images small** — `slim` variants contain only the minimum packages needed to run Python (~70MB vs ~1GB for full). Smaller images mean faster pulls, smaller attack surface, and lower registry storage costs.
 4. **Azure Pipelines builds from the repo** — the pipeline agent checks out the Azure DevOps repository and looks for the Dockerfile relative to `$(Build.SourcesDirectory)`. Files only in GitHub are not accessible to the Azure DevOps pipeline agent.
 
 ---
 
-## 🎯 **Next Steps**
+## ➡️ What's Next
 
-**✅ Upon Completion:**
-- [ ] ACR WIF service connection created: `devopsjourneyoct2024acr`
-- [ ] `app/` folder committed to Azure DevOps repo
-- [ ] Pipeline updated with Docker build variables
-- [ ] Pipeline run successfully — image visible in ACR
+Your Docker image is now building and pushing to ACR on every pipeline run. In the next lab you'll configure the pipeline identity's AKS access and store the App Insights connection string securely.
 
-**➡️ Continue to:** [Lab 4 — Deploy Application to AKS](../4-Deploy-App-AKS/1-Update-AD-Group-and-Add-KeyVault-Secret.md)
+**[← Back to Lab 2](../2-AzureDevOps-Terraform-Pipeline/1-Setup-AzureDevOps-Pipeline.md)** | **[Continue to Lab 4 →](../4-Deploy-App-AKS/1-Update-AD-Group-and-Add-KeyVault-Secret.md)**
 
 ---
 
-## 📚 **Additional Resources**
+## 📚 Additional Resources
 
 - 🔗 [Azure Container Registry — Authentication overview](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication)
 - 🔗 [Docker task in Azure Pipelines](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/docker-v2)

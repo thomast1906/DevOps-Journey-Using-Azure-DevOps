@@ -1,32 +1,30 @@
 # ♻️ Automated Rolling Deployments to AKS
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Switch the image tag from `$(Build.BuildId)` to `latest`** — enabling the pipeline to always use the most recent build
-- [ ] **Add `imagePullPolicy: Always`** — forcing AKS to pull the latest image on every pod restart or rolling update
-- [ ] **Understand zero-downtime rolling updates** — how Kubernetes replaces pods without service interruption
-- [ ] **Verify the automated deployment** — by observing new pods running the `latest` image after a pipeline run
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Switch the image tag from `$(Build.BuildId)` to `latest` — enabling the pipeline to always use the most recent build
+- Add `imagePullPolicy: Always` — forcing AKS to pull the latest image on every pod restart or rolling update
+- Understand zero-downtime rolling updates — how Kubernetes replaces pods without service interruption
+- Verify the automated deployment — by observing new pods running the `latest` image after a pipeline run
 
-**✅ Required Knowledge:**
-- [ ] Kubernetes Deployment and rolling update concepts
-- [ ] Docker image tagging strategies
+> ⏱️ **Estimated Time**: ~15 minutes
 
-**🔧 Required Tools:**
-- [ ] `kubectl` installed and configured (AKS credentials from Lab 4)
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 5.1 — CI/CD Trigger](./1-Introduce-CI-CD-to-your-Pipeline.md)
-- [ ] Application successfully deployed to AKS (Lab 4)
+Before starting, ensure you have:
+
+- **`kubectl`** installed and configured (AKS credentials from Lab 4)
+- **Completed [Lab 5.1 — CI/CD Trigger](./1-Introduce-CI-CD-to-your-Pipeline.md)**
+- **Application successfully deployed to AKS** (Lab 4)
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Understand the Problem with Hardcoded Build IDs**
+### Step 1: Understand the Problem with Hardcoded Build IDs
 
 In Lab 4, the `app.yaml` had a hardcoded image tag:
 
@@ -42,7 +40,7 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
 ---
 
-### **Step 2: Update `app.yaml` to Use `latest` Tag**
+### Step 2: Update `app.yaml` to Use `latest` Tag
 
 1. **📝 Open the Kubernetes manifest**
 
@@ -72,7 +70,7 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
 ---
 
-### **Step 3: Update the Pipeline Tag to `latest`**
+### Step 3: Update the Pipeline Tag to `latest`
 
 1. **📝 Open the pipeline YAML**
 
@@ -96,7 +94,7 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
 ---
 
-### **Step 4: Commit, Push, and Verify**
+### Step 4: Commit, Push, and Verify
 
 1. **💾 Commit all changes**
 
@@ -148,16 +146,16 @@ image: devopsjourneyoct2024acr.azurecr.io/repository:626
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Deployment Validation:**
-- [ ] `app.yaml` uses `latest` tag and `imagePullPolicy: Always`
-- [ ] Pipeline YAML uses `tags: 'latest'`
-- [ ] ACR shows `latest` tag after pipeline run
-- [ ] AKS pods show `repository:latest` image
-- [ ] Application still responds correctly via ALB FQDN
+**Deployment checklist:**
+- `app.yaml` uses `latest` tag and `imagePullPolicy: Always`
+- Pipeline YAML uses `tags: 'latest'`
+- ACR shows `latest` tag after pipeline run
+- AKS pods show `repository:latest` image
+- Application still responds correctly via ALB FQDN
 
-**🔧 Full Validation Script:**
+**Full validation script:**
 ```bash
 #!/bin/bash
 echo "=== Checking ACR for latest tag ==="
@@ -182,9 +180,10 @@ echo "HTTP Status: $HTTP_CODE"
 
 ---
 
-## 🚨 **Troubleshooting Guide**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
-**❌ Common Issues:**
+**Common issues:**
 
 ```bash
 # Problem: Pods still running the old image tag after pipeline runs
@@ -207,37 +206,28 @@ az role assignment list \
   --query "[].{Principal:principalName,Role:roleDefinitionName}" -o table
 ```
 
----
-
-## 💡 **Knowledge Check**
-
-**🎯 Questions:**
-1. Why does changing from `$(Build.BuildId)` to `latest` enable automated deployments?
-2. What would happen if `imagePullPolicy` were left as `IfNotPresent` with the `latest` tag?
-3. How does Kubernetes perform a rolling update with zero downtime?
-4. What are the trade-offs of using `latest` in production vs. explicit version tags?
-
-**📝 Answers:**
-1. **The manifest no longer needs to change per build** — with `latest`, every `kubectl apply` references the same image name. With `imagePullPolicy: Always`, AKS pulls the updated image from ACR every time a pod is (re)started. The rolling update replaces old pods with new ones automatically, pulling the fresh `latest` image each time — no manifest update required.
-2. **`IfNotPresent` with `latest` would serve stale images** — Kubernetes checks if the image is cached locally first. Since `latest` was already pulled once, it would reuse the cached version even though ACR now has a newer image under the same tag. `Always` bypasses the local cache and always fetches from the registry.
-3. **Rolling update process**: (1) Kubernetes creates one (or more) new pods with the updated spec; (2) waits until the new pods pass the `readiness` probe; (3) terminates one (or more) old pods; (4) repeats until all replicas are replaced. Traffic is never fully interrupted because old pods serve requests while new pods warm up.
-4. **`latest` is convenient for CI/CD** but provides less traceability and makes rollbacks harder (you cannot pin to a specific build). **Explicit version tags** (e.g., `626`) are better for production — you know exactly which build is running, can roll back by changing the tag, and can audit changes. A common pattern: use `latest` + BuildId in CI pipelines and promote explicit tags to production.
+</details>
 
 ---
 
-## 🎯 **Next Steps**
+## � Key Takeaways
 
-**✅ Upon Completion:**
-- [ ] `app.yaml` updated: `image: ...repository:latest` + `imagePullPolicy: Always`
-- [ ] Pipeline updated: `tags: 'latest'`
-- [ ] Push to `main` triggers automatic pipeline run
-- [ ] New pods running `repository:latest` confirmed in AKS
-
-**➡️ Continue to:** [Lab 6 — Application Insights Monitoring](../6-Monitoring-and-Alerting/1-Application-Insights.md)
+1. **Switching from `$(Build.BuildId)` to `latest`** means the manifest never needs to change per build. With `imagePullPolicy: Always`, AKS pulls the updated image from ACR every time a pod is restarted, enabling truly automated deployments.
+2. **`IfNotPresent` with `latest` serves stale images** — Kubernetes reuses the cached version even though ACR has a newer image under the same tag. `Always` bypasses the local cache.
+3. **Rolling update process**: (1) Create new pods with updated spec; (2) wait for readiness probe to pass; (3) terminate old pods; (4) repeat until all replicas are replaced — no traffic interruption.
+4. **`latest` is convenient for CI/CD** but reduces traceability. Explicit version tags are better for production: you know exactly which build is running and can roll back by changing the tag. A common pattern is to use `latest` in CI and promote explicit tags to production.
 
 ---
 
-## 📚 **Additional Resources**
+## ➡️ What's Next
+
+You now have a fully automated CI/CD pipeline — every push to `main` builds, tags, and deploys your application to AKS with zero manual steps. In the next lab you'll add observability by connecting Application Insights to your running application.
+
+**[← Back to Lab 5.1](./1-Introduce-CI-CD-to-your-Pipeline.md)** | **[Continue to Lab 6 →](../6-Monitoring-and-Alerting/1-Application-Insights.md)**
+
+---
+
+## 📚 Additional Resources
 
 - 🔗 [Kubernetes — Rolling update strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment)
 - 🔗 [Kubernetes — Image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy)

@@ -1,34 +1,31 @@
 # 🔑 Configure AD Group, App Insights Connection String & Key Vault
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Add the WIF service principal to the AKS admin AD group** — so the pipeline can authenticate to AKS for deployments
-- [ ] **Retrieve the Application Insights connection string** — required by the `azure-monitor-opentelemetry` SDK
-- [ ] **Store the connection string as a Key Vault secret** — so the pipeline can inject it securely into Kubernetes
-- [ ] **Create an Azure DevOps variable group** — linking the Key Vault secret for use in the pipeline
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Add the WIF service principal to the AKS admin AD group — so the pipeline can authenticate to AKS for deployments
+- Retrieve the Application Insights connection string — required by the `azure-monitor-opentelemetry` SDK
+- Store the connection string as a Key Vault secret — so the pipeline can inject it securely into Kubernetes
+- Create an Azure DevOps variable group — linking the Key Vault secret for use in the pipeline
 
-**✅ Required Knowledge:**
-- [ ] Entra ID group membership management
-- [ ] Azure Key Vault secrets
-- [ ] Azure DevOps variable groups
+> ⏱️ **Estimated Time**: ~15 minutes
 
-**🔧 Required Tools:**
-- [ ] Azure CLI authenticated (`az login`)
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 3 — Deploy App to ACR](../3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md)
-- [ ] AKS, Key Vault, and Application Insights provisioned by Terraform (Lab 2)
-- [ ] Entra ID group `devopsjourney-aks-group-oct2024` created (Lab 1.3)
+Before starting, ensure you have:
+
+- **Azure CLI** authenticated (`az login`)
+- **Completed [Lab 3 — Deploy App to ACR](../3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md)**
+- **AKS, Key Vault, and Application Insights** provisioned by Terraform (Lab 2)
+- **Entra ID group** `devopsjourney-aks-group-oct2024` created (Lab 1.3)
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Add the WIF Service Principal to the AKS Admin Group**
+### Step 1: Add the WIF Service Principal to the AKS Admin Group
 
 The Workload Identity Federation service principal needs to be a member of the `devopsjourney-aks-group-oct2024` group. This grants the pipeline identity **AKS Cluster Admin** RBAC to run `kubectl apply` during the deploy stage.
 
@@ -79,7 +76,7 @@ The Workload Identity Federation service principal needs to be a member of the `
 
 ---
 
-### **Step 2: Get the Application Insights Connection String**
+### Step 2: Get the Application Insights Connection String
 
 > ⚠️ **Important**: The app uses `azure-monitor-opentelemetry==1.8.7` which requires the **full Connection String** — NOT just the Instrumentation Key. The connection string includes endpoint URLs needed by the OpenTelemetry exporter. The environment variable name is `APPLICATIONINSIGHTS_CONNECTION_STRING`.
 
@@ -110,7 +107,7 @@ The Workload Identity Federation service principal needs to be a member of the `
 
 ---
 
-### **Step 3: Store the Connection String in Key Vault**
+### Step 3: Store the Connection String in Key Vault
 
 The pipeline reads the connection string from Key Vault and injects it as a Kubernetes secret. The Python app reads `APPLICATIONINSIGHTS_CONNECTION_STRING` at startup.
 
@@ -151,7 +148,7 @@ The pipeline reads the connection string from Key Vault and injects it as a Kube
 
 ---
 
-### **Step 4: Create an Azure DevOps Variable Group**
+### Step 4: Create an Azure DevOps Variable Group
 
 The variable group links to Key Vault and makes the `AIKEY` secret available to pipelines as `$(AIKEY)`.
 
@@ -175,14 +172,14 @@ The variable group links to Key Vault and makes the `AIKEY` secret available to 
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Infrastructure Validation:**
-- [ ] WIF service principal is a member of `devopsjourney-aks-group-oct2024`
-- [ ] Key Vault secret `AIKEY` contains the full App Insights connection string
-- [ ] Azure DevOps variable group `devopsjourney` is created and linked to Key Vault
+**Infrastructure checklist:**
+- WIF service principal is a member of `devopsjourney-aks-group-oct2024`
+- Key Vault secret `AIKEY` contains the full App Insights connection string
+- Azure DevOps variable group `devopsjourney` is created and linked to Key Vault
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # Verify WIF SP is in the group
 az ad group member check \
@@ -217,9 +214,8 @@ AIKEY   True
 
 ---
 
-## 🚨 **Troubleshooting Guide**
-
-**❌ Common Issues:**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
 ```bash
 # Problem: "Insufficient privileges" adding SP to group
@@ -247,36 +243,28 @@ az monitor app-insights component list \
   --query "[].{Name:name, Kind:kind}" -o table
 ```
 
+</details>
+
 ---
 
-## 💡 **Knowledge Check**
+## � Key Takeaways
 
-**🎯 Questions:**
-1. Why does the WIF service principal need to be in the AKS admin AD group?
-2. What is the difference between an **Instrumentation Key** and a **Connection String** for Application Insights?
-3. Why is the connection string stored in Key Vault rather than directly as a pipeline variable?
-4. How does the `azure-monitor-opentelemetry` SDK locate the connection string at runtime in Kubernetes?
-
-**📝 Answers:**
 1. **The AKS cluster uses Azure RBAC** — the admin group has **Azure Kubernetes Service Cluster Admin** role. The pipeline's WIF service principal must be a group member to run `az aks get-credentials` and execute `kubectl apply` during the deployment stage.
-2. **The Instrumentation Key is just a GUID**; the **Connection String** is the full endpoint configuration (`InstrumentationKey=...;IngestionEndpoint=...;LiveEndpoint=...`). The `azure-monitor-opentelemetry` SDK and the OpenTelemetry Azure Monitor exporter require the connection string to know which regional endpoint to send telemetry to. The instrumentation key alone is legacy and insufficient.
+2. **The connection string is required, not just the Instrumentation Key** — the `azure-monitor-opentelemetry` SDK uses the OpenTelemetry Azure Monitor exporter, which needs the full `InstrumentationKey=...;IngestionEndpoint=...;LiveEndpoint=...` string to reach the correct regional endpoint.
 3. **Key Vault provides secret governance** — rotation, access auditing, RBAC, and soft-delete protection. Pipeline variables (even marked secret) are stored in Azure DevOps and lack the enterprise controls of Key Vault.
-4. **The Kubernetes deployment manifest** (`app.yaml`) references a Kubernetes secret `aikey` with key `aisecret`. The pipeline creates this secret from `$(AIKEY)` (the variable group value). The pod then has `APPLICATIONINSIGHTS_CONNECTION_STRING` injected as an environment variable from the Kubernetes secret, and the SDK reads it automatically at startup.
+4. **The Kubernetes deployment manifest** references a Kubernetes secret `aikey`. The pipeline creates this secret from `$(AIKEY)` (the variable group value), and the pod receives `APPLICATIONINSIGHTS_CONNECTION_STRING` as an environment variable at startup.
 
 ---
 
-## 🎯 **Next Steps**
+## ➡️ What's Next
 
-**✅ Upon Completion:**
-- [ ] WIF service principal added to `devopsjourney-aks-group-oct2024`
-- [ ] Key Vault secret `AIKEY` contains the full App Insights connection string
-- [ ] Azure DevOps variable group `devopsjourney` created and linked to Key Vault
+The pipeline identity has AKS access and the App Insights connection string is securely stored. In the next lab you'll add the Deploy stage to push the application to AKS.
 
-**➡️ Continue to:** [Lab 4.2 — Update Pipeline to Deploy App to AKS](./2-Update-Pipeline-Deploy-App-AKS.md)
+**[← Back to Lab 3](../3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md)** | **[Continue to Lab 4.2 →](./2-Update-Pipeline-Deploy-App-AKS.md)**
 
 ---
 
-## 📚 **Additional Resources**
+## 📚 Additional Resources
 
 - 🔗 [Application Insights — Connection strings](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string)
 - 🔗 [azure-monitor-opentelemetry — PyPI](https://pypi.org/project/azure-monitor-opentelemetry/)

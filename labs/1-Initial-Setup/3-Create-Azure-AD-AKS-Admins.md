@@ -1,32 +1,30 @@
 # 👥 Create Azure AD Group for AKS Admins
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Create an Azure AD security group** — the group that controls `kubectl` admin access to AKS
-- [ ] **Add your current user to the group** — so you can interact with the cluster after it is provisioned
-- [ ] **Record the Group Object ID** — used as `admin_object_id` in Terraform to grant Key Vault and AKS admin RBAC
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Create an Azure AD security group — the group that controls `kubectl` admin access to AKS
+- Add your current user to the group — so you can interact with the cluster after it is provisioned
+- Record the Group Object ID — used as `admin_object_id` in Terraform to grant Key Vault and AKS admin RBAC
 
-**✅ Required Knowledge:**
-- [ ] Understanding of Azure Active Directory (Entra ID) groups
-- [ ] Familiarity with RBAC concepts
+> ⏱️ **Estimated Time**: ~5 minutes
 
-**🔧 Required Tools:**
-- [ ] Azure CLI installed and authenticated (`az login`)
-- [ ] Bash
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 1.2 — Terraform Remote Storage](./2-Azure-Terraform-Remote-Storage.md)
-- [ ] Sufficient Entra ID permissions to create groups and add members (at minimum **Groups Administrator** or **User Administrator** role)
+Before starting, ensure you have:
+
+- **Azure CLI** installed and authenticated (`az login`)
+- **Bash** terminal
+- **Completed [Lab 1.2 — Terraform Remote Storage](./2-Azure-Terraform-Remote-Storage.md)**
+- **Sufficient Entra ID permissions** to create groups and add members (at minimum **Groups Administrator** or **User Administrator** role)
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Run the AD Group Creation Script**
+### Step 1: Run the AD Group Creation Script
 
 1. **▶️ Execute the script**
 
@@ -51,9 +49,9 @@ By the end of this lab, you will:
    ```
 
    **What the script does:**
-   - [ ] Creates an Entra ID security group named `devopsjourney-aks-group-oct2024`
-   - [ ] Adds the currently authenticated Azure CLI user as a group member
-   - [ ] Outputs the **Group Object ID** — copy this, you will need it in Lab 2
+   - Creates an Entra ID security group named `devopsjourney-aks-group-oct2024`
+   - Adds the currently authenticated Azure CLI user as a group member
+   - Outputs the **Group Object ID** — copy this, you will need it in Lab 2
 
 2. **📋 Save the Group Object ID**
 
@@ -63,7 +61,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Verify Group Creation in the Portal**
+### Step 2: Verify Group Creation in the Portal
 
 1. **🌐 Navigate to Azure Portal**
 
@@ -76,14 +74,14 @@ By the end of this lab, you will:
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Infrastructure Validation:**
-- [ ] Group `devopsjourney-aks-group-oct2024` visible in Entra ID → Groups
-- [ ] Your user account appears as a member
-- [ ] Group Object ID has been recorded
+**Infrastructure checklist:**
+- Group `devopsjourney-aks-group-oct2024` visible in Entra ID → Groups
+- Your user account appears as a member
+- Group Object ID has been recorded
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # Verify the group exists and get its ID
 az ad group show \
@@ -109,9 +107,8 @@ you@yourdomain.com             Your Name
 
 ---
 
-## 🚨 **Troubleshooting Guide**
-
-**❌ Common Issues:**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
 ```bash
 # Problem: "Insufficient privileges to complete the operation"
@@ -133,36 +130,28 @@ az ad group member add \
 az ad group show --group "devopsjourney-aks-group-oct2024" --query id -o tsv
 ```
 
+</details>
+
 ---
 
-## 💡 **Knowledge Check**
+## � Key Takeaways
 
-**🎯 Questions:**
-1. Why do we use an Azure AD group for AKS admin access rather than granting access directly to individual users?
-2. What is the `admin_object_id` value used for in Terraform?
-3. How would you add the Azure DevOps Workload Identity to this group in a later lab?
-4. What is the difference between Entra ID group-based RBAC and AKS local accounts?
-
-**📝 Answers:**
 1. **Group-based access is scalable and auditable** — adding or removing team members only requires group membership changes, not infrastructure re-deployments. Groups also simplify access reviews.
 2. **`admin_object_id` is passed to Terraform** to create two RBAC assignments: (a) **Key Vault Administrator** so the group can manage secrets, and (b) **Azure Kubernetes Service Cluster Admin** so members can run `kubectl` commands against the cluster.
-3. In Lab 4, you retrieve the service principal created by the WIF service connection (from Azure DevOps → Project Settings → Service Connections → Manage Workload Identity) and run: `az ad group member add --group devopsjourney-aks-group-oct2024 --member-id <sp-object-id>`
+3. **To add the WIF service principal later**: retrieve the SP created by the WIF service connection from Azure DevOps → Project Settings → Service Connections → Manage Workload Identity, then run: `az ad group member add --group devopsjourney-aks-group-oct2024 --member-id <sp-object-id>`
 4. **Entra ID RBAC** integrates with your organisation's identity provider — SSO, MFA, and conditional access apply. **Local accounts** (`--disable-local-accounts`) are legacy and bypass Entra ID controls; disabling them is a security best practice.
 
 ---
 
-## 🎯 **Next Steps**
+## ➡️ What's Next
 
-**✅ Upon Completion:**
-- [ ] Entra ID group `devopsjourney-aks-group-oct2024` created
-- [ ] Your user added as a group member
-- [ ] **Group Object ID recorded** (needed as `admin_object_id` in Lab 2)
+You now have an Entra ID admin group ready for AKS RBAC. The Group Object ID will be used as `admin_object_id` in your Terraform variables in Lab 2.
 
-**➡️ Continue to:** [Lab 2 — Set Up Azure DevOps Terraform Pipeline](../2-AzureDevOps-Terraform-Pipeline/1-Setup-AzureDevOps-Pipeline.md)
+**[← Back to Lab 1.2](./2-Azure-Terraform-Remote-Storage.md)** | **[Continue to Lab 2 →](../2-AzureDevOps-Terraform-Pipeline/1-Setup-AzureDevOps-Pipeline.md)**
 
 ---
 
-## 📚 **Additional Resources**
+## 📚 Additional Resources
 
 - 🔗 [Azure AD groups overview](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/how-to-manage-groups)
 - 🔗 [AKS — Use Azure RBAC for Kubernetes authorization](https://learn.microsoft.com/en-us/azure/aks/manage-azure-rbac)

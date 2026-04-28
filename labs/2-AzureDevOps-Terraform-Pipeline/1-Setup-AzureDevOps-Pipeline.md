@@ -1,35 +1,33 @@
 # ⚙️ Set Up Azure DevOps Pipeline for Terraform
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Install the Terraform extension** — enabling Terraform tasks (`init`, `plan`, `apply`) in Azure Pipelines
-- [ ] **Create an Azure DevOps repository** — to host all pipeline YAML, Terraform code, and app source
-- [ ] **Configure `production.tfvars`** — with your environment-specific values including `admin_object_id`
-- [ ] **Update the pipeline YAML** — with your Terraform backend (storage account, resource group, service connection)
-- [ ] **Run the pipeline** — to provision the full AKS infrastructure via Terraform
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Install the Terraform extension — enabling Terraform tasks (`init`, `plan`, `apply`) in Azure Pipelines
+- Create an Azure DevOps repository — to host all pipeline YAML, Terraform code, and app source
+- Configure `production.tfvars` — with your environment-specific values including `admin_object_id`
+- Update the pipeline YAML — with your Terraform backend (storage account, resource group, service connection)
+- Run the pipeline — to provision the full AKS infrastructure via Terraform
 
-**✅ Required Knowledge:**
-- [ ] Terraform basics (variables, state, `init`/`plan`/`apply`)
-- [ ] Azure DevOps pipeline concepts (stages, tasks, YAML)
+> ⏱️ **Estimated Time**: ~30 minutes
 
-**🔧 Required Tools:**
-- [ ] Azure DevOps organisation and project (from Lab 1.1)
-- [ ] Azure CLI authenticated (`az login`)
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 1.1 — Azure DevOps Setup](../1-Initial-Setup/1-Azure-DevOps-Setup.md) — WIF service connection created
-- [ ] Completed [Lab 1.2 — Terraform Remote Storage](../1-Initial-Setup/2-Azure-Terraform-Remote-Storage.md) — storage account and container created
-- [ ] Completed [Lab 1.3 — AKS Admin Group](../1-Initial-Setup/3-Create-Azure-AD-AKS-Admins.md) — Group Object ID recorded
+Before starting, ensure you have:
+
+- **Terraform basics** — variables, state, `init`/`plan`/`apply`
+- **Azure DevOps pipeline concepts** — stages, tasks, YAML
+- **Completed [Lab 1.1](../1-Initial-Setup/1-Azure-DevOps-Setup.md)** — WIF service connection created
+- **Completed [Lab 1.2](../1-Initial-Setup/2-Azure-Terraform-Remote-Storage.md)** — storage account and container created
+- **Completed [Lab 1.3](../1-Initial-Setup/3-Create-Azure-AD-AKS-Admins.md)** — Group Object ID recorded
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Install the Terraform Extension**
+### Step 1: Install the Terraform Extension
 
 1. **🔌 Navigate to the Marketplace**
 
@@ -51,7 +49,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Create an Azure DevOps Repository**
+### Step 2: Create an Azure DevOps Repository
 
 1. **📁 Navigate to Repos**
 
@@ -82,7 +80,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 3: Update `production.tfvars`**
+### Step 3: Update `production.tfvars`
 
 1. **📝 Open the tfvars file**
 
@@ -113,7 +111,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 4: Update the Pipeline YAML**
+### Step 4: Update the Pipeline YAML
 
 1. **📝 Open the pipeline YAML**
 
@@ -137,7 +135,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 5: Set Up and Run the Pipeline**
+### Step 5: Set Up and Run the Pipeline
 
 1. **🔧 Create the pipeline in Azure DevOps**
 
@@ -173,16 +171,16 @@ By the end of this lab, you will:
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Infrastructure Validation:**
-- [ ] Pipeline completes all stages (Validate, Plan, Apply) with green ticks
-- [ ] AKS cluster `devopsjourneyoct2024` visible in Azure Portal
-- [ ] ACR `devopsjourneyoct2024acr` created
-- [ ] Key Vault `devopsjourneyoct2024-kv` created with RBAC access control enabled
-- [ ] Application Insights workspace-based resource created
+**Infrastructure checklist:**
+- Pipeline completes all stages (Validate, Plan, Apply) with green ticks
+- AKS cluster `devopsjourneyoct2024` visible in Azure Portal
+- ACR `devopsjourneyoct2024acr` created
+- Key Vault `devopsjourneyoct2024-kv` created with RBAC access control enabled
+- Application Insights workspace-based resource created
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # Verify AKS cluster
 az aks show \
@@ -219,9 +217,8 @@ devopsjourneyoct2024-kv   True
 
 ---
 
-## 🚨 **Troubleshooting Guide**
-
-**❌ Common Issues:**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
 ```bash
 # Problem: Pipeline fails at Terraform Init with "AuthorizationFailed"
@@ -246,38 +243,28 @@ az role assignment create \
   --scope "/subscriptions/<sub-id>/resourceGroups/devops-journey-rg-oct2024/providers/Microsoft.Storage/storageAccounts/devopsjourneyoct2024"
 ```
 
+</details>
+
 ---
 
-## 💡 **Knowledge Check**
+## � Key Takeaways
 
-**🎯 Questions:**
-1. What is the purpose of the `backendServiceArm` variable in the pipeline YAML?
-2. Why is `admin_object_id` used instead of `access_policy_id` in this repo?
-3. What Kubernetes version is this lab targeting, and where is it configured?
-4. Why does the Workload Identity need **User Access Administrator** (not just Contributor)?
-
-**📝 Answers:**
 1. **`backendServiceArm` authenticates Terraform's Azure backend** — it tells the `TerraformTaskV4` task which Azure DevOps service connection to use when reading/writing the remote state file in Azure Blob Storage.
-2. **The Key Vault uses RBAC authorization** (`enableRbacAuthorization = true`) — not legacy access policies. The `admin_object_id` is used to create a **Key Vault Administrator** role assignment, which is the RBAC equivalent. `access_policy_id` was the old name used when Key Vault access policies were configured.
-3. **Kubernetes `1.33`** — configured in `production.tfvars` as `kubernetes_version = "1.33"`. AKS uses the **patch upgrade channel** so patch versions are managed automatically.
+2. **The Key Vault uses RBAC authorization** (`enableRbacAuthorization = true`) — not legacy access policies. The `admin_object_id` creates a **Key Vault Administrator** role assignment. `access_policy_id` was the old name used when Key Vault access policies were configured.
+3. **Kubernetes `1.33`** is configured in `production.tfvars` as `kubernetes_version = "1.33"`. AKS uses the **patch upgrade channel** so patch versions are managed automatically.
 4. **User Access Administrator is needed to create role assignments** — Terraform creates RBAC assignments (e.g., ACR pull for AKS, Key Vault roles) during `terraform apply`. Contributor alone cannot manage role assignments.
 
 ---
 
-## 🎯 **Next Steps**
+## ➡️ What's Next
 
-**✅ Upon Completion:**
-- [ ] Terraform extension installed in Azure DevOps
-- [ ] Azure DevOps repository created
-- [ ] `production.tfvars` updated with your values (including `admin_object_id`)
-- [ ] Pipeline YAML updated with backend configuration
-- [ ] Full AKS infrastructure provisioned via pipeline
+All Azure infrastructure is now provisioned via the Terraform pipeline. In the next lab you'll build and push the Python/Flask Docker image to your new Azure Container Registry.
 
-**➡️ Continue to:** [Lab 3 — Deploy Application to ACR](../3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md)
+**[← Back to Lab 1.3](../1-Initial-Setup/3-Create-Azure-AD-AKS-Admins.md)** | **[Continue to Lab 3 →](../3-Deploy-App-to-ACR/1-Deploy-App-to-ACR.md)**
 
 ---
 
-## 📚 **Additional Resources**
+## 📚 Additional Resources
 
 - 🔗 [Terraform extension for Azure DevOps](https://marketplace.visualstudio.com/items?itemName=ms-devlabs.custom-terraform-tasks)
 - 🔗 [AzureRM Terraform Provider `>= 4.68.0`](https://registry.terraform.io/providers/hashicorp/azurerm/latest)

@@ -1,34 +1,32 @@
 # 🚢 Deploy Application to AKS
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Update `app.yaml`** — with the correct ACR image reference for your environment
-- [ ] **Add a Deploy stage to the pipeline** — to `kubectl apply` the application to AKS
-- [ ] **Configure pipeline resource names** — AKS cluster, resource group, namespace, and VNet
-- [ ] **Test the deployed application** — via the Azure Application Gateway for Containers FQDN
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Update `app.yaml` — with the correct ACR image reference for your environment
+- Add a Deploy stage to the pipeline — to `kubectl apply` the application to AKS
+- Configure pipeline resource names — AKS cluster, resource group, namespace, and VNet
+- Test the deployed application — via the Azure Application Gateway for Containers FQDN
 
-**✅ Required Knowledge:**
-- [ ] Kubernetes manifest basics (Deployment, Service, Ingress)
-- [ ] AKS `kubectl` access concepts
+> ⏱️ **Estimated Time**: ~20 minutes
 
-**🔧 Required Tools:**
-- [ ] `kubectl` installed locally (for validation)
-- [ ] Azure CLI authenticated
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 4.1 — AD Group and Key Vault Setup](./1-Update-AD-Group-and-Add-KeyVault-Secret.md)
-- [ ] Docker image built and pushed to ACR (Lab 3) — note the build ID tag
-- [ ] Variable group `devopsjourney` created with `AIKEY` secret
+Before starting, ensure you have:
+
+- **`kubectl`** installed locally (for validation)
+- **Azure CLI** authenticated
+- **Completed [Lab 4.1 — AD Group and Key Vault Setup](./1-Update-AD-Group-and-Add-KeyVault-Secret.md)**
+- **Docker image** built and pushed to ACR (Lab 3) — note the build ID tag
+- **Variable group** `devopsjourney` created with `AIKEY` secret
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Update `app.yaml` with Your ACR Image**
+### Step 1: Update `app.yaml` with Your ACR Image
 
 1. **📝 Open the Kubernetes manifest**
 
@@ -45,7 +43,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Add the Deploy Stage to the Pipeline**
+### Step 2: Add the Deploy Stage to the Pipeline
 
 1. **📝 Add the deploy stage**
 
@@ -95,7 +93,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 3: Run the Pipeline**
+### Step 3: Run the Pipeline
 
 1. **💾 Commit and push the updated pipeline and manifests**
 
@@ -123,7 +121,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 4: Test the Deployed Application**
+### Step 4: Test the Deployed Application
 
 1. **🔑 Get AKS credentials**
 
@@ -160,15 +158,15 @@ By the end of this lab, you will:
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Infrastructure Validation:**
-- [ ] Pipeline Deploy stage completes successfully
-- [ ] Pods are running in the `thomasthorntoncloud` namespace
-- [ ] Application is reachable via the ALB FQDN
-- [ ] `APPLICATIONINSIGHTS_CONNECTION_STRING` is present in the pod environment
+**Infrastructure checklist:**
+- Pipeline Deploy stage completes successfully
+- Pods are running in the `thomasthorntoncloud` namespace
+- Application is reachable via the ALB FQDN
+- `APPLICATIONINSIGHTS_CONNECTION_STRING` is present in the pod environment
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # Get AKS credentials
 az aks get-credentials --name devopsjourneyoct2024 --resource-group devopsjourneyoct2024-rg
@@ -198,9 +196,8 @@ HTTP Status: 200
 
 ---
 
-## 🚨 **Troubleshooting Guide**
-
-**❌ Common Issues:**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
 ```bash
 # Problem: Pod in CrashLoopBackOff
@@ -225,37 +222,28 @@ az ad group member list --group "devopsjourney-aks-group-oct2024" \
   --query "[].displayName" -o tsv
 ```
 
----
-
-## 💡 **Knowledge Check**
-
-**🎯 Questions:**
-1. How does the pipeline inject the App Insights connection string into the running pod?
-2. What Kubernetes resources does `app.yaml` create?
-3. Why is the ALB controller deployed to the `azure-alb-system` namespace rather than `thomasthorntoncloud`?
-4. What happens if you re-run the deploy stage without deleting existing resources?
-
-**📝 Answers:**
-1. **Via a Kubernetes secret** — the pipeline runs `kubectl create secret generic aikey --from-literal=aisecret="$(AIKEY)"`. The `app.yaml` Deployment spec then references this secret with `valueFrom.secretKeyRef`, making the connection string available as the `APPLICATIONINSIGHTS_CONNECTION_STRING` environment variable inside the container. The `azure-monitor-opentelemetry` SDK detects this variable at startup and configures the OpenTelemetry exporter automatically.
-2. **`app.yaml` creates**: a Kubernetes `Namespace`, a `Deployment` (Flask app pods), a `Service` (ClusterIP), a `Gateway` (Application Gateway for Containers), and an `HTTPRoute` (routing rules). Together these expose the app via the Azure ALB FQDN.
-3. **The ALB controller is a cluster-wide component** — it watches Gateway and HTTPRoute resources across all namespaces and manages Azure Application Gateway for Containers. It runs in `azure-alb-system` by convention, separate from application workloads.
-4. **`kubectl apply` is idempotent** — re-running the deploy stage updates in-place. The Deployment performs a rolling update: new pods are started before old pods are terminated, ensuring zero downtime. The `aikey` secret is also updated idempotently via `--dry-run=client -o yaml | kubectl apply -f -`.
+</details>
 
 ---
 
-## 🎯 **Next Steps**
+## � Key Takeaways
 
-**✅ Upon Completion:**
-- [ ] `app.yaml` updated with correct ACR image reference
-- [ ] Deploy stage added to pipeline YAML
-- [ ] Pipeline runs all three stages successfully
-- [ ] Application accessible via ALB FQDN
-
-**➡️ Continue to:** [Lab 5 — Introduce CI/CD Triggers](../5-CICD/1-Introduce-CI-CD-to-your-Pipeline.md)
+1. **The App Insights connection string is injected via a Kubernetes secret** — the pipeline runs `kubectl create secret generic aikey --from-literal=aisecret="$(AIKEY)"`. The `app.yaml` Deployment spec references this with `valueFrom.secretKeyRef`, making it available as `APPLICATIONINSIGHTS_CONNECTION_STRING` inside the container.
+2. **`app.yaml` creates multiple resources** — a Kubernetes `Namespace`, a `Deployment` (Flask app pods), a `Service` (ClusterIP), a `Gateway` (Application Gateway for Containers), and an `HTTPRoute` (routing rules).
+3. **The ALB controller runs in `azure-alb-system`** — it watches Gateway and HTTPRoute resources across all namespaces and manages Azure Application Gateway for Containers. It runs separately from application workloads by convention.
+4. **`kubectl apply` is idempotent** — re-running the deploy stage updates in-place. The Deployment performs a rolling update: new pods are started before old pods are terminated, ensuring zero downtime.
 
 ---
 
-## 📚 **Additional Resources**
+## ➡️ What's Next
+
+Your Python/Flask app is now running in AKS and accessible via the Azure Application Gateway for Containers. In the next lab you'll configure automatic pipeline triggers so every push to `main` deploys automatically.
+
+**[← Back to Lab 4.1](./1-Update-AD-Group-and-Add-KeyVault-Secret.md)** | **[Continue to Lab 5 →](../5-CICD/1-Introduce-CI-CD-to-your-Pipeline.md)**
+
+---
+
+## 📚 Additional Resources
 
 - 🔗 [AKS — Deploy applications](https://learn.microsoft.com/en-us/azure/aks/tutorial-kubernetes-deploy-application)
 - 🔗 [Azure Application Gateway for Containers](https://learn.microsoft.com/en-us/azure/application-gateway/for-containers/overview)

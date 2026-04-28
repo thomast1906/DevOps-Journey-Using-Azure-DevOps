@@ -1,32 +1,30 @@
 # 🗄️ Configure Terraform Remote State Storage
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Understand why remote Terraform state is essential** — for collaboration, consistency, and locking
-- [ ] **Create an Azure Resource Group** — as the logical container for your Terraform backend resources
-- [ ] **Provision an Azure Storage Account and Blob Container** — to store and lock the Terraform state file securely
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Understand why remote Terraform state is essential — for collaboration, consistency, and locking
+- Create an Azure Resource Group — as the logical container for your Terraform backend resources
+- Provision an Azure Storage Account and Blob Container — to store and lock the Terraform state file securely
 
-**✅ Required Knowledge:**
-- [ ] Basic understanding of Terraform state concepts
-- [ ] Familiarity with Azure Storage
+> ⏱️ **Estimated Time**: ~10 minutes
 
-**🔧 Required Tools:**
-- [ ] Azure CLI installed and authenticated (`az login`)
-- [ ] Bash (macOS/Linux terminal or WSL on Windows)
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 1.1 — Azure DevOps Setup](./1-Azure-DevOps-Setup.md)
-- [ ] Active Azure subscription with sufficient permissions (Contributor or Owner)
+Before starting, ensure you have:
+
+- **Azure CLI** installed and authenticated (`az login`)
+- **Bash** terminal (macOS/Linux or WSL on Windows)
+- **Completed [Lab 1.1 — Azure DevOps Setup](./1-Azure-DevOps-Setup.md)**
+- **Active Azure subscription** with Contributor or Owner permissions
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Customise the Script Variables**
+### Step 1: Customise the Script Variables
 
 1. **📂 Open the storage creation script**
 
@@ -43,7 +41,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Run the Script**
+### Step 2: Run the Script
 
 1. **▶️ Execute the script**
 
@@ -73,14 +71,14 @@ By the end of this lab, you will:
    ```
 
 **What the script does:**
-- [ ] Creates an Azure **Resource Group** for all DevOps journey resources
-- [ ] Creates an Azure **Storage Account** with LRS redundancy and HTTPS-only enforcement
-- [ ] Creates a **Blob Container** named `tfstate` to store the Terraform state file
-- [ ] Enables **blob versioning** and **soft-delete** for state file protection
+- Creates an Azure **Resource Group** for all DevOps journey resources
+- Creates an Azure **Storage Account** with LRS redundancy and HTTPS-only enforcement
+- Creates a **Blob Container** named `tfstate` to store the Terraform state file
+- Enables **blob versioning** and **soft-delete** for state file protection
 
 ---
 
-### **Step 3: Record Your Backend Values**
+### Step 3: Record Your Backend Values
 
 Make note of the following — you will need them in the pipeline YAML configuration in Lab 2:
 
@@ -96,12 +94,12 @@ az storage account keys list \
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Infrastructure Validation:**
-- [ ] Resource group `devops-journey-rg-oct2024` exists in Azure Portal
-- [ ] Storage account `devopsjourneyoct2024` is present within the resource group
-- [ ] Blob container `tfstate` exists inside the storage account
+**Infrastructure checklist:**
+- Resource group `devops-journey-rg-oct2024` exists in Azure Portal
+- Storage account `devopsjourneyoct2024` is present within the resource group
+- Blob container `tfstate` exists inside the storage account
 
 ```bash
 # Validate resource group
@@ -141,9 +139,8 @@ You can also verify visually in the Azure Portal:
 
 ---
 
-## 🚨 **Troubleshooting Guide**
-
-**❌ Common Issues:**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
 ```bash
 # Problem: Storage account name already taken
@@ -164,37 +161,28 @@ az role assignment create \
   --scope "/subscriptions/$(az account show --query id -o tsv)/resourceGroups/devops-journey-rg-oct2024/providers/Microsoft.Storage/storageAccounts/devopsjourneyoct2024"
 ```
 
+</details>
+
 ---
 
-## 💡 **Knowledge Check**
+## � Key Takeaways
 
-**🎯 Questions:**
-1. Why must Terraform state be stored remotely rather than locally when working in a team?
-2. What is state locking and why is Azure Blob Storage suitable for it?
-3. What happens to your infrastructure if the Terraform state file is lost or corrupted?
-4. Why should the blob container NOT have public access enabled?
-
-**📝 Answers:**
 1. **Remote state enables collaboration** — multiple engineers can run `terraform plan/apply` against the same state without conflicts. Local state is per-developer and leads to drift.
 2. **State locking prevents concurrent modifications** — Azure Blob Storage supports lease-based locking so only one `terraform apply` runs at a time. Without locking, parallel runs can corrupt the state.
-3. **Terraform loses track of existing resources** — it would try to create all resources again, causing duplication or errors. Always back up state files using versioning and soft-delete.
-4. **The state file may contain sensitive values** — secrets, passwords, and keys can appear in plaintext in Terraform state. Public access would expose these to anyone.
+3. **Terraform loses track of resources without state** — it would try to create all resources again, causing duplication or errors. Always back up state files using versioning and soft-delete.
+4. **The blob container must not have public access** — the state file may contain sensitive values including secrets, passwords, and keys in plaintext.
 
 ---
 
-## 🎯 **Next Steps**
+## ➡️ What's Next
 
-**✅ Upon Completion:**
-- [ ] Azure Resource Group created: `devops-journey-rg-oct2024`
-- [ ] Storage Account created: `devopsjourneyoct2024`
-- [ ] Blob Container created: `tfstate`
-- [ ] Backend values noted for use in Lab 2 pipeline
+Your Terraform remote state backend is ready. The storage account and container details will be used to configure the backend in your pipeline YAML in Lab 2.
 
-**➡️ Continue to:** [Lab 1.3 — Create Azure AD AKS Admin Group](./3-Create-Azure-AD-AKS-Admins.md)
+**[← Back to Lab 1.1](./1-Azure-DevOps-Setup.md)** | **[Continue to Lab 1.3 →](./3-Create-Azure-AD-AKS-Admins.md)**
 
 ---
 
-## 📚 **Additional Resources**
+## 📚 Additional Resources
 
 - 🔗 [Terraform — Azure Backend configuration](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm)
 - 🔗 [Azure Storage — Blob storage overview](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction)

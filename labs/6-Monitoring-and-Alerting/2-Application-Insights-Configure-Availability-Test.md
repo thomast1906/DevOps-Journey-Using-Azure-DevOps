@@ -1,30 +1,28 @@
 # 🔔 Configure Application Insights Availability Tests
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Understand availability test types** — URL Ping, Standard, Multi-Step, and Custom TrackAvailability
-- [ ] **Configure a classic URL Ping test** — to monitor your application's external availability from multiple regions
-- [ ] **Interpret availability test results** — response times, failure locations, and test history
-- [ ] **Set up availability alerts** — to be notified when the application becomes unreachable
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Understand availability test types — URL Ping, Standard, Multi-Step, and Custom TrackAvailability
+- Configure a classic URL Ping test — to monitor your application's external availability from multiple regions
+- Interpret availability test results — response times, failure locations, and test history
+- Set up availability alerts — to be notified when the application becomes unreachable
 
-**✅ Required Knowledge:**
-- [ ] Application Insights basics (Lab 6.1)
-- [ ] Understanding of HTTP endpoints
+> ⏱️ **Estimated Time**: ~15 minutes
 
-**🔧 Required Tools:**
-- [ ] Azure Portal access
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 6.1 — Application Insights](./1-Application-Insights.md)
-- [ ] Application accessible via public FQDN from Lab 4 (Azure Application Gateway for Containers)
+Before starting, ensure you have:
+
+- **Azure Portal** access
+- **Completed [Lab 6.1 — Application Insights](./1-Application-Insights.md)**
+- **Application accessible via public FQDN** from Lab 4 (Azure Application Gateway for Containers)
 
 ---
 
-## 🏗️ **Availability Test Types**
+## 🏗️ Availability Test Types
 
 Application Insights supports four availability test types:
 
@@ -39,9 +37,9 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Get the Application FQDN**
+### Step 1: Get the Application FQDN
 
 1. **🌐 Retrieve the ALB FQDN**
 
@@ -61,7 +59,7 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
 
 ---
 
-### **Step 2: Create a Classic URL Ping Test**
+### Step 2: Create a Classic URL Ping Test
 
 1. **🔔 Navigate to Availability**
 
@@ -90,7 +88,7 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
 
 ---
 
-### **Step 3: Configure an Availability Alert**
+### Step 3: Configure an Availability Alert
 
 1. **🔔 Set up email notifications**
 
@@ -109,7 +107,7 @@ This lab uses the **URL Ping (Classic)** test — the simplest and most common s
 
 ---
 
-### **Step 4: View Test Results**
+### Step 4: View Test Results
 
 After 10-15 minutes, the test has enough data to display meaningful charts.
 
@@ -135,15 +133,15 @@ After 10-15 minutes, the test has enough data to display meaningful charts.
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Availability Test Validation:**
-- [ ] Test appears in the Availability tests list
-- [ ] Test shows green results from all 5 locations
-- [ ] Response time < 2000ms from all locations
-- [ ] Alert rule created and action group configured
+**Availability test checklist:**
+- Test appears in the Availability tests list
+- Test shows green results from all 5 locations
+- Response time < 2000ms from all locations
+- Alert rule created and action group configured
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # Verify the application is publicly accessible (simulating what the test does)
 fqdn=$(kubectl get gateway gateway-01 \
@@ -169,9 +167,10 @@ Status: 200 | Time: 0.145s
 
 ---
 
-## 🚨 **Troubleshooting Guide**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
-**❌ Common Issues:**
+**Common issues:**
 
 ```bash
 # Problem: Availability test shows all failures (red dots)
@@ -195,37 +194,28 @@ curl "http://<your-fqdn>" | grep -i "DevOps Journey"
 # Consider deploying to additional Azure regions to improve global latency
 ```
 
----
-
-## 💡 **Knowledge Check**
-
-**🎯 Questions:**
-1. Why does the availability test require the URL to be publicly accessible?
-2. What is the benefit of testing from **multiple geographic locations** simultaneously?
-3. When would you use a **Standard Test** instead of a URL Ping Test?
-4. What does it mean when a test shows `2/5 locations failed`?
-
-**📝 Answers:**
-1. **App Insights availability tests run from Azure infrastructure** — the test agents are hosted in Azure regions around the world and make real HTTP requests to your endpoint from the public internet. Internal-only URLs (private IP, VPN-required) cannot be reached by these test agents. For internal endpoints, use the **Custom TrackAvailability** method from inside your network.
-2. **Geographic distribution reveals regional issues** — a CDN misconfiguration, DNS propagation issue, or regional Azure outage may affect some locations but not others. Testing from 5 locations means you get early warning of regional problems before your global users notice them.
-3. **Standard Test** is better when you need: (a) SSL certificate expiry warnings (alerts 30/14/7 days before expiry), (b) custom HTTP request headers (e.g., API keys for a secured endpoint), (c) specific HTTP verbs (POST instead of GET), or (d) `Content-Type` matching. URL Ping only does simple GET requests with basic success criteria.
-4. **`2/5 locations failed`** means the test ran from 5 geographic locations and 2 of them received a non-200 response or a timeout. The alert threshold of `2/5` reduces false positives — a single transient failure from one location is common noise; consistent failures from multiple locations indicate a real outage.
+</details>
 
 ---
 
-## 🎯 **Next Steps**
+## � Key Takeaways
 
-**✅ Upon Completion:**
-- [ ] Classic URL Ping availability test created
-- [ ] Test runs every 5 minutes from 5 geographic locations
-- [ ] Availability alert configured with email notification
-- [ ] Test results visible in Availability blade (green dots)
-
-**➡️ Continue to:** [Lab 6.3 — Log Analytics & Container Insights](./3-Log-Analytics-Container-Insights.md)
+1. **Availability tests run from Azure infrastructure** — the test agents make real HTTP requests from the public internet, so the URL must be publicly accessible. For internal endpoints, use Custom TrackAvailability from within your network.
+2. **Geographic distribution reveals regional issues** — a CDN misconfiguration, DNS propagation issue, or regional Azure outage may affect some locations but not others. Five test locations give you early warning of regional problems before your global users notice.
+3. **Standard Test** is better when you need SSL certificate expiry warnings, custom HTTP request headers, specific HTTP verbs (POST), or content-type matching — URL Ping only does simple GET requests with basic success criteria.
+4. **`2/5 locations failed`** means 2 of 5 geographic test locations received a non-200 response or timeout. The `2/5` threshold reduces false positives — a single transient failure from one location is noise; failures from multiple locations indicate a real outage.
 
 ---
 
-## 📚 **Additional Resources**
+## ➡️ What's Next
+
+Your application is now monitored from multiple geographic locations around the clock. In the next lab you'll explore Log Analytics and Container Insights to query AKS cluster and container-level metrics.
+
+**[← Back to Lab 6.1](./1-Application-Insights.md)** | **[Continue to Lab 6.3 →](./3-Log-Analytics-Container-Insights.md)**
+
+---
+
+## 📚 Additional Resources
 
 - 🔗 [Application Insights — Availability overview](https://learn.microsoft.com/en-us/azure/azure-monitor/app/availability-overview)
 - 🔗 [Application Insights — URL Ping test](https://learn.microsoft.com/en-us/azure/azure-monitor/app/monitor-web-app-availability)

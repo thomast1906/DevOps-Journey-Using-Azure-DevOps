@@ -1,32 +1,30 @@
 # 📊 Log Analytics & Container Insights
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Navigate Container Insights** — Cluster, Nodes, Controllers, and Containers perspectives
-- [ ] **Interpret cluster performance metrics** — CPU, memory, node count, and pod count charts
-- [ ] **Write KQL queries** — to search container logs and diagnose issues from Log Analytics
-- [ ] **Set up log-based alerts** — to trigger on error patterns in application logs
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Navigate Container Insights — Cluster, Nodes, Controllers, and Containers perspectives
+- Interpret cluster performance metrics — CPU, memory, node count, and pod count charts
+- Write KQL queries — to search container logs and diagnose issues from Log Analytics
+- Set up log-based alerts — to trigger on error patterns in application logs
 
-**✅ Required Knowledge:**
-- [ ] Basic Kubernetes concepts (pods, nodes, namespaces)
-- [ ] Application Insights basics (Lab 6.1)
+> ⏱️ **Estimated Time**: ~20 minutes
 
-**🔧 Required Tools:**
-- [ ] Azure Portal access
-- [ ] `kubectl` (for validation commands)
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 6.2 — Availability Tests](./2-Application-Insights-Configure-Availability-Test.md)
-- [ ] AKS 1.33 cluster with Container Insights enabled (provisioned by Terraform in Lab 2)
-- [ ] Log Analytics workspace connected to both the AKS cluster and Application Insights
+Before starting, ensure you have:
+
+- **Azure Portal** access
+- **`kubectl`** (for validation commands)
+- **Completed [Lab 6.2 — Availability Tests](./2-Application-Insights-Configure-Availability-Test.md)**
+- **AKS 1.33 cluster** with Container Insights enabled (provisioned by Terraform in Lab 2)
+- **Log Analytics workspace** connected to both the AKS cluster and Application Insights
 
 ---
 
-## 🏗️ **How Container Insights Works**
+## 🏗️ How Container Insights Works
 
 ```
 AKS Cluster (1.33)
@@ -44,9 +42,9 @@ AKS Cluster (1.33)
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Navigate to Container Insights**
+### Step 1: Navigate to Container Insights
 
 1. **🌐 Open the Azure Portal**
 
@@ -64,7 +62,7 @@ AKS Cluster (1.33)
 
 ---
 
-### **Step 2: Cluster Perspective**
+### Step 2: Cluster Perspective
 
 The **Cluster** tab shows aggregated performance metrics for the entire cluster.
 
@@ -86,7 +84,7 @@ The **Cluster** tab shows aggregated performance metrics for the entire cluster.
 
 ---
 
-### **Step 3: Nodes Perspective**
+### Step 3: Nodes Perspective
 
 1. **🖥️ Switch to Nodes tab**
 
@@ -102,7 +100,7 @@ The **Cluster** tab shows aggregated performance metrics for the entire cluster.
 
 ---
 
-### **Step 4: Containers Perspective**
+### Step 4: Containers Perspective
 
 1. **📦 Switch to Containers tab**
 
@@ -120,7 +118,7 @@ The **Cluster** tab shows aggregated performance metrics for the entire cluster.
 
 ---
 
-### **Step 5: KQL Queries in Log Analytics**
+### Step 5: KQL Queries in Log Analytics
 
 Container Insights stores all data in Log Analytics — you can query it with KQL.
 
@@ -180,7 +178,7 @@ Container Insights stores all data in Log Analytics — you can query it with KQ
 
 ---
 
-### **Step 6: Create a Log-Based Alert**
+### Step 6: Create a Log-Based Alert
 
 Alert when your application logs contain `ERROR` messages.
 
@@ -210,14 +208,14 @@ Alert when your application logs contain `ERROR` messages.
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Container Insights Validation:**
-- [ ] Cluster tab shows CPU, memory, node count, and pod count charts with data
-- [ ] Containers tab shows pods in `thomasthorntoncloud` namespace
-- [ ] Nodes tab shows all nodes in Ready state
+**Container Insights checklist:**
+- Cluster tab shows CPU, memory, node count, and pod count charts with data
+- Containers tab shows pods in `thomasthorntoncloud` namespace
+- Nodes tab shows all nodes in Ready state
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # Verify Container Insights add-on is running
 kubectl get pods -n kube-system | grep -i "omsagent\|ama-"
@@ -247,9 +245,10 @@ devopsjourney-app-<hash>                1/1     Running   0          2d
 
 ---
 
-## 🚨 **Troubleshooting Guide**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
-**❌ Common Issues:**
+**Common issues:**
 
 ```bash
 # Problem: Container Insights shows no data / "No data for selected time range"
@@ -278,44 +277,44 @@ az monitor diagnostic-settings list \
 kubectl describe pod -n thomasthorntoncloud <pod-name> | grep -A5 "Limits\|Requests"
 ```
 
----
-
-## 💡 **Knowledge Check**
-
-**🎯 Questions:**
-1. What is the difference between **Container Insights** and **Application Insights** for monitoring a Flask application?
-2. Why might you use the **KubePodInventory** table rather than `kubectl get pods` for historical analysis?
-3. What does `OOMKilled` mean, and how would you fix it?
-4. Why does Container Insights share a Log Analytics workspace with Application Insights?
-
-**📝 Answers:**
-1. **Container Insights** focuses on **infrastructure** — CPU/memory per pod/node, pod lifecycle events, container restarts, node health. It tells you how your Kubernetes infrastructure is performing. **Application Insights** focuses on **application code** — HTTP request traces, exceptions, dependencies, user behaviour. Together they give you the full picture: infra issues (Container Insights) + code issues (Application Insights). The shared Log Analytics workspace lets you write KQL queries that join both datasets.
-2. **`KubePodInventory` is historical** — `kubectl get pods` only shows the current state. If a pod crashed and restarted 3 hours ago, `kubectl` shows the current Running state; `KubePodInventory` shows the full lifecycle including the crash, restart count, and the timestamp when `ContainerStatusReason` was `OOMKilled` or `CrashLoopBackOff`. This is essential for post-incident analysis.
-3. **`OOMKilled` (Out Of Memory Killed)** means the container exceeded its Kubernetes memory limit and was forcibly terminated by the OS OOM killer. Fix: (a) increase the memory limit in the deployment manifest (`resources.limits.memory`), (b) profile the Python app for memory leaks (use `tracemalloc` or Application Insights memory metrics), or (c) scale horizontally to distribute load across more pods.
-4. **Sharing a Log Analytics workspace** enables **cross-resource KQL queries** — you can correlate application errors (from Application Insights, stored as `requests`/`exceptions` tables) with pod crashes (from Container Insights, stored as `KubePodInventory`) in a single query. This is a key benefit of the workspace-based Application Insights architecture over classic (isolated) Application Insights.
+</details>
+```
 
 ---
 
-## 🎯 **Next Steps**
+## � Key Takeaways
 
-**✅ Lab Series Complete! You have:**
-- [ ] Set up Azure DevOps with Workload Identity Federation (Lab 1)
-- [ ] Provisioned AKS infrastructure with Terraform (Lab 2)
-- [ ] Created AD admin group for AKS RBAC (Lab 1.3)
-- [ ] Built a Terraform pipeline with remote state (Lab 2)
-- [ ] Built and pushed the Flask app to ACR (Lab 3)
-- [ ] Configured Key Vault with App Insights connection string (Lab 4.1)
-- [ ] Deployed the app to AKS with the full pipeline (Lab 4.2)
-- [ ] Implemented CI/CD with branch triggers (Lab 5)
-- [ ] Monitored the app with Application Insights (Lab 6.1)
-- [ ] Configured availability tests (Lab 6.2)
-- [ ] Analysed container metrics with Container Insights and KQL (Lab 6.3)
-
-**🎉 Congratulations on completing the DevOps Journey Using Azure DevOps!**
+1. **Container Insights is for infrastructure; Application Insights is for application code** — together they give you the full picture. Container Insights shows CPU/memory/pod health; Application Insights shows HTTP traces, exceptions, and user behaviour. The shared Log Analytics workspace lets you join both datasets in a single KQL query.
+2. **`KubePodInventory` is historical** — `kubectl get pods` only shows current state. If a pod crashed and restarted hours ago, `kubectl` shows Running; `KubePodInventory` shows the full lifecycle including crash timestamps and `ContainerStatusReason`. Essential for post-incident analysis.
+3. **`OOMKilled` means the container exceeded its memory limit** and was forcibly terminated by the OS. Fix by increasing the memory limit in the deployment manifest, profiling the app for leaks, or scaling horizontally.
+4. **Sharing a Log Analytics workspace** enables cross-resource KQL queries — you can correlate application errors (from Application Insights: `requests`/`exceptions`) with pod crashes (from Container Insights: `KubePodInventory`) in a single query. This is a key advantage of workspace-based Application Insights over classic.
 
 ---
 
-## 📚 **Additional Resources**
+## ➡️ What's Next
+
+Congratulations 🎉 — you've completed the full DevOps Journey Using Azure DevOps lab series!
+
+You now have a production-grade pipeline that provisions infrastructure with Terraform, builds and pushes container images to ACR, deploys to AKS with zero-touch CI/CD, and monitors everything with Application Insights and Container Insights.
+
+**Lab series summary:**
+
+1. Set up Azure DevOps with Workload Identity Federation
+2. Provisioned AKS infrastructure with Terraform
+3. Created AD admin group for AKS RBAC
+4. Built and pushed the Flask app to ACR
+5. Configured Key Vault with App Insights connection string
+6. Deployed the app to AKS with the full pipeline
+7. Implemented CI/CD with branch triggers
+8. Monitored the app with Application Insights
+9. Configured availability tests
+10. Analysed container metrics with Container Insights and KQL
+
+**[← Back to Lab 6.2](./2-Application-Insights-Configure-Availability-Test.md)** | **[Return to Course Home →](../../README.md)**
+
+---
+
+## 📚 Additional Resources
 
 - 🔗 [Container Insights overview](https://learn.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-overview)
 - 🔗 [Container Insights — Query container logs](https://learn.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-log-query)

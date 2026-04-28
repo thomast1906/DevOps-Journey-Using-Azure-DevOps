@@ -1,34 +1,32 @@
 # 📊 Monitor with Application Insights
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Understand what Application Insights collects** — requests, exceptions, dependencies, custom metrics, and usage
-- [ ] **Use Live Metrics** — to monitor real-time request rates and failures during a deployment
-- [ ] **Use Transaction Search** — to inspect individual HTTP requests and exceptions
-- [ ] **Use Failures blade** — to diagnose HTTP errors and exceptions at a glance
-- [ ] **Use Application Map** — to visualise dependencies and performance bottlenecks
-- [ ] **Configure Smart Detection and Alerts** — to be notified of anomalies automatically
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Understand what Application Insights collects — requests, exceptions, dependencies, custom metrics, and usage
+- Use Live Metrics — to monitor real-time request rates and failures during a deployment
+- Use Transaction Search — to inspect individual HTTP requests and exceptions
+- Use Failures blade — to diagnose HTTP errors and exceptions at a glance
+- Use Application Map — to visualise dependencies and performance bottlenecks
+- Configure Smart Detection and Alerts — to be notified of anomalies automatically
 
-**✅ Required Knowledge:**
-- [ ] Basic understanding of application telemetry concepts
-- [ ] Familiarity with the Azure Portal
+> ⏱️ **Estimated Time**: ~25 minutes
 
-**🔧 Required Tools:**
-- [ ] Azure Portal access
-- [ ] Application deployed to AKS (Labs 4–5)
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] Completed [Lab 5 — CI/CD](../5-CICD/2-Automated-Deployment-AKS-Application.md)
-- [ ] Application Insights resource provisioned (workspace-based, created by Terraform in Lab 2)
-- [ ] `APPLICATIONINSIGHTS_CONNECTION_STRING` injected into the running pods (Lab 4)
+Before starting, ensure you have:
+
+- **Azure Portal** access
+- **Application deployed to AKS** (Labs 4–5)
+- **Completed [Lab 5 — CI/CD](../5-CICD/2-Automated-Deployment-AKS-Application.md)**
+- **Application Insights resource** provisioned (workspace-based, created by Terraform in Lab 2)
+- **`APPLICATIONINSIGHTS_CONNECTION_STRING`** injected into the running pods (Lab 4)
 
 ---
 
-## 🏗️ **How Application Insights Works in This Lab**
+## 🏗️ How Application Insights Works in This Lab
 
 The Python/Flask application uses `azure-monitor-opentelemetry==1.8.7`:
 
@@ -52,9 +50,9 @@ Flask App (pod)
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Navigate to Application Insights**
+### Step 1: Navigate to Application Insights
 
 1. **🌐 Open the Azure Portal**
 
@@ -74,7 +72,7 @@ Flask App (pod)
 
 ---
 
-### **Step 2: Live Metrics**
+### Step 2: Live Metrics
 
 Live Metrics provides near-real-time (< 1 second latency) visibility into your application's performance.
 
@@ -93,7 +91,7 @@ Live Metrics provides near-real-time (< 1 second latency) visibility into your a
 
 ---
 
-### **Step 3: Transaction Search**
+### Step 3: Transaction Search
 
 Transaction Search lets you find and drill into individual telemetry events.
 
@@ -122,7 +120,7 @@ Transaction Search lets you find and drill into individual telemetry events.
 
 ---
 
-### **Step 4: Failures Blade**
+### Step 4: Failures Blade
 
 The Failures blade shows a consolidated view of all HTTP errors and exceptions, making triage fast.
 
@@ -140,7 +138,7 @@ The Failures blade shows a consolidated view of all HTTP errors and exceptions, 
 
 ---
 
-### **Step 5: Application Map**
+### Step 5: Application Map
 
 The Application Map shows all components (services, databases, external APIs) and the call volume and error rate between them.
 
@@ -159,7 +157,7 @@ The Application Map shows all components (services, databases, external APIs) an
 
 ---
 
-### **Step 6: Smart Detection and Alerts**
+### Step 6: Smart Detection and Alerts
 
 Application Insights automatically learns your application's baseline and alerts you when anomalies occur.
 
@@ -188,7 +186,7 @@ Application Insights automatically learns your application's baseline and alerts
 
 ---
 
-### **Step 7: Usage Analysis**
+### Step 7: Usage Analysis
 
 Usage analysis helps you understand how users interact with your application.
 
@@ -204,14 +202,14 @@ Usage analysis helps you understand how users interact with your application.
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Telemetry Validation:**
-- [ ] Application Insights receives data (requests visible in Transaction Search)
-- [ ] Live Metrics shows connected server count matching AKS replica count
-- [ ] No unexpected exceptions in Failures blade
+**Telemetry checklist:**
+- Application Insights receives data (requests visible in Transaction Search)
+- Live Metrics shows connected server count matching AKS replica count
+- No unexpected exceptions in Failures blade
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # Generate test traffic
 fqdn=$(kubectl get gateway gateway-01 -n thomasthorntoncloud \
@@ -237,9 +235,10 @@ APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=...;IngestionEndpoint=.
 
 ---
 
-## 🚨 **Troubleshooting Guide**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
-**❌ Common Issues:**
+**Common issues:**
 
 ```bash
 # Problem: No data appears in Application Insights (Live Metrics shows 0 servers)
@@ -265,36 +264,28 @@ az keyvault secret set --vault-name devopsjourneyoct2024-kv --name AIKEY \
 # Live Metrics shows near-real-time; other blades have 2-5 min lag
 ```
 
----
-
-## 💡 **Knowledge Check**
-
-**🎯 Questions:**
-1. Why does this lab use `APPLICATIONINSIGHTS_CONNECTION_STRING` instead of `APPINSIGHTS_INSTRUMENTATIONKEY`?
-2. What is the difference between **workspace-based** and **classic** Application Insights?
-3. How does the `azure-monitor-opentelemetry` SDK know where to send telemetry?
-4. What is the difference between Smart Detection and manual alert rules?
-
-**📝 Answers:**
-1. **`azure-monitor-opentelemetry==1.8.7` requires the connection string** — the SDK uses the OpenTelemetry Azure Monitor exporter, which reads `APPLICATIONINSIGHTS_CONNECTION_STRING` to configure the correct regional ingestion endpoint. `APPINSIGHTS_INSTRUMENTATIONKEY` is the legacy env var for the older Application Insights SDK and is not supported by the OpenTelemetry exporter.
-2. **Workspace-based** App Insights stores data in a **Log Analytics workspace** — enabling KQL queries, cross-resource queries, longer retention, and integration with Azure Monitor alerts and workbooks. **Classic** App Insights stored data in its own proprietary store. All new deployments should use workspace-based (this lab's Terraform creates workspace-based by default).
-3. **The SDK reads `APPLICATIONINSIGHTS_CONNECTION_STRING`** at startup via `configure_azure_monitor()`. The connection string includes the `IngestionEndpoint` URL (e.g., `https://uksouth-1.in.applicationinsights.azure.com/`) and `LiveEndpoint` URL. The SDK configures the OpenTelemetry pipeline to export spans, metrics, and logs to these endpoints.
-4. **Smart Detection** automatically learns your app's baseline and alerts on anomalies (no threshold to set); it adapts over time. **Manual alert rules** fire when a metric crosses a fixed threshold you define — predictable but requires you to know the right threshold value. Use Smart Detection as an early warning system and manual alerts for business-critical SLAs.
+</details>
 
 ---
 
-## 🎯 **Next Steps**
+## � Key Takeaways
 
-**✅ Upon Completion:**
-- [ ] Confirmed telemetry is flowing from Flask app → App Insights
-- [ ] Reviewed Live Metrics, Transaction Search, Failures, and Application Map
-- [ ] Created at least one custom alert
-
-**➡️ Continue to:** [Lab 6.2 — Configure Availability Tests](./2-Application-Insights-Configure-Availability-Test.md)
+1. **`azure-monitor-opentelemetry` requires the connection string** — the SDK reads `APPLICATIONINSIGHTS_CONNECTION_STRING` (not the legacy `APPINSIGHTS_INSTRUMENTATIONKEY`) to configure the correct regional ingestion endpoint for the OpenTelemetry Azure Monitor exporter.
+2. **Workspace-based App Insights** stores data in a Log Analytics workspace, enabling KQL queries, cross-resource queries, longer retention, and integration with Azure Monitor. All new deployments should use workspace-based (this lab’s Terraform creates it by default).
+3. **The SDK reads `APPLICATIONINSIGHTS_CONNECTION_STRING` at startup** via `configure_azure_monitor()`. The connection string includes the `IngestionEndpoint` and `LiveEndpoint` URLs, which the SDK uses to route telemetry to the correct region.
+4. **Smart Detection** automatically learns your app’s baseline and alerts on anomalies without a threshold to configure. **Manual alert rules** fire when a metric crosses a fixed threshold you define. Use Smart Detection as an early warning system and manual alerts for business-critical SLAs.
 
 ---
 
-## 📚 **Additional Resources**
+## ➡️ What's Next
+
+You can now navigate Application Insights to view live traffic, trace individual requests, diagnose failures, and create alerts. In the next lab you'll configure Availability Tests to automatically verify your application is reachable from multiple regions.
+
+**[← Back to Lab 5.2](../5-CICD/2-Automated-Deployment-AKS-Application.md)** | **[Continue to Lab 6.2 →](./2-Application-Insights-Configure-Availability-Test.md)**
+
+---
+
+## 📚 Additional Resources
 
 - 🔗 [Application Insights overview](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - 🔗 [azure-monitor-opentelemetry — Python SDK](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=python)

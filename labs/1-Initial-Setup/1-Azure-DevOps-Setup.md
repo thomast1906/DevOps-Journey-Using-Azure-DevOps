@@ -1,32 +1,32 @@
 # 🚀 Azure DevOps Setup
 
 
-## 🎯 **Learning Objectives**
+## 🎯 Learning Objectives
 
-By the end of this lab, you will:
-- [ ] **Create an Azure DevOps organisation and project** — your central hub for all pipeline and repo work
-- [ ] **Configure a Workload Identity Federation (WIF) service connection** — the secure, secretless way to authenticate to Azure
-- [ ] **Assign appropriate RBAC roles** — so pipelines can provision and manage Azure resources
+By the end of this lab, you'll be able to:
 
-## 📋 **Prerequisites**
+- Create an Azure DevOps organisation and project — your central hub for all pipeline and repo work
+- Configure a Workload Identity Federation (WIF) service connection — the secure, secretless way to authenticate to Azure
+- Assign appropriate RBAC roles — so pipelines can provision and manage Azure resources
 
-**✅ Required Knowledge:**
-- [ ] Basic familiarity with Azure portal navigation
-- [ ] Understanding of CI/CD concepts
+> ⏱️ **Estimated Time**: ~20 minutes
 
-**🔧 Required Tools:**
-- [ ] A Microsoft account (free)
-- [ ] An active Azure subscription
-- [ ] Azure CLI installed (`az --version`)
+## ✅ Prerequisites
 
-**🏗️ Infrastructure Dependencies:**
-- [ ] None — this is the very first lab
+Before starting, ensure you have:
+
+- **Microsoft account** (free)
+- **Active Azure subscription** with Owner or Contributor access
+- **Azure CLI** installed and authenticated (`az --version`)
+- **Basic familiarity** with Azure portal navigation and CI/CD concepts
+
+> This is the first lab — no prior labs are required.
 
 ---
 
-## 🚀 **Step-by-Step Implementation**
+## 🚀 Step-by-Step Implementation
 
-### **Step 1: Create an Azure DevOps Organisation**
+### Step 1: Create an Azure DevOps Organisation
 
 1. **🌐 Sign in to Azure DevOps**
 
@@ -53,7 +53,7 @@ By the end of this lab, you will:
 
 ---
 
-### **Step 2: Create a Workload Identity Federation Service Connection**
+### Step 2: Create a Workload Identity Federation Service Connection
 
 Workload Identity Federation (WIF/OIDC) is the **recommended, secretless** way to authenticate Azure DevOps pipelines to Azure. No service principal secrets or certificates are stored.
 
@@ -98,7 +98,7 @@ Workload Identity Federation (WIF/OIDC) is the **recommended, secretless** way t
 
 ---
 
-### **Step 3: Assign RBAC Roles to the Workload Identity**
+### Step 3: Assign RBAC Roles to the Workload Identity
 
 The pipeline identity needs sufficient Azure permissions to provision infrastructure.
 
@@ -135,16 +135,16 @@ The pipeline identity needs sufficient Azure permissions to provision infrastruc
 
 ---
 
-## ✅ **Validation Steps**
+## ✅ Validation
 
-**🔍 Infrastructure Validation:**
-- [ ] Azure DevOps project is visible at `https://dev.azure.com/<your-org>/DevOps-Journey`
-- [ ] Service connection appears under **Project Settings → Service connections**
-- [ ] Service connection status shows **"Verified"** (green tick)
-- [ ] Workload Identity appears in **Entra ID → App registrations**
-- [ ] Role assignment is visible in **Subscription → IAM → Role assignments**
+**Infrastructure checklist:**
+- Azure DevOps project is visible at `https://dev.azure.com/<your-org>/DevOps-Journey`
+- Service connection appears under **Project Settings → Service connections**
+- Service connection status shows **"Verified"** (green tick)
+- Workload Identity appears in **Entra ID → App registrations**
+- Role assignment is visible in **Subscription → IAM → Role assignments**
 
-**🔧 Technical Validation:**
+**Technical validation:**
 ```bash
 # Verify the service principal exists
 az ad sp list --display-name "azure-devops-journey-identity" \
@@ -158,9 +158,8 @@ az role assignment list \
 
 ---
 
-## 🚨 **Troubleshooting Guide**
-
-**❌ Common Issues:**
+<details>
+<summary>🔧 <strong>Troubleshooting</strong> (click to expand)</summary>
 
 ```bash
 # Problem: Service connection verification fails
@@ -178,36 +177,28 @@ az role assignment create \
 # Solution: Navigate to Manage Workload Identity → Branding → update display name
 ```
 
+</details>
+
 ---
 
-## 💡 **Knowledge Check**
+## � Key Takeaways
 
-**🎯 Questions:**
-1. Why is Workload Identity Federation preferred over service principal secrets?
-2. What Azure role does the WIF service connection need to assign RBAC during AKS deployment?
-3. What is the difference between a WIF **automatic** and **manual** service connection?
-4. Why is subscription-scope role assignment required rather than resource-group scope?
-
-**📝 Answers:**
 1. **WIF uses short-lived OIDC tokens** — no secrets to rotate, leak, or expire. Authentication is based on federated trust between Azure DevOps and Entra ID.
-2. **User Access Administrator** — required to create role assignments for managed identities and AKS RBAC resources during Terraform apply.
-3. **Automatic** lets Azure DevOps create the Entra ID app registration automatically; **Manual** requires you to provide an existing app registration's federation details.
-4. Infrastructure spans multiple resource groups; subscription-scope ensures the pipeline can create all required resources without per-RG grants.
+2. **User Access Administrator is required** — to create role assignments for managed identities and AKS RBAC resources during Terraform apply.
+3. **Automatic WIF** lets Azure DevOps create the Entra ID app registration automatically; **Manual** requires you to provide an existing app registration's federation details.
+4. **Subscription-scope role assignment is required** — infrastructure spans multiple resource groups, so the pipeline can create all required resources without per-RG grants.
 
 ---
 
-## 🎯 **Next Steps**
+## ➡️ What's Next
 
-**✅ Upon Completion:**
-- [ ] Azure DevOps project created
-- [ ] WIF service connection created and verified
-- [ ] RBAC roles assigned to Workload Identity
+You now have Azure DevOps set up with a Workload Identity Federation service connection. The pipeline identity is ready to provision Azure resources without any stored secrets.
 
-**➡️ Continue to:** [Lab 1.2 — Configure Terraform Remote Storage](./2-Azure-Terraform-Remote-Storage.md)
+**[← Back to Lab Overview](./README.md)** | **[Continue to Lab 1.2 →](./2-Azure-Terraform-Remote-Storage.md)**
 
 ---
 
-## 📚 **Additional Resources**
+## 📚 Additional Resources
 
 - 🔗 [Azure DevOps — Create a project](https://learn.microsoft.com/en-us/azure/devops/organizations/projects/create-project)
 - 🔗 [Workload Identity Federation for Azure DevOps](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/connect-to-azure?view=azure-devops#workload-identity-federation)
