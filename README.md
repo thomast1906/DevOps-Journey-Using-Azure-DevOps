@@ -41,7 +41,7 @@ Before starting, review the full [prerequisites guide](./prerequisites.md). You'
 - **Azure subscription** with Contributor access
 - **Azure DevOps organisation** — [create one free](https://dev.azure.com/)
 - **Azure CLI** — `az` installed and authenticated
-- **Terraform** — v1.14+
+- **Terraform** — v1.14+ (the Azure DevOps pipelines use tested version `1.14.9` for reproducible builds)
 - **Docker Desktop** — for local image testing
 - **kubectl** and **kubelogin**
 - **Helm** — v3+

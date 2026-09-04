@@ -24,8 +24,10 @@ You will:
 ### Terraform Stack
 | Component | Version |
 |---|---|
-| Terraform | `>= 1.14.0, < 2.0.0` |
+| Terraform | Pipelines pin tested version `1.14.9`; configuration supports `>= 1.14.0, < 2.0.0` |
 | AzureRM Provider | `>= 4.68.0, < 5.0.0` |
+
+> The pipeline version is pinned so a newly released Terraform version cannot change the lab behaviour. Update it only after running the Terraform validation checks.
 
 ### Key Configuration File
 `vars/production.tfvars` — update all values for your environment:

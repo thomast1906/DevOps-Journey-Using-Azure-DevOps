@@ -23,6 +23,7 @@ variables:
   - name: environment
     value: 'production'
   - name: terraform_version
+    # Pin the tested version so learner builds remain reproducible; update only after validation.
     value: '1.14.9'
   - name: repository
     value: 'repository'
